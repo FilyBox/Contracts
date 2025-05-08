@@ -8,6 +8,7 @@ import { folderRouter } from './folder-router/router';
 import { profileRouter } from './profile-router/router';
 import { recipientRouter } from './recipient-router/router';
 import { shareLinkRouter } from './share-link-router/router';
+import { taskRouter } from './task-router/route';
 import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
 import { router } from './trpc';
@@ -18,6 +19,7 @@ export const appRouter = router({
   profile: profileRouter,
   document: documentRouter,
   field: fieldRouter,
+  task: taskRouter,
   folder: folderRouter,
   recipient: recipientRouter,
   admin: adminRouter,
