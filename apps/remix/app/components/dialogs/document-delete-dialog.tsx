@@ -124,7 +124,7 @@ export const DocumentDeleteDialog = ({
                 <AlertDescription>
                   <Trans>
                     This action is <strong>irreversible</strong>. Once confirmed, this document will
-                    be permanently deleted.
+                    be permanently deleted. Lol
                   </Trans>
                 </AlertDescription>
               ))
