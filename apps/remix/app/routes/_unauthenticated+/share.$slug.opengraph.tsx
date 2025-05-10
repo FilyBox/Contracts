@@ -22,11 +22,6 @@ const IMAGE_SIZE = {
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const { slug } = params;
 
-  // QR codes are not supported for OpenGraph images
-  if (slug.startsWith('qr_')) {
-    return new Response('Not found', { status: 404 });
-  }
-
   const baseUrl = NEXT_PUBLIC_WEBAPP_URL();
 
   const [interSemiBold, interRegular, caveatRegular] = await Promise.all([

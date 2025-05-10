@@ -156,7 +156,9 @@ export const sendTeamEmailVerificationEmail = async (
       name: FROM_NAME,
       address: FROM_ADDRESS,
     },
-    subject: i18n._(msg`A request to use your email has been initiated by ${team.name}`),
+    subject: i18n._(
+      msg`A request to use your email has been initiated by ${team.name} on Documenso`,
+    ),
     html,
     text,
   });

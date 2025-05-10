@@ -208,11 +208,7 @@ export const TemplateEditForm = ({
         duration: 5000,
       });
 
-      const templatePath = template.folderId
-        ? `${templateRootPath}/f/${template.folderId}`
-        : templateRootPath;
-
-      await navigate(templatePath);
+      await navigate(templateRootPath);
     } catch (err) {
       console.error(err);
 

@@ -38,33 +38,28 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const documentId = Number(id);
 
   const documentRootPath = formatDocumentsPath(team?.url);
-  console.log('documentId', documentId);
+
   if (!documentId || Number.isNaN(documentId)) {
-    console.log('Document ID is invalid or not provided');
     throw redirect(documentRootPath);
   }
 
-  const document = await getDocumentById({
-    documentId,
-    userId: user.id,
-    teamId: team?.id,
-  }).catch(() => null);
-  console.log('document', document);
+  // Todo: Get full document instead?
+  const [document, recipients] = await Promise.all([
+    getDocumentById({
+      documentId,
+      userId: user.id,
+      teamId: team?.id,
+    }).catch(() => null),
+    getRecipientsForDocument({
+      documentId,
+      userId: user.id,
+      teamId: team?.id,
+    }),
+  ]);
+
   if (!document || !document.documentData) {
-    console.log('Document not found or document data is null');
     throw redirect(documentRootPath);
   }
-
-  // if (document.folderId) {
-  //   console.log('Document has a folderId', document.folderId);
-  //   throw redirect(documentRootPath);
-  // }
-
-  const recipients = await getRecipientsForDocument({
-    documentId,
-    userId: user.id,
-    teamId: team?.id,
-  });
 
   return {
     document,

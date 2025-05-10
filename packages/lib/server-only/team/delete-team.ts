@@ -121,7 +121,7 @@ export const sendTeamDeleteEmail = async ({ email, isOwner, team }: SendTeamDele
       name: FROM_NAME,
       address: FROM_ADDRESS,
     },
-    subject: i18n._(msg`Team "${team.name}" has been deleted`),
+    subject: i18n._(msg`Team "${team.name}" has been deleted on Documenso`),
     html,
     text,
   });

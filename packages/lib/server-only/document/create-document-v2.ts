@@ -13,7 +13,7 @@ import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { normalizePdf as makeNormalizedPdf } from '@documenso/lib/server-only/pdf/normalize-pdf';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import type { ApiRequestMetadata } from '@documenso/lib/universal/extract-request-metadata';
-import { nanoid, prefixedId } from '@documenso/lib/universal/id';
+import { nanoid } from '@documenso/lib/universal/id';
 import { createDocumentAuditLogData } from '@documenso/lib/utils/document-audit-logs';
 import { prisma } from '@documenso/prisma';
 import type { TCreateDocumentV2Request } from '@documenso/trpc/server/document-router/schema';
@@ -142,7 +142,6 @@ export const createDocumentV2 = async ({
     const document = await tx.document.create({
       data: {
         title,
-        qrToken: prefixedId('qr'),
         externalId: data.externalId,
         documentDataId,
         userId,
@@ -233,7 +232,6 @@ export const createDocumentV2 = async ({
         documentMeta: true,
         recipients: true,
         fields: true,
-        folder: true,
       },
     });
 

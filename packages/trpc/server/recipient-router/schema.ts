@@ -30,7 +30,7 @@ export const ZCreateRecipientSchema = z.object({
   actionAuth: ZRecipientActionAuthTypesSchema.optional().nullable(),
 });
 
-export const ZUpdateRecipientSchema = z.object({
+const ZUpdateRecipientSchema = z.object({
   id: z.number().describe('The ID of the recipient to update.'),
   email: z.string().toLowerCase().email().min(1).optional(),
   name: z.string().optional(),

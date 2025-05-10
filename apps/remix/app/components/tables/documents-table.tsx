@@ -29,17 +29,11 @@ export type DocumentsTableProps = {
   data?: TFindDocumentsResponse;
   isLoading?: boolean;
   isLoadingError?: boolean;
-  onMoveDocument?: (documentId: number) => void;
 };
 
 type DocumentsTableRow = TFindDocumentsResponse['data'][number];
 
-export const DocumentsTable = ({
-  data,
-  isLoading,
-  isLoadingError,
-  onMoveDocument,
-}: DocumentsTableProps) => {
+export const DocumentsTable = ({ data, isLoading, isLoadingError }: DocumentsTableProps) => {
   const { _, i18n } = useLingui();
 
   const team = useOptionalCurrentTeam();
@@ -86,15 +80,12 @@ export const DocumentsTable = ({
           (!row.original.deletedAt || isDocumentCompleted(row.original.status)) && (
             <div className="flex items-center gap-x-4">
               <DocumentsTableActionButton row={row.original} />
-              <DocumentsTableActionDropdown
-                row={row.original}
-                onMoveDocument={onMoveDocument ? () => onMoveDocument(row.original.id) : undefined}
-              />
+              <DocumentsTableActionDropdown row={row.original} />
             </div>
           ),
       },
     ] satisfies DataTableColumnDef<DocumentsTableRow>[];
-  }, [team, onMoveDocument]);
+  }, [team]);
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -180,9 +171,6 @@ const DataTableTitle = ({ row, teamUrl }: DataTableTitleProps) => {
   const isCurrentTeamDocument = teamUrl && row.team?.url === teamUrl;
 
   const documentsPath = formatDocumentsPath(isCurrentTeamDocument ? teamUrl : undefined);
-  const formatPath = row.folderId
-    ? `${documentsPath}/f/${row.folderId}/${row.id}`
-    : `${documentsPath}/${row.id}`;
 
   return match({
     isOwner,
@@ -191,7 +179,7 @@ const DataTableTitle = ({ row, teamUrl }: DataTableTitleProps) => {
   })
     .with({ isOwner: true }, { isCurrentTeamDocument: true }, () => (
       <Link
-        to={formatPath}
+        to={`${documentsPath}/${row.id}`}
         title={row.title}
         className="block max-w-[10rem] truncate font-medium hover:underline md:max-w-[20rem]"
       >

@@ -1,6 +1,7 @@
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
+import type { Document, Recipient, Team, User } from '@prisma/client';
 import { DocumentStatus, RecipientRole, SigningStatus } from '@prisma/client';
 import { CheckCircle, Download, Edit, EyeIcon, Pencil } from 'lucide-react';
 import { Link } from 'react-router';
@@ -8,7 +9,6 @@ import { match } from 'ts-pattern';
 
 import { downloadPDF } from '@documenso/lib/client-only/download-pdf';
 import { useSession } from '@documenso/lib/client-only/providers/session';
-import type { TDocumentMany as TDocumentRow } from '@documenso/lib/types/document';
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
 import { formatDocumentsPath } from '@documenso/lib/utils/teams';
 import { trpc as trpcClient } from '@documenso/trpc/client';
@@ -18,7 +18,11 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 import { useOptionalCurrentTeam } from '~/providers/team';
 
 export type DocumentsTableActionButtonProps = {
-  row: TDocumentRow;
+  row: Document & {
+    user: Pick<User, 'id' | 'name' | 'email'>;
+    recipients: Recipient[];
+    team: Pick<Team, 'id' | 'url'> | null;
+  };
 };
 
 export const DocumentsTableActionButton = ({ row }: DocumentsTableActionButtonProps) => {
@@ -40,9 +44,6 @@ export const DocumentsTableActionButton = ({ row }: DocumentsTableActionButtonPr
   const isCurrentTeamDocument = team && row.team?.url === team.url;
 
   const documentsPath = formatDocumentsPath(team?.url);
-  const formatPath = row.folderId
-    ? `${documentsPath}/f/${row.folderId}/${row.id}/edit`
-    : `${documentsPath}/${row.id}/edit`;
 
   const onDownloadClick = async () => {
     try {
@@ -95,7 +96,7 @@ export const DocumentsTableActionButton = ({ row }: DocumentsTableActionButtonPr
       isOwner ? { isDraft: true, isOwner: true } : { isDraft: true, isCurrentTeamDocument: true },
       () => (
         <Button className="w-32" asChild>
-          <Link to={formatPath}>
+          <Link to={`${documentsPath}/${row.id}/edit`}>
             <Edit className="-ml-1 mr-2 h-4 w-4" />
             <Trans>Edit</Trans>
           </Link>

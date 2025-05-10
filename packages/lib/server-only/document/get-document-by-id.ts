@@ -12,15 +12,9 @@ export type GetDocumentByIdOptions = {
   documentId: number;
   userId: number;
   teamId?: number;
-  folderId?: string;
 };
 
-export const getDocumentById = async ({
-  documentId,
-  userId,
-  teamId,
-  folderId,
-}: GetDocumentByIdOptions) => {
+export const getDocumentById = async ({ documentId, userId, teamId }: GetDocumentByIdOptions) => {
   const documentWhereInput = await getDocumentWhereInput({
     documentId,
     userId,
@@ -28,10 +22,7 @@ export const getDocumentById = async ({
   });
 
   const document = await prisma.document.findFirst({
-    where: {
-      ...documentWhereInput,
-      folderId,
-    },
+    where: documentWhereInput,
     include: {
       documentData: true,
       documentMeta: true,

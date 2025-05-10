@@ -215,10 +215,10 @@ export default function SigningPage() {
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to="https://disturbed-tiffanie-latain-27ff5f7d.koyeb.app/"
+                  to="https://documenso.com"
                   className="text-documenso-700 hover:text-documenso-600"
                 >
-                  Check out our platform.
+                  Check out Documenso.
                 </Link>
               </Trans>
             </p>

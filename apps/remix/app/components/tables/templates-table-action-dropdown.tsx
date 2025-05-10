@@ -2,16 +2,7 @@ import { useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import type { Recipient, Template, TemplateDirectLink } from '@prisma/client';
-import {
-  Copy,
-  Edit,
-  FolderIcon,
-  MoreHorizontal,
-  MoveRight,
-  Share2Icon,
-  Trash2,
-  Upload,
-} from 'lucide-react';
+import { Copy, Edit, MoreHorizontal, MoveRight, Share2Icon, Trash2, Upload } from 'lucide-react';
 import { Link } from 'react-router';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
@@ -28,7 +19,6 @@ import { TemplateDeleteDialog } from '../dialogs/template-delete-dialog';
 import { TemplateDirectLinkDialog } from '../dialogs/template-direct-link-dialog';
 import { TemplateDuplicateDialog } from '../dialogs/template-duplicate-dialog';
 import { TemplateMoveDialog } from '../dialogs/template-move-dialog';
-import { TemplateMoveToFolderDialog } from '../dialogs/template-move-to-folder-dialog';
 
 export type TemplatesTableActionDropdownProps = {
   row: Template & {
@@ -60,20 +50,13 @@ export const TemplatesTableActionDropdown = ({
   const [isTemplateDirectLinkDialogOpen, setTemplateDirectLinkDialogOpen] = useState(false);
   const [isDuplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
   const [isMoveDialogOpen, setMoveDialogOpen] = useState(false);
-  const [isMoveToFolderDialogOpen, setMoveToFolderDialogOpen] = useState(false);
 
   const isOwner = row.userId === user.id;
   const isTeamTemplate = row.teamId === teamId;
 
-  const formatPath = row.folderId
-    ? `${templateRootPath}/f/${row.folderId}/${row.id}/edit`
-    : `${templateRootPath}/${row.id}/edit`;
-
-  
-
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger data-testid="template-table-action-btn">
+      <DropdownMenuTrigger>
         <MoreHorizontal className="text-muted-foreground h-5 w-5" />
       </DropdownMenuTrigger>
 
@@ -81,7 +64,7 @@ export const TemplatesTableActionDropdown = ({
         <DropdownMenuLabel>Action</DropdownMenuLabel>
 
         <DropdownMenuItem disabled={!isOwner && !isTeamTemplate} asChild>
-          <Link to={formatPath}>
+          <Link to={`${templateRootPath}/${row.id}/edit`}>
             <Edit className="mr-2 h-4 w-4" />
             <Trans>Edit</Trans>
           </Link>
@@ -98,11 +81,6 @@ export const TemplatesTableActionDropdown = ({
         <DropdownMenuItem onClick={() => setTemplateDirectLinkDialogOpen(true)}>
           <Share2Icon className="mr-2 h-4 w-4" />
           <Trans>Direct link</Trans>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => setMoveToFolderDialogOpen(true)}>
-          <FolderIcon className="mr-2 h-4 w-4" />
-          <Trans>Move to Folder</Trans>
         </DropdownMenuItem>
 
         {!teamId && !row.teamId && (
@@ -156,14 +134,6 @@ export const TemplatesTableActionDropdown = ({
         open={isDeleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onDelete={onDelete}
-      />
-
-      <TemplateMoveToFolderDialog
-        templateId={row.id}
-        templateTitle={row.title}
-        isOpen={isMoveToFolderDialogOpen}
-        onOpenChange={setMoveToFolderDialogOpen}
-        currentFolderId={row.folderId}
       />
     </DropdownMenu>
   );

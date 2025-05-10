@@ -54,11 +54,6 @@ export const TemplatesTable = ({
   const formatTemplateLink = (row: TemplatesTableRow) => {
     const isCurrentTeamTemplate = team?.url && row.team?.url === team?.url;
     const path = formatTemplatesPath(isCurrentTeamTemplate ? team?.url : undefined);
-
-    if (row.folderId) {
-      return `${path}/f/${row.folderId}/${row.id}`;
-    }
-
     return `${path}/${row.id}`;
   };
 

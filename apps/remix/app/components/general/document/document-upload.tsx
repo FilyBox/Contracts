@@ -4,7 +4,7 @@ import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { Loader } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { match } from 'ts-pattern';
 
 import { useLimits } from '@documenso/ee/server-only/limits/provider/client';
@@ -17,13 +17,7 @@ import { putPdfFile } from '@documenso/lib/universal/upload/put-file';
 import { formatDocumentsPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 import { cn } from '@documenso/ui/lib/utils';
-import { DocumentDropzone } from '@documenso/ui/primitives/document-upload';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@documenso/ui/primitives/tooltip';
+import { DocumentDropzone } from '@documenso/ui/primitives/document-dropzone';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -36,7 +30,6 @@ export const DocumentUploadDropzone = ({ className }: DocumentUploadDropzoneProp
   const { _ } = useLingui();
   const { toast } = useToast();
   const { user } = useSession();
-  const { folderId } = useParams();
 
   const team = useOptionalCurrentTeam();
 
@@ -76,7 +69,6 @@ export const DocumentUploadDropzone = ({ className }: DocumentUploadDropzoneProp
         title: file.name,
         documentDataId: response.id,
         timezone: userTimezone,
-        folderId: folderId ?? undefined,
       });
 
       void refreshLimits();
@@ -93,11 +85,7 @@ export const DocumentUploadDropzone = ({ className }: DocumentUploadDropzoneProp
         timestamp: new Date().toISOString(),
       });
 
-      await navigate(
-        folderId
-          ? `${formatDocumentsPath(team?.url)}/f/${folderId}/${id}/edit`
-          : `${formatDocumentsPath(team?.url)}/${id}/edit`,
-      );
+      await navigate(`${formatDocumentsPath(team?.url)}/${id}/edit`);
     } catch (err) {
       const error = AppError.parseError(err);
 
@@ -133,31 +121,25 @@ export const DocumentUploadDropzone = ({ className }: DocumentUploadDropzoneProp
 
   return (
     <div className={cn('relative', className)}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <DocumentDropzone
-                disabled={remaining.documents === 0 || !user.emailVerified}
-                disabledMessage={disabledMessage}
-                onDrop={onFileDrop}
-                onDropRejected={onFileDropRejected}
-              />
-            </div>
-          </TooltipTrigger>
-          {team?.id === undefined &&
-            remaining.documents > 0 &&
-            Number.isFinite(remaining.documents) && (
-              <TooltipContent>
-                <p className="text-sm">
-                  <Trans>
-                    {remaining.documents} of {quota.documents} documents remaining this month.
-                  </Trans>
-                </p>
-              </TooltipContent>
-            )}
-        </Tooltip>
-      </TooltipProvider>
+      <DocumentDropzone
+        className="h-[min(400px,50vh)]"
+        disabled={remaining.documents === 0 || !user.emailVerified}
+        disabledMessage={disabledMessage}
+        onDrop={onFileDrop}
+        onDropRejected={onFileDropRejected}
+      />
+
+      <div className="absolute -bottom-6 right-0">
+        {team?.id === undefined &&
+          remaining.documents > 0 &&
+          Number.isFinite(remaining.documents) && (
+            <p className="text-muted-foreground/60 text-xs">
+              <Trans>
+                {remaining.documents} of {quota.documents} documents remaining this month.
+              </Trans>
+            </p>
+          )}
+      </div>
 
       {isLoading && (
         <div className="bg-background/50 absolute inset-0 flex items-center justify-center rounded-lg">

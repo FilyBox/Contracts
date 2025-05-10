@@ -1,7 +1,9 @@
 import { Trans } from '@lingui/react/macro';
 import { File } from 'lucide-react';
 
+import timurImage from '@documenso/assets/images/timur.png';
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
+import { VerifiedIcon } from '@documenso/ui/icons/verified';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
 
@@ -20,7 +22,7 @@ export const UserProfileTimur = ({ className, rows = 2 }: UserProfileTimurProps)
         className,
       )}
     >
-      {/* <div className="border-border bg-background text-muted-foreground inline-block max-w-full truncate rounded-md border px-2.5 py-1.5 text-sm">
+      <div className="border-border bg-background text-muted-foreground inline-block max-w-full truncate rounded-md border px-2.5 py-1.5 text-sm">
         {baseUrl.host}/u/timur
       </div>
 
@@ -30,8 +32,8 @@ export const UserProfileTimur = ({ className, rows = 2 }: UserProfileTimurProps)
           className="h-20 w-20 rounded-full"
           alt="image of timur ercan founder of documenso"
         />
-      </div> */}
-      {/* 
+      </div>
+
       <div className="mt-6">
         <div className="flex items-center justify-center gap-x-2">
           <h2 className="text-2xl font-semibold">Timur Ercan</h2>
@@ -46,7 +48,7 @@ export const UserProfileTimur = ({ className, rows = 2 }: UserProfileTimurProps)
         <p className="text-muted-foreground mt-1 max-w-[40ch] text-center text-sm">
           <Trans>Pick any of the following agreements below and start signing to get started</Trans>
         </p>
-      </div> */}
+      </div>
 
       <div className="mt-8 w-full">
         <div className="dark:divide-foreground/30 dark:border-foreground/30 divide-y-2 divide-neutral-200 overflow-hidden rounded-lg border-2 border-neutral-200">

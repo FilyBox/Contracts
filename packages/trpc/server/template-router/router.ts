@@ -121,14 +121,13 @@ export const templateRouter = router({
     .output(ZCreateTemplateResponseSchema)
     .mutation(async ({ input, ctx }) => {
       const { teamId } = ctx;
-      const { title, templateDocumentDataId, folderId } = input;
+      const { title, templateDocumentDataId } = input;
 
       return await createTemplate({
         userId: ctx.user.id,
         teamId,
         title,
         templateDocumentDataId,
-        folderId,
       });
     }),
 

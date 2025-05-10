@@ -30,15 +30,10 @@ import {
 export interface ConfigureDocumentViewProps {
   onSubmit: (data: TConfigureEmbedFormSchema) => void | Promise<void>;
   defaultValues?: Partial<TConfigureEmbedFormSchema>;
-  disableUpload?: boolean;
   isSubmitting?: boolean;
 }
 
-export const ConfigureDocumentView = ({
-  onSubmit,
-  defaultValues,
-  disableUpload,
-}: ConfigureDocumentViewProps) => {
+export const ConfigureDocumentView = ({ onSubmit, defaultValues }: ConfigureDocumentViewProps) => {
   const { isTemplate } = useConfigureDocument();
 
   const form = useForm<TConfigureEmbedFormSchema>({
@@ -52,7 +47,6 @@ export const ConfigureDocumentView = ({
           email: isTemplate ? `recipient.${1}@document.com` : '',
           role: RecipientRole.SIGNER,
           signingOrder: 1,
-          disabled: false,
         },
       ],
       meta: {
@@ -116,7 +110,7 @@ export const ConfigureDocumentView = ({
             />
           </div>
 
-          {!disableUpload && <ConfigureDocumentUpload isSubmitting={isSubmitting} />}
+          <ConfigureDocumentUpload isSubmitting={isSubmitting} />
           <ConfigureDocumentRecipients control={control} isSubmitting={isSubmitting} />
           <ConfigureDocumentAdvancedSettings control={control} isSubmitting={isSubmitting} />
 

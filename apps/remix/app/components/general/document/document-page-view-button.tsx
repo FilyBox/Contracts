@@ -38,9 +38,6 @@ export const DocumentPageViewButton = ({ document }: DocumentPageViewButtonProps
   const role = recipient?.role;
 
   const documentsPath = formatDocumentsPath(document.team?.url);
-  const formatPath = document.folderId
-    ? `${documentsPath}/f/${document.folderId}/${document.id}/edit`
-    : `${documentsPath}/${document.id}/edit`;
 
   const onDownloadClick = async () => {
     try {
@@ -104,7 +101,7 @@ export const DocumentPageViewButton = ({ document }: DocumentPageViewButtonProps
     ))
     .with({ isComplete: false }, () => (
       <Button className="w-full" asChild>
-        <Link to={formatPath}>
+        <Link to={`${documentsPath}/${document.id}/edit`}>
           <Trans>Edit</Trans>
         </Link>
       </Button>

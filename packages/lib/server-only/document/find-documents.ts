@@ -27,7 +27,6 @@ export type FindDocumentsOptions = {
   period?: PeriodSelectorValue;
   senderIds?: number[];
   query?: string;
-  folderId?: string;
 };
 
 export const findDocuments = async ({
@@ -42,7 +41,6 @@ export const findDocuments = async ({
   period,
   senderIds,
   query = '',
-  folderId,
 }: FindDocumentsOptions) => {
   const user = await prisma.user.findFirstOrThrow({
     where: {
@@ -122,10 +120,10 @@ export const findDocuments = async ({
     },
   ];
 
-  let filters: Prisma.DocumentWhereInput | null = findDocumentsFilter(status, user, folderId);
+  let filters: Prisma.DocumentWhereInput | null = findDocumentsFilter(status, user);
 
   if (team) {
-    filters = findTeamDocumentsFilter(status, team, visibilityFilters, folderId);
+    filters = findTeamDocumentsFilter(status, team, visibilityFilters);
   }
 
   if (filters === null) {
@@ -229,12 +227,6 @@ export const findDocuments = async ({
     };
   }
 
-  if (folderId !== undefined) {
-    whereClause.folderId = folderId;
-  } else {
-    whereClause.folderId = null;
-  }
-
   const [data, count] = await Promise.all([
     prisma.document.findMany({
       where: whereClause,
@@ -281,18 +273,13 @@ export const findDocuments = async ({
   } satisfies FindResultResponse<typeof data>;
 };
 
-const findDocumentsFilter = (
-  status: ExtendedDocumentStatus,
-  user: User,
-  folderId?: string | null,
-) => {
+const findDocumentsFilter = (status: ExtendedDocumentStatus, user: User) => {
   return match<ExtendedDocumentStatus, Prisma.DocumentWhereInput>(status)
     .with(ExtendedDocumentStatus.ALL, () => ({
       OR: [
         {
           userId: user.id,
           teamId: null,
-          folderId: folderId,
         },
         {
           status: ExtendedDocumentStatus.COMPLETED,
@@ -301,7 +288,6 @@ const findDocumentsFilter = (
               email: user.email,
             },
           },
-          folderId: folderId,
         },
         {
           status: ExtendedDocumentStatus.PENDING,
@@ -310,7 +296,6 @@ const findDocumentsFilter = (
               email: user.email,
             },
           },
-          folderId: folderId,
         },
       ],
     }))
@@ -339,7 +324,6 @@ const findDocumentsFilter = (
           userId: user.id,
           teamId: null,
           status: ExtendedDocumentStatus.PENDING,
-          folderId: folderId,
         },
         {
           status: ExtendedDocumentStatus.PENDING,
@@ -352,7 +336,6 @@ const findDocumentsFilter = (
               },
             },
           },
-          folderId: folderId,
         },
       ],
     }))
@@ -362,7 +345,6 @@ const findDocumentsFilter = (
           userId: user.id,
           teamId: null,
           status: ExtendedDocumentStatus.COMPLETED,
-          folderId: folderId,
         },
         {
           status: ExtendedDocumentStatus.COMPLETED,
@@ -371,7 +353,6 @@ const findDocumentsFilter = (
               email: user.email,
             },
           },
-          folderId: folderId,
         },
       ],
     }))
@@ -381,7 +362,6 @@ const findDocumentsFilter = (
           userId: user.id,
           teamId: null,
           status: ExtendedDocumentStatus.REJECTED,
-          folderId: folderId,
         },
         {
           status: ExtendedDocumentStatus.REJECTED,
@@ -391,7 +371,6 @@ const findDocumentsFilter = (
               signingStatus: SigningStatus.REJECTED,
             },
           },
-          folderId: folderId,
         },
       ],
     }))
@@ -431,7 +410,6 @@ const findTeamDocumentsFilter = (
   status: ExtendedDocumentStatus,
   team: Team & { teamEmail: TeamEmail | null },
   visibilityFilters: Prisma.DocumentWhereInput[],
-  folderId?: string,
 ) => {
   const teamEmail = team.teamEmail?.email ?? null;
 
@@ -442,7 +420,6 @@ const findTeamDocumentsFilter = (
         OR: [
           {
             teamId: team.id,
-            folderId: folderId,
             OR: visibilityFilters,
           },
         ],
@@ -460,7 +437,6 @@ const findTeamDocumentsFilter = (
             },
           },
           OR: visibilityFilters,
-          folderId: folderId,
         });
 
         // Filter to display all documents that have been sent by the team email.
@@ -469,7 +445,6 @@ const findTeamDocumentsFilter = (
             email: teamEmail,
           },
           OR: visibilityFilters,
-          folderId: folderId,
         });
       }
 
@@ -495,7 +470,6 @@ const findTeamDocumentsFilter = (
           },
         },
         OR: visibilityFilters,
-        folderId: folderId,
       };
     })
     .with(ExtendedDocumentStatus.DRAFT, () => {
@@ -505,7 +479,6 @@ const findTeamDocumentsFilter = (
             teamId: team.id,
             status: ExtendedDocumentStatus.DRAFT,
             OR: visibilityFilters,
-            folderId: folderId,
           },
         ],
       };
@@ -517,7 +490,6 @@ const findTeamDocumentsFilter = (
             email: teamEmail,
           },
           OR: visibilityFilters,
-          folderId: folderId,
         });
       }
 
@@ -530,7 +502,6 @@ const findTeamDocumentsFilter = (
             teamId: team.id,
             status: ExtendedDocumentStatus.PENDING,
             OR: visibilityFilters,
-            folderId: folderId,
           },
         ],
       };
@@ -550,14 +521,12 @@ const findTeamDocumentsFilter = (
                 },
               },
               OR: visibilityFilters,
-              folderId: folderId,
             },
             {
               user: {
                 email: teamEmail,
               },
               OR: visibilityFilters,
-              folderId: folderId,
             },
           ],
         });

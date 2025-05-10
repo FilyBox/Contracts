@@ -110,7 +110,9 @@ export const requestTeamOwnershipTransfer = async ({
           name: FROM_NAME,
           address: FROM_ADDRESS,
         },
-        subject: i18n._(msg`You have been requested to take ownership of team ${team.name}`),
+        subject: i18n._(
+          msg`You have been requested to take ownership of team ${team.name} on Documenso`,
+        ),
         html,
         text,
       });

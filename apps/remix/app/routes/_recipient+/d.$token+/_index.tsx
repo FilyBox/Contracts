@@ -60,10 +60,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   return superLoaderJson({
     isAccessAuthValid: true,
-    template: {
-      ...template,
-      folder: null,
-    },
+    template,
     directTemplateRecipient,
   } as const);
 }
