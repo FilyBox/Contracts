@@ -64,7 +64,6 @@ export const Header = ({ className, user, teams, ...props }: HeaderProps) => {
         >
           <BrandingLogo className="h-6 w-auto" />
         </Link>
-
         <AppNavDesktop setIsCommandMenuOpen={setIsCommandMenuOpen} />
 
         <div
