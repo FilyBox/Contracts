@@ -56,6 +56,7 @@ model User {
   accounts             Account[]
   sessions             Session[]
   documents            Document[]
+  folders              Folder[]
   subscriptions        Subscription[]
   passwordResetTokens  PasswordResetToken[]
   ownedTeams           Team[]
@@ -70,6 +71,10 @@ model User {
   verificationTokens VerificationToken[]
   apiTokens          ApiToken[]
   templates          Template[]
+  taskAssignees      TaskAssignee[]
+  taskComments       TaskComment[]
+  taskAttachments    TaskAttachment[]
+  taskSubtasks       Task[]
   securityAuditLogs  UserSecurityAuditLog[]
   webhooks           Webhook[]
   siteSettings       SiteSettings[]
@@ -312,9 +317,39 @@ enum DocumentVisibility {
   ADMIN
 }
 
+enum FolderType {
+  DOCUMENT
+  TEMPLATE
+}
+
+model Folder {
+  id         String             @id @default(cuid())
+  name       String
+  userId     Int
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId     Int?
+  team       Team?              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  pinned     Boolean            @default(false)
+  parentId   String?
+  parent     Folder?            @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
+  documents  Document[]
+  templates  Template[]
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @default(now()) @updatedAt
+  subfolders Folder[]           @relation("FolderToFolder")
+  visibility DocumentVisibility @default(EVERYONE)
+  type       FolderType
+
+  @@index([userId])
+  @@index([teamId])
+  @@index([parentId])
+  @@index([type])
+}
+
 /// @zod.import(["import { ZDocumentAuthOptionsSchema } from '@documenso/lib/types/document-auth';", "import { ZDocumentFormValuesSchema } from '@documenso/lib/types/document-form-values';"])
 model Document {
   id             Int                 @id @default(autoincrement())
+  qrToken        String? /// @zod.string.describe("The token for viewing the document using the QR code on the certificate.")
   externalId     String? /// @zod.string.describe("A custom external ID you can use to identify the document.")
   userId         Int /// @zod.number.describe("The ID of the user that created this document.")
   user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -343,10 +378,13 @@ model Document {
   template     Template?    @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   auditLogs DocumentAuditLog[]
+  folder    Folder?            @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId  String?
 
   @@unique([documentDataId])
   @@index([userId])
   @@index([status])
+  @@index([folderId])
 }
 
 model DocumentAuditLog {
@@ -468,6 +506,130 @@ model Recipient {
   @@index([token])
 }
 
+model Task {
+  id          Int            @id @default(autoincrement())
+  externalId  String? /// @zod.string.describe("A custom external ID you can use to identify the task.")
+  userId      Int /// @zod.number.describe("The ID of the user that created this task.")
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TaskStatus     @default(PENDING)
+  priority    TaskPriority   @default(MEDIUM)
+  dueDate     DateTime?
+  assignees   TaskAssignee[]
+  comments    TaskComment[]
+
+  tags         String[]  @default([])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  completedAt  DateTime?
+  deletedAt    DateTime?
+  teamId       Int?
+  projectId    Int?
+  parentTaskId Int?
+
+  team       Team?    @relation(fields: [teamId], references: [id])
+  project    Project? @relation(fields: [projectId], references: [id])
+  parentTask Task?    @relation("TaskHierarchy", fields: [parentTaskId], references: [id])
+  subtasks   Task[]   @relation("TaskHierarchy")
+
+  auditLogs TaskAuditLog[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@index([teamId])
+  @@index([projectId])
+}
+
+model TaskAssignee {
+  id         Int      @id @default(autoincrement())
+  taskId     Int
+  userId     Int
+  assignedAt DateTime @default(now())
+  assignedBy Int /// User who assigned the task
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model TaskComment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model TaskAttachment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int? // Requerido
+  userId    Int // Requerido
+  name      String // Requerido
+  createdAt DateTime @default(now()) // Automático
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model TaskAuditLog {
+  id        String   @id @default(cuid())
+  taskId    Int
+  createdAt DateTime @default(now())
+  type      String
+  data      Json
+
+  // Details of the person who performed the action which caused the audit log.
+  name      String?
+  email     String?
+  userId    Int?
+  userAgent String?
+  ipAddress String?
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// Modelo opcional para proyectos (si necesitas agrupar tareas)
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      ProjectStatus @default(ACTIVE)
+  teamId      Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+
+  team  Team?  @relation(fields: [teamId], references: [id])
+  tasks Task[]
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+  ON_HOLD
+}
+
 enum FieldType {
   SIGNATURE
   FREE_SIGNATURE
@@ -564,6 +726,8 @@ model TeamGlobalSettings {
   brandingCompanyDetails String  @default("")
   brandingHidePoweredBy  Boolean @default(false)
 
+  allowEmbeddedAuthoring Boolean @default(false)
+
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
@@ -589,7 +753,10 @@ model Team {
   subscription Subscription?
 
   documents Document[]
+  tasks     Task[]
   templates Template[]
+  projects  Project[]
+  folders   Folder[]
   apiTokens ApiToken[]
   webhooks  Webhook[]
 }
@@ -718,6 +885,8 @@ model Template {
   fields               Field[]
   directLink           TemplateDirectLink?
   documents            Document[]
+  folder               Folder?             @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId             String?
 
   @@unique([templateDocumentDataId])
 }

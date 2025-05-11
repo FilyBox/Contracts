@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "./.bin/build.sh",
+    "build": "bash ./.bin/build.sh",
     "build:app": "npm run typecheck && cross-env NODE_ENV=production react-router build",
     "build:server": "cross-env NODE_ENV=production rollup -c rollup.config.mjs",
     "dev": "npm run with:env -- react-router dev",
@@ -100,5 +100,5 @@
     "vite-plugin-babel-macros": "^1.0.6",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "version": "1.10.0-rc.5"
+  "version": "1.10.3"
 }
