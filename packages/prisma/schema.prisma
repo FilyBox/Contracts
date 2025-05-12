@@ -36,6 +36,18 @@ enum Role {
   USER
 }
 
+enum TypeSongAlbum {
+  SONG
+  ALBUM
+}
+
+enum StatusSongAlbum {
+  DELETED
+  RELEASED
+  PENDING
+  DRAFT
+}
+
 model User {
   id               Int              @id @default(autoincrement())
   name             String?
@@ -90,6 +102,50 @@ model UserProfile {
   bio     String?
 
   User User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Artist {
+  id            Int            @id @default(autoincrement())
+  name          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  roles         Role[]         @default([USER])
+  avatarImageId String?
+  teamId        Int?
+  disabled      Boolean        @default(false)
+  event         Event[]
+  url           String?        @unique
+  ArtistProfile ArtistProfile?
+  songs         Songs[]
+  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model ArtistProfile {
+  id       String  @id @default(cuid())
+  enabled  Boolean @default(false)
+  artistId Int     @unique
+  bio      String?
+
+  Artist Artist? @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}
+
+model Songs {
+  id                Int               @id @default(autoincrement())
+  name              String?
+  author            String?
+  teamId            Int?
+  publisherMexico   String?
+  publisherUSA      String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now()) @updatedAt
+  disabled          Boolean           @default(false)
+  artists           Artist[]
+  url               String?           @unique
+  type              TypeSongAlbum[]
+  status            StatusSongAlbum[]
+  uniqueIdentifier  String?           @unique @default(cuid())
+  royaltyPercentage String?
+  team              Team?             @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model TeamProfile {
@@ -628,14 +684,14 @@ model TeamGlobalSettings {
 }
 
 model Team {
-  id            Int      @id @default(autoincrement())
-  name          String
-  url           String   @unique
-  createdAt     DateTime @default(now())
-  avatarImageId String?
-  customerId    String?  @unique
-  ownerUserId   Int
-
+  id                   Int                       @id @default(autoincrement())
+  name                 String
+  url                  String                    @unique
+  createdAt            DateTime                  @default(now())
+  avatarImageId        String?
+  customerId           String?                   @unique
+  ownerUserId          Int
+  Event                Event[]
   members              TeamMember[]
   invites              TeamMemberInvite[]
   teamEmail            TeamEmail?
@@ -643,10 +699,11 @@ model Team {
   transferVerification TeamTransferVerification?
   teamGlobalSettings   TeamGlobalSettings?
   avatarImage          AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-
-  profile      TeamProfile?
-  owner        User          @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  subscription Subscription?
+  songs                Songs[]
+  artists              Artist[]
+  profile              TeamProfile?
+  owner                User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  subscription         Subscription?
 
   documents         Document[]
   templates         Template[]
@@ -987,4 +1044,85 @@ model Suggestion {
   document ChatDocument @relation(fields: [documentId, documentCreatedAt], references: [id, createdAt])
 
   @@map("Suggestion")
+}
+
+// Events table
+model Event {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(300)
+  description String?   @db.VarChar(200)
+  image       String?   @db.Text
+  teamId      Int?
+  venue       String?   @db.VarChar(300)
+  artists     Artist[]
+  beginning   DateTime  @default(now())
+  end         DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  team         Team?         @relation(fields: [teamId], references: [id])
+  ticketTypes  TicketType[]
+  ticketBuyers TicketBuyer[]
+}
+
+// Buyers table
+model Buyer {
+  id               String    @id @default(cuid())
+  password         String?
+  uid              String?
+  rfc              String?   @unique @db.VarChar(13)
+  fullname         String    @db.VarChar(250)
+  email            String    @unique @db.VarChar(250)
+  image            String?   @db.Text
+  emailVerified    DateTime?
+  phoneNumber      String?   @db.VarChar(20)
+  stripeCustomerId String    @unique @db.VarChar(255)
+  createdAt        DateTime  @default(now())
+  deletedAt        DateTime?
+
+  ticketBuyers TicketBuyer[]
+}
+
+// Ticket types table
+model TicketType {
+  id                 Int       @id @default(autoincrement())
+  name               String?   @db.VarChar(100)
+  eventId            Int
+  price              Int?
+  uid                String?
+  maxQuantityPerUser Int       @default(5)
+  quantity           Int?
+  available          Int?
+  description        String?
+  seatNumber         Int?
+  stripeProductId    String?   @db.Text
+  stripePriceId      String?   @db.Text
+  imageUrl           String?   @db.Text
+  status             String    @default("valid") @db.VarChar(20)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+}
+
+// Tickets buyers table
+model TicketBuyer {
+  id              Int       @id @default(autoincrement())
+  name            String?   @db.VarChar(100)
+  eventId         Int
+  buyerId         String
+  ticketId        Int?
+  price           Int?
+  quantity        Int?
+  stripeProductId String?   @db.Text
+  imageUrl        String?   @db.Text
+  status          String    @default("valid") @db.VarChar(20)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+  buyer Buyer @relation(fields: [buyerId], references: [id])
 }
