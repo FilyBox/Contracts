@@ -4,6 +4,7 @@ export const FolderType = {
   DOCUMENT: 'DOCUMENT',
   TEMPLATE: 'TEMPLATE',
   CHAT: 'CHAT',
+  TASK: 'TASK',
 } as const;
 
 export const ZFolderTypeSchema = z.enum([
