@@ -1,111 +1,51 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { Trans } from '@lingui/react/macro';
-import { Bird, FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { Bird, HomeIcon, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
-import { FolderType } from '@documenso/lib/types/folder-type';
+import { useSession } from '@documenso/lib/client-only/providers/session';
+import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
-import { formTasksPath, formatDocumentsPath } from '@documenso/lib/utils/teams';
+import { formTasksPath } from '@documenso/lib/utils/teams';
+import type { Team } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
-import type { TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 
 import { TaskCreateDialog } from '~/components/dialogs/task-create-dialog';
-import { TemplateFolderCreateDialog } from '~/components/dialogs/template-folder-create-dialog';
-import { TemplateFolderDeleteDialog } from '~/components/dialogs/template-folder-delete-dialog';
-import { TemplateFolderMoveDialog } from '~/components/dialogs/template-folder-move-dialog';
-import { TemplateFolderSettingsDialog } from '~/components/dialogs/template-folder-settings-dialog';
-import { FolderCard } from '~/components/general/folder/folder-card';
-import { TemplatesTable } from '~/components/tables/templates-table';
+import { TasksTable } from '~/components/lists/tasks-list';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
 
+export type TasksPageViewProps = {
+  team?: Team;
+  initialTasks: Awaited<ReturnType<typeof findTasks>>;
+};
+
 export function meta() {
-  return appMetaTags('Templates');
+  return appMetaTags('Tasks');
 }
 
-export default function TemplatesPage() {
+export default function TasksPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const [isMovingFolder, setIsMovingFolder] = useState(false);
-  const [folderToMove, setFolderToMove] = useState<TFolderWithSubfolders | null>(null);
-  const [isDeletingFolder, setIsDeletingFolder] = useState(false);
-  const [folderToDelete, setFolderToDelete] = useState<TFolderWithSubfolders | null>(null);
-  const [isSettingsFolderOpen, setIsSettingsFolderOpen] = useState(false);
-  const [folderToSettings, setFolderToSettings] = useState<TFolderWithSubfolders | null>(null);
-
   const team = useOptionalCurrentTeam();
-
-  const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
-  const { mutateAsync: unpinFolder } = trpc.folder.unpinFolder.useMutation();
-
-  const page = Number(searchParams.get('page')) || 1;
-  const perPage = Number(searchParams.get('perPage')) || 10;
-
-  const documentRootPath = formatDocumentsPath(team?.url);
   const taskRootPath = formTasksPath(team?.url);
-
-  const { data, isLoading, isLoadingError, refetch } = trpc.template.findTemplates.useQuery({
-    page: page,
-    perPage: perPage,
-  });
-
-  const {
-    data: foldersData,
-    isLoading: isFoldersLoading,
-    refetch: refetchFolders,
-  } = trpc.folder.getFolders.useQuery({
-    type: FolderType.TEMPLATE,
-    parentId: null,
+  const { user } = useSession();
+  const { data, isLoading, isLoadingError, refetch } = trpc.task.findTasks.useQuery({
+    userId: user.id,
+    teamId: team?.id,
+    // projectId: null,
+    // parentTaskId: null,
+    status: 'PENDING',
   });
 
   useEffect(() => {
     void refetch();
-    void refetchFolders();
   }, [team?.url]);
 
-  const navigateToFolder = (folderId?: string | null) => {
-    const tasksPath = formTasksPath(team?.url);
-
-    if (folderId) {
-      void navigate(`${tasksPath}/f/${folderId}`);
-    } else {
-      void navigate(tasksPath);
-    }
-  };
-
-  const handleNavigate = (folderId: string) => {
-    navigateToFolder(folderId);
-  };
-
-  const handleMove = (folder: TFolderWithSubfolders) => {
-    setFolderToMove(folder);
-    setIsMovingFolder(true);
-  };
-
-  const handlePin = (folderId: string) => {
-    void pinFolder({ folderId });
-  };
-
-  const handleUnpin = (folderId: string) => {
-    void unpinFolder({ folderId });
-  };
-
-  const handleSettings = (folder: TFolderWithSubfolders) => {
-    setFolderToSettings(folder);
-    setIsSettingsFolderOpen(true);
-  };
-
-  const handleDelete = (folder: TFolderWithSubfolders) => {
-    setFolderToDelete(folder);
-    setIsDeletingFolder(true);
-  };
-
-  const handleViewAllFolders = () => {
-    void navigate(`${formTasksPath(team?.url)}/folders`);
+  const handleTaskClick = (taskId: number) => {
+    void navigate(`${taskRootPath}/${taskId}`);
   };
 
   return (
@@ -116,95 +56,17 @@ export default function TemplatesPage() {
             variant="ghost"
             size="sm"
             className="flex items-center space-x-2 pl-0 hover:bg-transparent"
-            onClick={() => navigateToFolder(null)}
+            onClick={async () => await navigate(taskRootPath)}
           >
             <HomeIcon className="h-4 w-4" />
             <span>Home</span>
           </Button>
-
-          {foldersData?.breadcrumbs.map((folder) => (
-            <div key={folder.id} className="flex items-center space-x-2">
-              <span>/</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-2 pl-1 hover:bg-transparent"
-                onClick={() => navigateToFolder(folder.id)}
-              >
-                <FolderIcon className="h-4 w-4" />
-                <span>{folder.name}</span>
-              </Button>
-            </div>
-          ))}
         </div>
 
         <div className="flex gap-4 sm:flex-row sm:justify-end">
-          <TaskCreateDialog taskRootPath={taskRootPath} userId={team?.ownerUserId || 0} />
-          <TemplateFolderCreateDialog />
+          <TaskCreateDialog taskRootPath={taskRootPath} />
         </div>
       </div>
-
-      {isFoldersLoading ? (
-        <div className="mt-6 flex justify-center">
-          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-        </div>
-      ) : (
-        <>
-          {foldersData?.folders && foldersData.folders.some((folder) => folder.pinned) && (
-            <div className="mt-6">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {foldersData.folders
-                  .filter((folder) => folder.pinned)
-                  .map((folder) => (
-                    <FolderCard
-                      key={folder.id}
-                      folder={folder}
-                      onNavigate={handleNavigate}
-                      onMove={handleMove}
-                      onPin={handlePin}
-                      onUnpin={handleUnpin}
-                      onSettings={handleSettings}
-                      onDelete={handleDelete}
-                    />
-                  ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {foldersData?.folders
-                ?.filter((folder) => !folder.pinned)
-                .slice(0, 12)
-                .map((folder) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onNavigate={handleNavigate}
-                    onMove={handleMove}
-                    onPin={handlePin}
-                    onUnpin={handleUnpin}
-                    onSettings={handleSettings}
-                    onDelete={handleDelete}
-                  />
-                ))}
-            </div>
-
-            <div className="mt-6 flex items-center justify-center">
-              {foldersData && foldersData.folders?.length > 12 && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={() => void handleViewAllFolders()}
-                >
-                  View all folders
-                </Button>
-              )}
-            </div>
-          </div>
-        </>
-      )}
 
       <div className="mt-12">
         <div className="flex flex-row items-center">
@@ -218,75 +80,56 @@ export default function TemplatesPage() {
           )}
 
           <h1 className="truncate text-2xl font-semibold md:text-3xl">
-            <Trans>Templates</Trans>
+            <Trans>Tareas</Trans>
           </h1>
         </div>
 
         <div className="mt-8">
-          {data && data.count === 0 ? (
+          {isLoading ? (
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+            </div>
+          ) : isLoadingError ? (
+            <div className="flex h-64 items-center justify-center text-red-500">
+              <Trans>Error al cargar las tareas</Trans>
+            </div>
+          ) : data && data.length === 0 ? (
             <div className="text-muted-foreground/60 flex h-96 flex-col items-center justify-center gap-y-4">
               <Bird className="h-12 w-12" strokeWidth={1.5} />
 
               <div className="text-center">
                 <h3 className="text-lg font-semibold">
-                  <Trans>We're all empty</Trans>
+                  <Trans>No hay tareas</Trans>
                 </h3>
 
                 <p className="mt-2 max-w-[50ch]">
                   <Trans>
-                    You have not yet created any templates. To create a template please upload one.
+                    No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar.
                   </Trans>
                 </p>
               </div>
             </div>
           ) : (
-            <TemplatesTable
-              data={data}
-              isLoading={isLoading}
-              isLoadingError={isLoadingError}
-              documentRootPath={documentRootPath}
-              templateRootPath={taskRootPath}
+            <TasksTable
+              tasks={(data || [])
+                .filter(
+                  (task): task is { status: 'PENDING' | 'COMPLETED' } & typeof task =>
+                    task.status === 'PENDING' || task.status === 'COMPLETED',
+                )
+                .map((task) => ({
+                  ...task,
+                  priority: task.priority === 'CRITICAL' ? 'HIGH' : task.priority,
+                  assignees: task.assignees.map((assignee) => ({
+                    name: `User ${assignee.userId}`, // Replace with actual logic to get the name
+                  })),
+                }))}
+              isLoading={false} // Ya manejamos el loading arriba
+              isLoadingError={false} // Ya manejamos el error arriba
+              onTaskClick={handleTaskClick}
             />
           )}
         </div>
       </div>
-
-      <TemplateFolderMoveDialog
-        foldersData={foldersData?.folders}
-        folder={folderToMove}
-        isOpen={isMovingFolder}
-        onOpenChange={(open) => {
-          setIsMovingFolder(open);
-
-          if (!open) {
-            setFolderToMove(null);
-          }
-        }}
-      />
-
-      <TemplateFolderSettingsDialog
-        folder={folderToSettings}
-        isOpen={isSettingsFolderOpen}
-        onOpenChange={(open) => {
-          setIsSettingsFolderOpen(open);
-
-          if (!open) {
-            setFolderToSettings(null);
-          }
-        }}
-      />
-
-      <TemplateFolderDeleteDialog
-        folder={folderToDelete}
-        isOpen={isDeletingFolder}
-        onOpenChange={(open) => {
-          setIsDeletingFolder(open);
-
-          if (!open) {
-            setFolderToDelete(null);
-          }
-        }}
-      />
     </div>
   );
 }

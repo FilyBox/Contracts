@@ -32,7 +32,6 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 
 type TaskCreateDialogProps = {
   taskRootPath: string;
-  userId: number;
   teamId?: number;
   projectId?: number;
   parentTaskId?: number;
@@ -40,14 +39,12 @@ type TaskCreateDialogProps = {
 
 export const TaskCreateDialog = ({
   taskRootPath,
-  userId,
   teamId,
   projectId,
   parentTaskId,
 }: TaskCreateDialogProps) => {
   const navigate = useNavigate();
-
-  const { user } = useSession();
+  const { user } = useSession(); // Obtenemos el usuario de la sesión
   const { toast } = useToast();
   const { _ } = useLingui();
 
@@ -79,7 +76,7 @@ export const TaskCreateDialog = ({
   };
 
   const onCreateTask = async () => {
-    if (isCreatingTask) {
+    if (isCreatingTask || !user.id) {
       return;
     }
 
@@ -89,7 +86,7 @@ export const TaskCreateDialog = ({
       const { id } = await createTask({
         ...taskData,
         dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-        userId,
+        userId: user.id, // Usamos el ID del usuario de la sesión
         teamId,
         projectId,
         parentTaskId,
@@ -102,19 +99,33 @@ export const TaskCreateDialog = ({
       });
 
       setShowTaskCreateDialog(false);
-
       await navigate(`${taskRootPath}/${id}`);
     } catch (error) {
       console.error('Error creating task:', error);
+
+      let errorDescription = _(msg`Please try again later.`);
+
+      if (error.data?.code === 'P2025') {
+        if (error.data?.meta?.modelName === 'User') {
+          errorDescription = _(msg`User session is invalid. Please log in again.`);
+        } else if (error.data?.meta?.modelName === 'Team') {
+          errorDescription = _(msg`The specified team does not exist or you don't have access.`);
+        } else if (error.data?.meta?.modelName === 'Project') {
+          errorDescription = _(msg`The specified project does not exist or you don't have access.`);
+        }
+      }
+
       toast({
-        title: _(msg`Something went wrong`),
-        description: _(msg`Please try again later.`),
+        title: _(msg`Failed to create task`),
+        description: errorDescription,
         variant: 'destructive',
       });
 
       setIsCreatingTask(false);
     }
   };
+
+  const canCreateTask = Boolean(user.id) && !isCreatingTask && taskData.title;
 
   return (
     <Dialog
@@ -215,7 +226,7 @@ export const TaskCreateDialog = ({
               <Trans>Cancel</Trans>
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onCreateTask} disabled={isCreatingTask || !taskData.title}>
+          <Button type="button" onClick={onCreateTask} disabled={!canCreateTask}>
             <Trans>Create Task</Trans>
           </Button>
         </DialogFooter>
