@@ -161,6 +161,45 @@ const handleDocumentOwnerDelete = async ({
     return;
   }
 
+  const documentBody = await prisma.documentBodyExtracted.findUnique({
+    where: {
+      documentId: document.id,
+    },
+  });
+
+  console.log('documentBody', documentBody);
+
+  if (documentBody) {
+    const deletedDocument = await prisma.$transaction(async (tx) => {
+      // Currently redundant since deleting a document will delete the audit logs.
+      // However may be useful if we disassociate audit logs and documents if required.
+      // await tx.documentAuditLog.create({
+      //   data: createDocumentAuditLogData({
+      //     documentId: document.id,
+      //     type: DOCUMENT_AUDIT_LOG_TYPE.DOCUMENT_DELETED,
+      //     metadata: requestMetadata,
+      //     data: {
+      //       type: 'HARD',
+      //     },
+      //   }),
+      // });
+      console.log('deletedDocumentBody', documentBody);
+
+      await tx.documentBodyExtracted.delete({
+        where: {
+          id: documentBody.id,
+        },
+      });
+      return await tx.document.delete({
+        where: {
+          id: document.id,
+        },
+      });
+    });
+
+    return deletedDocument;
+  }
+
   // Soft delete completed documents.
   if (isDocumentCompleted(document.status)) {
     return await prisma.$transaction(async (tx) => {
@@ -174,6 +213,14 @@ const handleDocumentOwnerDelete = async ({
           },
         }),
       });
+
+      // if (documentBody) {
+      //   await tx.documentBodyExtracted.delete({
+      //     where: {
+      //       id: documentBody.id,
+      //     },
+      //   });
+      // }
 
       return await tx.document.update({
         where: {

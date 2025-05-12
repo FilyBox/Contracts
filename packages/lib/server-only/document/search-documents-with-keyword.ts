@@ -25,95 +25,189 @@ export const searchDocumentsWithKeyword = async ({
 
   const documents = await prisma.document.findMany({
     where: {
-      OR: [
+      AND: [
+        { useToChat: { not: true } },
         {
-          title: {
-            contains: query,
-            mode: 'insensitive',
-          },
-          userId: userId,
-          deletedAt: null,
-        },
-        {
-          externalId: {
-            contains: query,
-            mode: 'insensitive',
-          },
-          userId: userId,
-          deletedAt: null,
-        },
-        {
-          recipients: {
-            some: {
-              email: {
+          OR: [
+            {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+              userId: userId,
+              deletedAt: null,
+            },
+            {
+              externalId: {
+                contains: query,
+                mode: 'insensitive',
+              },
+              userId: userId,
+              deletedAt: null,
+            },
+            {
+              recipients: {
+                some: {
+                  email: {
+                    contains: query,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              userId: userId,
+              deletedAt: null,
+            },
+            {
+              status: DocumentStatus.COMPLETED,
+              recipients: {
+                some: {
+                  email: user.email,
+                },
+              },
+              title: {
                 contains: query,
                 mode: 'insensitive',
               },
             },
-          },
-          userId: userId,
-          deletedAt: null,
-        },
-        {
-          status: DocumentStatus.COMPLETED,
-          recipients: {
-            some: {
-              email: user.email,
-            },
-          },
-          title: {
-            contains: query,
-            mode: 'insensitive',
-          },
-        },
-        {
-          status: DocumentStatus.PENDING,
-          recipients: {
-            some: {
-              email: user.email,
-            },
-          },
-          title: {
-            contains: query,
-            mode: 'insensitive',
-          },
-          deletedAt: null,
-        },
-        {
-          title: {
-            contains: query,
-            mode: 'insensitive',
-          },
-          teamId: {
-            not: null,
-          },
-          team: {
-            members: {
-              some: {
-                userId: userId,
+            {
+              status: DocumentStatus.PENDING,
+              recipients: {
+                some: {
+                  email: user.email,
+                },
               },
-            },
-          },
-          deletedAt: null,
-        },
-        {
-          externalId: {
-            contains: query,
-            mode: 'insensitive',
-          },
-          teamId: {
-            not: null,
-          },
-          team: {
-            members: {
-              some: {
-                userId: userId,
+              title: {
+                contains: query,
+                mode: 'insensitive',
               },
+              deletedAt: null,
             },
-          },
-          deletedAt: null,
+            {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+              teamId: {
+                not: null,
+              },
+              team: {
+                members: {
+                  some: {
+                    userId: userId,
+                  },
+                },
+              },
+              deletedAt: null,
+            },
+            {
+              externalId: {
+                contains: query,
+                mode: 'insensitive',
+              },
+              teamId: {
+                not: null,
+              },
+              team: {
+                members: {
+                  some: {
+                    userId: userId,
+                  },
+                },
+              },
+              deletedAt: null,
+            },
+          ],
         },
       ],
+      // OR: [
+      //   {
+      //     title: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //     userId: userId,
+      //     deletedAt: null,
+      //   },
+      //   {
+      //     externalId: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //     userId: userId,
+      //     deletedAt: null,
+      //   },
+      //   {
+      //     recipients: {
+      //       some: {
+      //         email: {
+      //           contains: query,
+      //           mode: 'insensitive',
+      //         },
+      //       },
+      //     },
+      //     userId: userId,
+      //     deletedAt: null,
+      //   },
+      //   {
+      //     status: DocumentStatus.COMPLETED,
+      //     recipients: {
+      //       some: {
+      //         email: user.email,
+      //       },
+      //     },
+      //     title: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //   },
+      //   {
+      //     status: DocumentStatus.PENDING,
+      //     recipients: {
+      //       some: {
+      //         email: user.email,
+      //       },
+      //     },
+      //     title: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //     deletedAt: null,
+      //   },
+      //   {
+      //     title: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //     teamId: {
+      //       not: null,
+      //     },
+      //     team: {
+      //       members: {
+      //         some: {
+      //           userId: userId,
+      //         },
+      //       },
+      //     },
+      //     deletedAt: null,
+      //   },
+      //   {
+      //     externalId: {
+      //       contains: query,
+      //       mode: 'insensitive',
+      //     },
+      //     teamId: {
+      //       not: null,
+      //     },
+      //     team: {
+      //       members: {
+      //         some: {
+      //           userId: userId,
+      //         },
+      //       },
+      //     },
+      //     deletedAt: null,
+      //   },
+      // ],
     },
     include: {
       recipients: true,

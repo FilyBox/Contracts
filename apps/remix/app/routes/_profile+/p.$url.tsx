@@ -25,7 +25,7 @@ import type { Route } from './+types/p.$url';
 const BADGE_DATA = {
   Premium: {
     imageSrc: '/static/premium-user-badge.svg',
-    name: 'Premium',
+    name: 'Miembro',
   },
   EarlySupporter: {
     imageSrc: '/static/early-supporter-badge.svg',

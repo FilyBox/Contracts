@@ -191,13 +191,13 @@ const DataTableTitle = ({ row, teamUrl }: DataTableTitleProps) => {
     isCurrentTeamDocument,
   })
     .with({ isOwner: true }, { isCurrentTeamDocument: true }, () => (
-      <Link
-        to={formatPath}
+      <p
+        // to={formatPath}
         title={row.title}
-        className="block max-w-[10rem] truncate font-medium hover:underline md:max-w-[20rem]"
+        className="block max-w-[10rem] truncate font-medium md:max-w-[20rem]"
       >
         {row.title}
-      </Link>
+      </p>
     ))
     .with({ isRecipient: true }, () => (
       <Link

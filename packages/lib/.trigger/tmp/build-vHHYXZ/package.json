@@ -1,0 +1,1 @@
+{"name":"@documenso/lib","version":"0.0.0","main":"./index.ts","types":"./index.ts","license":"MIT","files":["client-only/","server-only/","universal/"],"scripts":{},"dependencies":{"@prisma/client":"5.22.0","import-in-the-middle":"1.11.0","prisma":"5.22.0"},"devDependencies":{},"trustedDependencies":["@prisma/client","import-in-the-middle","prisma"],"peerDependencies":{}}
