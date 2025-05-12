@@ -198,6 +198,7 @@ export const findDocumentsUseToChat = async ({
     { ...deletedFilter },
     { ...searchFilter },
     { useToChat: true },
+    { deletedAt: null },
   ];
 
   if (templateId) {

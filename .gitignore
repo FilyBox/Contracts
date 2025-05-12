@@ -31,6 +31,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+.trigger/tmp/
+
+
 # turbo
 .turbo
 .turbo-cookie

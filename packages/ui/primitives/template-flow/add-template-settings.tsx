@@ -454,7 +454,7 @@ export const AddTemplateSettingsFormPartial = ({
 
                 <AccordionContent className="text-muted-foreground -mx-1 px-1 pt-4 text-sm leading-relaxed">
                   <div className="flex flex-col space-y-6">
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name="externalId"
                       render={({ field }) => (
@@ -482,7 +482,7 @@ export const AddTemplateSettingsFormPartial = ({
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
 
                     <FormField
                       control={form.control}

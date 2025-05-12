@@ -32,7 +32,7 @@ import { themeSessionResolver } from './storage/theme-session.server';
 import { appMetaTags } from './utils/meta';
 
 const { trackPageview } = Plausible({
-  domain: 'documenso.com',
+  domain: 'https://disturbed-tiffanie-latain-27ff5f7d.koyeb.app',
   trackLocalhost: false,
 });
 
