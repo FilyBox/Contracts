@@ -6,13 +6,13 @@ import { useNavigate, useSearchParams } from 'react-router';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
-import { formatDocumentsPath, formatTemplatesPath } from '@documenso/lib/utils/teams';
+import { formTasksPath, formatDocumentsPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 import type { TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 
-import { TemplateCreateDialog } from '~/components/dialogs/template-create-dialog';
+import { TaskCreateDialog } from '~/components/dialogs/task-create-dialog';
 import { TemplateFolderCreateDialog } from '~/components/dialogs/template-folder-create-dialog';
 import { TemplateFolderDeleteDialog } from '~/components/dialogs/template-folder-delete-dialog';
 import { TemplateFolderMoveDialog } from '~/components/dialogs/template-folder-move-dialog';
@@ -46,7 +46,7 @@ export default function TemplatesPage() {
   const perPage = Number(searchParams.get('perPage')) || 10;
 
   const documentRootPath = formatDocumentsPath(team?.url);
-  const templateRootPath = formatTemplatesPath(team?.url);
+  const taskRootPath = formTasksPath(team?.url);
 
   const { data, isLoading, isLoadingError, refetch } = trpc.template.findTemplates.useQuery({
     page: page,
@@ -68,12 +68,12 @@ export default function TemplatesPage() {
   }, [team?.url]);
 
   const navigateToFolder = (folderId?: string | null) => {
-    const templatesPath = formatTemplatesPath(team?.url);
+    const tasksPath = formTasksPath(team?.url);
 
     if (folderId) {
-      void navigate(`${templatesPath}/f/${folderId}`);
+      void navigate(`${tasksPath}/f/${folderId}`);
     } else {
-      void navigate(templatesPath);
+      void navigate(tasksPath);
     }
   };
 
@@ -105,7 +105,7 @@ export default function TemplatesPage() {
   };
 
   const handleViewAllFolders = () => {
-    void navigate(`${formatTemplatesPath(team?.url)}/folders`);
+    void navigate(`${formTasksPath(team?.url)}/folders`);
   };
 
   return (
@@ -139,7 +139,7 @@ export default function TemplatesPage() {
         </div>
 
         <div className="flex gap-4 sm:flex-row sm:justify-end">
-          <TemplateCreateDialog templateRootPath={templateRootPath} />
+          <TaskCreateDialog taskRootPath={taskRootPath} userId={team?.ownerUserId || 0} />
           <TemplateFolderCreateDialog />
         </div>
       </div>
@@ -245,7 +245,7 @@ export default function TemplatesPage() {
               isLoading={isLoading}
               isLoadingError={isLoadingError}
               documentRootPath={documentRootPath}
-              templateRootPath={templateRootPath}
+              templateRootPath={taskRootPath}
             />
           )}
         </div>
