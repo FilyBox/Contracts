@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../../../../../trigger/index.ts"],
-  "mappings": ";;;;;;;;;;AAAA;AA2BO,IAAM,6BAA6B,OACxC,QACA,YACA,aACA,WACG;AACH,QAAM,EAAE,GAAG,IAAI,MAAM,wBAAwB,QAAQ;AAAA,IACnD;AAAA,IACA;AAAA,IACA;AAAA,IACA;AAAA,EACF,CAAC;AACD,SAAO;AACT;",
-  "names": []
-}
