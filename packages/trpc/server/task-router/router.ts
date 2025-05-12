@@ -149,6 +149,25 @@ export const taskRouter = router({
       });
     }),
 
+  deleteTask: authenticatedProcedure
+    .input(z.object({ taskId: z.number().min(1) }))
+    .mutation(async ({ input }) => {
+      const { taskId } = input;
+      // Eliminar la tarea y sus subtareas
+      await prisma.task.deleteMany({
+        where: {
+          id: taskId,
+          OR: [
+            { parentTaskId: taskId }, // Subtareas
+            { id: taskId }, // Tarea principal
+          ],
+        },
+      });
+      return { success: true };
+    }),
+
+  // uploadTemplate: authenticatedProcedure
+
   // uploadBulkSend: authenticatedProcedure
   //   .input(
   //     z.object({
