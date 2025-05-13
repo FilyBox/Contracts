@@ -1,125 +1,187 @@
+import { useState } from 'react';
+
 import { Trans } from '@lingui/react/macro';
 import { ChevronLeft } from 'lucide-react';
-import { Link, redirect } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
-import { isUserEnterprise } from '@documenso/ee/server-only/util/is-document-enterprise';
-import { type TGetTeamByUrlResponse, getTeamByUrl } from '@documenso/lib/server-only/team/get-team';
-import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
-import { formatTemplatesPath } from '@documenso/lib/utils/teams';
+import { prisma } from '@documenso/prisma';
 
-import { LegacyFieldWarningPopover } from '~/components/general/legacy-field-warning-popover';
-import { TemplateDirectLinkBadge } from '~/components/general/template/template-direct-link-badge';
-import { TemplateEditForm } from '~/components/general/template/template-edit-form';
-import { TemplateType } from '~/components/general/template/template-type';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
-import { TemplateDirectLinkDialogWrapper } from '../../components/dialogs/template-direct-link-dialog-wrapper';
-import type { Route } from './+types/templates.$id.edit';
-
-export async function loader({ params, request }: Route.LoaderArgs) {
+export async function loader({ params, request }: { params: { id: string }; request: Request }) {
   const { user } = await getSession(request);
 
-  let team: TGetTeamByUrlResponse | null = null;
-
-  if (params.teamUrl) {
-    team = await getTeamByUrl({ userId: user.id, teamUrl: params.teamUrl });
-  }
-
   const { id } = params;
+  const taskId = Number(id);
 
-  const templateId = Number(id);
-  const templateRootPath = formatTemplatesPath(team?.url);
-
-  if (!templateId || Number.isNaN(templateId)) {
-    throw redirect(templateRootPath);
+  if (!taskId || Number.isNaN(taskId)) {
+    throw new Response('Task not found', { status: 404 });
   }
 
-  const template = await getTemplateById({
-    id: templateId,
-    userId: user.id,
-    teamId: team?.id,
-  }).catch(() => null);
+  // Replace this with your logic to fetch task data
+  const task = {
+    id: taskId,
+    title: `Task ${taskId}`,
+    description: 'Task description',
+    tags: [],
+    priority: 'LOW',
+    dueDate: new Date().toISOString(),
+  };
 
-  if (!template || !template.templateDocumentData) {
-    throw redirect(templateRootPath);
-  }
-
-  if (template.folderId) {
-    throw redirect(`${templateRootPath}/f/${template.folderId}/${templateId}/edit`);
-  }
-
-  const isTemplateEnterprise = await isUserEnterprise({
-    userId: user.id,
-    teamId: team?.id,
-  });
-
-  return superLoaderJson({
-    template: {
-      ...template,
-      folder: null,
-    },
-    isTemplateEnterprise,
-    templateRootPath,
-  });
+  return superLoaderJson({ user, task });
 }
 
-export default function TemplateEditPage() {
-  const { template, isTemplateEnterprise, templateRootPath } = useSuperLoaderData<typeof loader>();
+export async function action({ request, params }: { request: Request; params: { id: string } }) {
+  const { id } = params;
+  const taskId = Number(id);
+
+  if (!taskId || Number.isNaN(taskId)) {
+    throw new Response('Invalid task ID', { status: 400 });
+  }
+
+  const formData = await request.formData();
+  const title = formData.get('title') as string;
+  const description = formData.get('description') as string;
+  const tags = (formData.get('tags') as string)?.split(',').map((tag) => tag.trim()) || [];
+  const priority = formData.get('priority') as string;
+
+  // Validate inputs
+  if (!title || !priority) {
+    throw new Response('Title and priority are required', { status: 400 });
+  }
+
+  // Update task in the database
+  try {
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        title,
+        description,
+        tags,
+        priority: priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
+      },
+    });
+    return superLoaderJson({ task: updatedTask });
+  } catch (error) {
+    console.error('Failed to update task:', error);
+    throw new Response('Failed to update task', { status: 500 });
+  }
+}
+
+export default function TaskPage() {
+  const { task } = useSuperLoaderData<typeof loader>();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    title: task.title,
+    description: task.description,
+    tags: task.tags.join(', '),
+    priority: task.priority,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`/tasks/${task.id}/edit`, {
+        method: 'POST',
+        body: new URLSearchParams(formData as Record<string, string>),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+
+      void navigate('/tasks');
+    } catch (error) {
+      console.error('Failed to update task:', error);
+    }
+  };
 
   return (
-    <div className="mx-auto -mt-4 max-w-screen-xl px-4 md:px-8">
-      <div className="flex flex-col justify-between sm:flex-row">
-        <div>
-          <Link
-            to={
-              template.folderId
-                ? `${templateRootPath}/f/${template.folderId}/${template.id}`
-                : `${templateRootPath}/${template.id}`
-            }
-            className="flex items-center text-[#7AC455] hover:opacity-80"
-          >
-            <ChevronLeft className="mr-2 inline-block h-5 w-5" />
-            <Trans>Template</Trans>
-          </Link>
+    <div className="mx-auto -mt-4 w-full max-w-screen-xl px-4 md:px-8">
+      <Link to="/tasks" className="flex items-center text-[#7AC455] hover:opacity-80">
+        <ChevronLeft className="mr-2 inline-block h-5 w-5" />
+        <Trans>Tasks</Trans>
+      </Link>
 
-          <h1
-            className="mt-4 block max-w-[20rem] truncate text-2xl font-semibold md:max-w-[30rem] md:text-3xl"
-            title={template.title}
-          >
-            {template.title}
-          </h1>
-
-          <div className="mt-2.5 flex items-center">
-            <TemplateType inheritColor className="text-muted-foreground" type={template.type} />
-
-            {template.directLink?.token && (
-              <TemplateDirectLinkBadge
-                className="ml-4"
-                token={template.directLink.token}
-                enabled={template.directLink.enabled}
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="mt-2 flex items-center gap-2 sm:mt-0 sm:self-end">
-          <TemplateDirectLinkDialogWrapper template={template} />
-
-          {template.useLegacyFieldInsertion && (
-            <div>
-              <LegacyFieldWarningPopover type="template" templateId={template.id} />
-            </div>
-          )}
-        </div>
+      <div className="mt-4">
+        <h1 className="text-2xl font-semibold">{task.title}</h1>
+        <p className="text-muted-foreground mt-2">{task.priority}</p>
       </div>
-
-      <TemplateEditForm
-        className="mt-6"
-        initialTemplate={template}
-        templateRootPath={templateRootPath}
-        isEnterprise={isTemplateEnterprise}
-      />
+      <div className="m-52 mt-6">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="tags" className="block text-sm font-medium">
+              Tags
+            </label>
+            <textarea
+              id="tags"
+              name="tags"
+              placeholder="tag1, tag2, tag3"
+              value={formData.tags}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="priority" className="block text-sm font-medium">
+              Priority
+            </label>
+            <select
+              id="priority"
+              name="priority"
+              value={formData.priority}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            >
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="CRITICAL">Critical</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            className="mt-4 rounded bg-[#7AC455] px-4 py-2 text-white hover:opacity-80"
+          >
+            Save
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

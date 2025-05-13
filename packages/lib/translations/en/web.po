@@ -3074,6 +3074,7 @@ msgid "Error"
 msgstr "Error"
 
 #: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+#: apps/remix/app/routes/_authenticated+/events._index.tsx
 #: apps/remix/app/components/lists/tasks-list.tsx
 msgid "Error al cargar las tareas"
 msgstr "Error al cargar las tareas"
@@ -3085,6 +3086,10 @@ msgstr "Error uploading file"
 #: apps/remix/app/components/lists/tasks-list.tsx
 msgid "Estado"
 msgstr "Estado"
+
+#: apps/remix/app/routes/_authenticated+/events._index.tsx
+msgid "Eventos"
+msgstr "Eventos"
 
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Everyone can access and view the document"
@@ -4000,10 +4005,12 @@ msgid "No further action is required from you at this time."
 msgstr "No further action is required from you at this time."
 
 #: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+#: apps/remix/app/routes/_authenticated+/events._index.tsx
 msgid "No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar."
 msgstr "No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar."
 
 #: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+#: apps/remix/app/routes/_authenticated+/events._index.tsx
 msgid "No hay tareas"
 msgstr "No hay tareas"
 

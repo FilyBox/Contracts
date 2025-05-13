@@ -1,8 +1,6 @@
-// import { TRPCError } from '@trpc/server';
+import { TaskPriority } from '@prisma/client';
 import { z } from 'zod';
 
-// import { jobs } from '@documenso/lib/jobs/client';
-// import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
 import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure, router } from '../trpc';
@@ -13,7 +11,6 @@ export type GetTaskByIdOptions = {
   teamId?: number;
   folderId?: string | null;
 };
-
 export const taskRouter = router({
   createTask: authenticatedProcedure
     .input(
@@ -121,7 +118,7 @@ export const taskRouter = router({
         taskId: z.number().min(1),
         title: z.string().min(1),
         description: z.string().optional(),
-        priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
+        priority: z.nativeEnum(TaskPriority),
         dueDate: z.date().optional(),
         tags: z.array(z.string()).optional().default([]),
         userId: z.number(),
@@ -166,57 +163,43 @@ export const taskRouter = router({
       return { success: true };
     }),
 
-  // uploadTemplate: authenticatedProcedure
+  getTaskById: authenticatedProcedure
+    .input(z.object({ id: z.number(), userId: z.number(), teamId: z.number().optional() }))
+    .query(async ({ input }) => {
+      const { id, userId, teamId } = input;
 
-  // uploadBulkSend: authenticatedProcedure
-  //   .input(
-  //     z.object({
-  //       taskId: z.number(),
-  //       teamId: z.number().optional(),
-  //       csv: z.string().min(1),
-  //       sendImmediately: z.boolean(),
-  //     }),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const { taskId, teamId, csv, sendImmediately } = input;
-  //     const { user } = ctx;
+      const task = await prisma.task.findFirst({
+        where: {
+          id,
+          ...(teamId
+            ? {
+                team: {
+                  id: teamId,
+                  members: {
+                    some: {
+                      userId,
+                    },
+                  },
+                },
+              }
+            : {
+                userId,
+                teamId: null,
+              }),
+        },
+        include: {
+          user: true,
+          project: true,
+          team: true,
+          parentTask: true,
+          subtasks: true,
+        },
+      });
 
-  //     if (csv.length > 4 * 1024 * 1024) {
-  //       throw new TRPCError({
-  //         code: 'BAD_REQUEST',
-  //         message: 'File size exceeds 4MB limit',
-  //       });
-  //     }
+      if (!task) {
+        throw new Error('Task not found');
+      }
 
-  //     const task = await getTemplateById({
-  //       id: taskId,
-  //       teamId,
-  //       userId: user.id,
-  //     });
-
-  //     if (!task) {
-  //       throw new TRPCError({
-  //         code: 'NOT_FOUND',
-  //         message: 'Template not found',
-  //       });
-  //     }
-
-  //     await jobs.triggerJob({
-  //       name: 'internal.bulk-send-template',
-  //       payload: {
-  //         userId: user.id,
-  //         teamId,
-  //         taskId,
-  //         csvContent: csv,
-  //         sendImmediately,
-  //         requestMetadata: ctx.metadata.requestMetadata,
-  //       },
-  //     });
-
-  //     return { success: true };
-  //   }),
-
-  ///Integrar despues
-
-  // ... otros procedimientos de tareas
+      return task;
+    }),
 });

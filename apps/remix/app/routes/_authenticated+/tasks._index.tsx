@@ -18,14 +18,14 @@ import { TasksTable } from '~/components/lists/tasks-list';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
 
+export function meta() {
+  return appMetaTags('Tasks');
+}
+
 export type TasksPageViewProps = {
   team?: Team;
   initialTasks: Awaited<ReturnType<typeof findTasks>>;
 };
-
-export function meta() {
-  return appMetaTags('Tasks');
-}
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -47,6 +47,10 @@ export default function TasksPage() {
   const handleTaskClick = (taskId: number) => {
     void navigate(`${taskRootPath}/${taskId}`);
   };
+
+  // const handleTaskEditClick = (taskId: number) => {
+  //   void navigate(`${taskRootPath}/${taskId}/edit`);
+  // };
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 md:px-8">

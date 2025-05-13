@@ -72,6 +72,7 @@ model User {
   apiTokens          ApiToken[]
   templates          Template[]
   taskAssignees      TaskAssignee[]
+  chat               Chat[]
   taskComments       TaskComment[]
   taskAttachments    TaskAttachment[]
   taskSubtasks       Task[]
@@ -82,6 +83,156 @@ model User {
   avatarImage        AvatarImage?           @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
 
   @@index([email])
+}
+
+model Songs {
+  id                Int          @id @default(autoincrement())
+  name              String?
+  author            String?
+  teamId            Int
+  team              Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  publisherMexico   String?
+  publisherUSA      String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now()) @updatedAt
+  disabled          Boolean      @default(false)
+  artists           Artist[]
+  url               String?      @unique
+  type              SongType[]
+  status            SongStatus[]
+  uniqueIdentifier  String?      @unique @default(cuid())
+  royaltyPercentage String?
+}
+
+enum TypeSongAlbum {
+  SONG
+  ALBUM
+}
+
+enum StatusSongAlbum {
+  DELETED
+  RELEASED
+  PENDING
+  DRAFT
+}
+
+enum SongStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SongType {
+  MASTER
+  MECHANICAL
+  PERFORMANCE
+  SYNCHRONIZATION
+}
+
+model Artist {
+  id            Int            @id @default(autoincrement())
+  name          String?
+  createdAt     DateTime       @default(now())
+  teamId        Int
+  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  updatedAt     DateTime       @default(now()) @updatedAt
+  roles         Role[]         @default([USER])
+  avatarImageId String?
+  disabled      Boolean        @default(false)
+  event         Event[]
+  url           String?        @unique
+  ArtistProfile ArtistProfile?
+  songs         Songs[]
+}
+
+model ArtistProfile {
+  id       String  @id @default(cuid())
+  enabled  Boolean @default(false)
+  artistId Int     @unique
+  bio      String?
+
+  Artist Artist? @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}
+
+// Events table
+model Event {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(300)
+  description String?   @db.VarChar(200)
+  image       String?   @db.Text
+  teamId      Int?
+  venue       String?   @db.VarChar(300)
+  artists     Artist[]
+  beginning   DateTime  @default(now())
+  end         DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  team         Team?         @relation(fields: [teamId], references: [id])
+  ticketTypes  TicketType[]
+  ticketBuyers TicketBuyer[]
+}
+
+// Buyers table
+model Buyer {
+  id               String    @id @default(cuid())
+  password         String?
+  uid              String?
+  rfc              String?   @unique @db.VarChar(13)
+  fullname         String    @db.VarChar(250)
+  email            String    @unique @db.VarChar(250)
+  image            String?   @db.Text
+  emailVerified    DateTime?
+  phoneNumber      String?   @db.VarChar(20)
+  stripeCustomerId String    @unique @db.VarChar(255)
+  createdAt        DateTime  @default(now())
+  deletedAt        DateTime?
+
+  ticketBuyers TicketBuyer[]
+}
+
+// Ticket types table
+model TicketType {
+  id                 Int       @id @default(autoincrement())
+  name               String?   @db.VarChar(100)
+  eventId            Int
+  price              Int?
+  uid                String?
+  maxQuantityPerUser Int       @default(5)
+  quantity           Int?
+  available          Int?
+  description        String?
+  seatNumber         Int?
+  stripeProductId    String?   @db.Text
+  stripePriceId      String?   @db.Text
+  imageUrl           String?   @db.Text
+  status             String    @default("valid") @db.VarChar(20)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+}
+
+// Tickets buyers table
+model TicketBuyer {
+  id              Int       @id @default(autoincrement())
+  name            String?   @db.VarChar(100)
+  eventId         Int
+  buyerId         String
+  ticketId        Int?
+  price           Int?
+  quantity        Int?
+  stripeProductId String?   @db.Text
+  imageUrl        String?   @db.Text
+  status          String    @default("valid") @db.VarChar(20)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+  buyer Buyer @relation(fields: [buyerId], references: [id])
 }
 
 model UserProfile {
@@ -370,6 +521,7 @@ model Document {
   teamId         Int?
   templateId     Int?
   source         DocumentSource
+  chat           Chat[]
 
   useLegacyFieldInsertion Boolean @default(false)
 
@@ -731,15 +883,85 @@ model TeamGlobalSettings {
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
-model Team {
-  id            Int      @id @default(autoincrement())
-  name          String
-  url           String   @unique
-  createdAt     DateTime @default(now())
-  avatarImageId String?
-  customerId    String?  @unique
-  ownerUserId   Int
+model Chat {
+  id         String   @id @default(cuid())
+  createdAt  DateTime
+  title      String   @db.Text
+  userId     Int
+  documentId Int?
+  teamId     Int?
+  visibility String   @default("private") @db.VarChar(255)
 
+  user       User                @relation(fields: [userId], references: [id])
+  document   Document?           @relation(fields: [documentId], references: [id])
+  team       Team?               @relation(fields: [teamId], references: [id])
+  messagesV1 MessageDeprecated[]
+  messagesV2 Message[]
+  votesV1    VoteDeprecated[]
+  votesV2    Vote[]
+
+  @@map("Chat")
+}
+
+model Vote {
+  chatId    String
+  messageId String
+  isUpvoted Boolean
+
+  chat    Chat    @relation(fields: [chatId], references: [id])
+  message Message @relation(fields: [messageId], references: [id])
+
+  @@id([chatId, messageId])
+  @@map("Vote_v2")
+}
+
+model VoteDeprecated {
+  chatId    String
+  messageId String
+  isUpvoted Boolean
+
+  chat    Chat              @relation(fields: [chatId], references: [id])
+  message MessageDeprecated @relation(fields: [messageId], references: [id])
+
+  @@id([chatId, messageId])
+  @@map("Vote")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  chatId      String
+  role        String   @db.VarChar(255)
+  parts       Json
+  attachments Json
+  createdAt   DateTime
+
+  chat  Chat   @relation(fields: [chatId], references: [id])
+  votes Vote[]
+
+  @@map("MessageV2")
+}
+
+model MessageDeprecated {
+  id        String   @id @default(cuid())
+  chatId    String
+  role      String   @db.VarChar(255)
+  content   Json
+  createdAt DateTime
+
+  chat  Chat             @relation(fields: [chatId], references: [id])
+  votes VoteDeprecated[]
+
+  @@map("Message")
+}
+
+model Team {
+  id                   Int                       @id @default(autoincrement())
+  name                 String
+  url                  String                    @unique
+  createdAt            DateTime                  @default(now())
+  avatarImageId        String?
+  customerId           String?                   @unique
+  ownerUserId          Int
   members              TeamMember[]
   invites              TeamMemberInvite[]
   teamEmail            TeamEmail?
@@ -747,18 +969,37 @@ model Team {
   transferVerification TeamTransferVerification?
   teamGlobalSettings   TeamGlobalSettings?
   avatarImage          AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  profile              TeamProfile?
+  owner                User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  subscription         Subscription?
+  events               Event[]
+  documents            Document[]
+  tasks                Task[]
+  templates            Template[]
+  projects             Project[]
+  songs                Songs[]
+  artists              Artist[]
+  Chat                 Chat[]
+  contractTemplates    ContractTemplate[]
+  folders              Folder[]
+  apiTokens            ApiToken[]
+  webhooks             Webhook[]
+}
 
-  profile      TeamProfile?
-  owner        User          @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  subscription Subscription?
+model ContractTemplate {
+  id        Int       @id @default(autoincrement())
+  name      String?   @db.VarChar(100)
+  body      String?
+  url       String?   @db.Text
+  type      String?
+  status    String?
+  teamId    Int?
+  team      Team?     @relation(fields: [teamId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
 
-  documents Document[]
-  tasks     Task[]
-  templates Template[]
-  projects  Project[]
-  folders   Folder[]
-  apiTokens ApiToken[]
-  webhooks  Webhook[]
+  @@map("ContractTemplates")
 }
 
 model TeamPending {

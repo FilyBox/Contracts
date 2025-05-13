@@ -1,5 +1,6 @@
 import { Trans } from '@lingui/react/macro';
 import { CheckCircle, Circle, Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { trpc } from '@documenso/trpc/react';
@@ -40,8 +41,8 @@ export const TasksTable = ({
   onTaskClick: (taskId: number) => void;
   refetch: () => Promise<void>;
 }) => {
+  const navigate = useNavigate();
   const { mutateAsync: deleteTask } = trpc.task.deleteTask.useMutation();
-
   const handleDeleteTask = async (taskId: number) => {
     try {
       await deleteTask({ taskId });
@@ -149,7 +150,7 @@ export const TasksTable = ({
                   <DropdownMenuItem onClick={() => onTaskClick(task.id)}>
                     <Trans>Ver detalles</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={async () => navigate(`/tasks/${task.id}/edit`)}>
                     <Trans>Editar</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
