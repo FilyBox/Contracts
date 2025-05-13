@@ -967,10 +967,6 @@ msgstr "Pozwala na uwierzytelnianie za pomocą biometrii, menedżerów haseł, k
 msgid "Already have an account? <0>Sign in instead</0>"
 msgstr "Masz już konto? <0>Zaloguj się zamiast tego</0>"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Alta"
-msgstr ""
-
 #: apps/remix/app/components/tables/team-settings-billing-invoices-table.tsx
 msgid "Amount"
 msgstr "Kwota"
@@ -1404,10 +1400,6 @@ msgstr "Kod zapasowy"
 #: apps/remix/app/components/forms/2fa/enable-authenticator-app-dialog.tsx
 msgid "Backup codes"
 msgstr "Kody zapasowe"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Baja"
-msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Banner Updated"
@@ -3917,10 +3909,6 @@ msgstr "Max"
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Maximum file size: 4MB. Maximum 100 rows per upload. Blank values will use template defaults."
 msgstr "Maksymalny rozmiar pliku: 4MB. Maksymalnie 100 wierszy na przesyłkę. Puste wartości zostaną zastąpione domyślnymi z szablonu."
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Media"
-msgstr ""
 
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Medium"

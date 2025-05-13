@@ -967,10 +967,6 @@ msgstr "Permite autenticarse usando biometría, administradores de contraseñas,
 msgid "Already have an account? <0>Sign in instead</0>"
 msgstr "¿Ya tienes una cuenta? <0>Iniciar sesión en su lugar</0>"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Alta"
-msgstr ""
-
 #: apps/remix/app/components/tables/team-settings-billing-invoices-table.tsx
 msgid "Amount"
 msgstr "Cantidad"
@@ -1404,10 +1400,6 @@ msgstr "Código de respaldo"
 #: apps/remix/app/components/forms/2fa/enable-authenticator-app-dialog.tsx
 msgid "Backup codes"
 msgstr "Códigos de respaldo"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Baja"
-msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Banner Updated"
@@ -2173,7 +2165,7 @@ msgstr "Creado el {0}"
 
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Critical"
-msgstr ""
+msgstr "Critico"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
@@ -3499,7 +3491,7 @@ msgstr "Ocultar información adicional"
 
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "I am a signer of this document"
@@ -3804,7 +3796,7 @@ msgstr "Iniciar sesión"
 
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Low"
-msgstr ""
+msgstr "Baja"
 
 #: apps/remix/app/components/tables/user-settings-current-teams-table.tsx
 msgid "Manage"
@@ -3918,13 +3910,9 @@ msgstr "Máx"
 msgid "Maximum file size: 4MB. Maximum 100 rows per upload. Blank values will use template defaults."
 msgstr "Tamaño máximo de archivo: 4MB. Máximo 100 filas por carga. Los valores en blanco usarán los valores predeterminados de la plantilla."
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Media"
-msgstr ""
-
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Medium"
-msgstr ""
+msgstr "Media"
 
 #: packages/lib/constants/teams.ts
 msgid "Member"

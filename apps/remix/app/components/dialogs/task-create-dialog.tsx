@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { FilePlus, Loader } from 'lucide-react';
+import { FilePlus } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
@@ -153,9 +153,7 @@ export const TaskCreateDialog = ({
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              <Trans>Title</Trans>
-            </label>
+            <Trans>Title</Trans>
             <Input
               id="title"
               name="title"
@@ -167,9 +165,7 @@ export const TaskCreateDialog = ({
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              <Trans>Description</Trans>
-            </label>
+            <Trans>Description</Trans>
             <Textarea
               id="description"
               name="description"
@@ -182,9 +178,7 @@ export const TaskCreateDialog = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
-                <Trans>Priority</Trans>
-              </label>
+              <Trans>Priority</Trans>
               <Select value={taskData.priority} onValueChange={handlePriorityChange}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select priority" />
@@ -199,9 +193,7 @@ export const TaskCreateDialog = ({
             </div>
 
             <div>
-              <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
-                <Trans>Due Date</Trans>
-              </label>
+              <Trans>Due Date</Trans>
               <Input
                 id="dueDate"
                 name="dueDate"
@@ -212,12 +204,6 @@ export const TaskCreateDialog = ({
               />
             </div>
           </div>
-
-          {isCreatingTask && (
-            <div className="flex items-center justify-center rounded-lg py-4">
-              <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
-            </div>
-          )}
         </div>
 
         <DialogFooter>

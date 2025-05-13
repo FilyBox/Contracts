@@ -216,9 +216,9 @@ export const TeamMemberInviteDialog = ({ trigger, ...props }: TeamMemberInviteDi
 
   const downloadTemplate = () => {
     const data = [
-      { email: 'admin@documenso.com', role: 'Admin' },
-      { email: 'manager@documenso.com', role: 'Manager' },
-      { email: 'member@documenso.com', role: 'Member' },
+      { email: 'admin@lpm.com', role: 'Admin' },
+      { email: 'manager@lpm.com', role: 'Manager' },
+      { email: 'member@lpm.com', role: 'Member' },
     ];
 
     const csvContent =

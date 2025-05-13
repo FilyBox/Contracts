@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro';
-import { Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
+import { Clock, Loader2, MoreVertical } from 'lucide-react';
 
 import type { ExtendedTaskStatus } from '@documenso/prisma/types/extended-task-status';
 import { Button } from '@documenso/ui/primitives/button';
@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@documenso/ui/primitives/table';
 
+import { TaskPriority } from '../general/document/task/task-priority';
 import { TaskStatusComponent } from '../general/document/task/task-status';
 
 export const TasksTable = ({
@@ -99,7 +100,8 @@ export const TasksTable = ({
               )} */}
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
-              <div className="flex items-center gap-2">
+              <TaskPriority priority={task.priority} />
+              {/* <div className="flex items-center gap-2">
                 {task.priority === 'HIGH' && <Flag className="h-4 w-4 fill-red-500 text-red-500" />}
                 {task.priority === 'MEDIUM' && (
                   <Flag className="h-4 w-4 fill-yellow-500 text-yellow-500" />
@@ -112,7 +114,7 @@ export const TasksTable = ({
                   {task.priority === 'MEDIUM' && <Trans>Media</Trans>}
                   {task.priority === 'LOW' && <Trans>Baja</Trans>}
                 </span>
-              </div>
+              </div> */}
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
               {task.assignees.length > 0 ? task.assignees.map((a) => a.name).join(', ') : '-'}

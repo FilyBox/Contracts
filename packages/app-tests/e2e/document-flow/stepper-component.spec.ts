@@ -346,14 +346,14 @@ test('[DOCUMENT_FLOW]: should be able to approve a document', async ({ page }) =
 
   const { recipients } = await seedPendingDocumentWithFullFields({
     owner: user,
-    recipients: ['user@documenso.com', 'approver@documenso.com'],
+    recipients: ['user@lpm.com', 'approver@lpm.com'],
     recipientsCreateOptions: [
       {
-        email: 'user@documenso.com',
+        email: 'user@lpm.com',
         role: RecipientRole.SIGNER,
       },
       {
-        email: 'approver@documenso.com',
+        email: 'approver@lpm.com',
         role: RecipientRole.APPROVER,
       },
     ],

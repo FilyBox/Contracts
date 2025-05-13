@@ -133,7 +133,7 @@ export const DirectTemplateConfigureForm = ({
                         derivedRecipientAccessAuth !== null ||
                         user?.email !== undefined
                       }
-                      placeholder="recipient@documenso.com"
+                      placeholder="recipient@lpm.com"
                     />
                   </FormControl>
 

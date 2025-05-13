@@ -56,13 +56,11 @@ export default function TasksPage() {
   const taskRootPath = formTasksPath(team?.url);
   const { user } = useSession();
   const { data, isLoading, isLoadingError, refetch } = trpc.task.findTasks.useQuery({
-    // projectId: null,
     query: findDocumentSearchParams.query,
     priority: findDocumentSearchParams.priority,
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
-    // parentTaskId: null,
   });
 
   const [stats, setStats] = useState<TFindTaskInternalResponse['stats']>({
@@ -104,7 +102,7 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="mx-auto max-w-screen-xl px-4 md:px-8">
+    <div className="mx-auto max-w-screen-xl gap-y-8 px-4 md:px-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 items-center">
           <Button
@@ -123,7 +121,7 @@ export default function TasksPage() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
         <div className="flex flex-row items-center">
           {team && (
             <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
@@ -175,7 +173,7 @@ export default function TasksPage() {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
               <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
