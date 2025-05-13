@@ -1,6 +1,8 @@
 import { Trans } from '@lingui/react/macro';
 import { CheckCircle, Circle, Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
+import { toast } from 'sonner';
 
+import { trpc } from '@documenso/trpc/react';
 import { Button } from '@documenso/ui/primitives/button';
 import {
   DropdownMenu,
@@ -22,6 +24,7 @@ export const TasksTable = ({
   isLoading,
   isLoadingError,
   onTaskClick,
+  refetch,
 }: {
   tasks: Array<{
     id: number;
@@ -35,7 +38,21 @@ export const TasksTable = ({
   isLoading: boolean;
   isLoadingError: boolean;
   onTaskClick: (taskId: number) => void;
+  refetch: () => Promise<void>;
 }) => {
+  const { mutateAsync: deleteTask } = trpc.task.deleteTask.useMutation();
+
+  const handleDeleteTask = async (taskId: number) => {
+    try {
+      await deleteTask({ taskId });
+      toast.success('Tarea eliminada correctamente');
+      await refetch();
+    } catch (error) {
+      toast.error('Error al eliminar la tarea');
+      console.error('Error deleting task:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -135,7 +152,13 @@ export const TasksTable = ({
                   <DropdownMenuItem>
                     <Trans>Editar</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-500">
+                  <DropdownMenuItem
+                    className="text-red-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleDeleteTask(task.id);
+                    }}
+                  >
                     <Trans>Eliminar</Trans>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

@@ -110,6 +110,7 @@ export default function TasksPage() {
               </div>
             </div>
           ) : (
+            // En el componente TasksPage, modifica la parte donde usas TasksTable:
             <TasksTable
               tasks={(data || [])
                 .filter(
@@ -123,9 +124,12 @@ export default function TasksPage() {
                     name: `User ${assignee.userId}`, // Replace with actual logic to get the name
                   })),
                 }))}
-              isLoading={false} // Ya manejamos el loading arriba
-              isLoadingError={false} // Ya manejamos el error arriba
+              isLoading={false}
+              isLoadingError={false}
               onTaskClick={handleTaskClick}
+              refetch={async () => {
+                await refetch();
+              }} // Añade esta línea
             />
           )}
         </div>
