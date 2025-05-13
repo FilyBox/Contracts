@@ -1,9 +1,14 @@
 // import { TRPCError } from '@trpc/server';
+import type { Prisma, User } from '@prisma/client';
+import { DateTime } from 'luxon';
 import { z } from 'zod';
 
+import { type GetStatsInput, getStats } from '@documenso/lib/server-only/document/get-priority';
+import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
 // import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
 import { prisma } from '@documenso/prisma';
+import { ExtendedTaskPriority } from '@documenso/prisma/types/extended-task-priority';
 
 import { authenticatedProcedure, router } from '../trpc';
 
@@ -72,35 +77,80 @@ export const taskRouter = router({
   findTasks: authenticatedProcedure
     .input(
       z.object({
-        userId: z.number(),
+        // userId: z.number(),
+        query: z.string().optional(),
         teamId: z.number().optional(),
         projectId: z.number().optional(),
         folderId: z.number().optional(),
+        page: z.number().optional(),
+        perPage: z.number().optional(),
+        period: z.enum(['7d', '14d', '30d']).optional(),
+        priority: z.nativeEnum(ExtendedTaskPriority).optional(),
         status: z.enum(['PENDING', 'COMPLETED']).optional(),
         orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
         orderDirection: z.enum(['asc', 'desc']).optional().default('desc'),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const {
-        userId,
-        teamId,
         projectId,
-        folderId,
-        status,
+        query,
+        priority,
+        period,
         orderBy = 'createdAt',
         orderDirection = 'desc',
       } = input;
-
+      const { user, teamId } = ctx;
+      const user_Id = user.id;
       // Construir el objeto where para los filtros
-      const where = {
-        userId,
+      let where: any = {
+        userId: user_Id, // Note: changed from user_Id to userId to match Prisma schema
         ...(teamId && { teamId }),
         ...(projectId && { projectId }),
-        ...(folderId && { folderId }),
-        ...(status && { status }),
+        // ...(folderId && { folderId }),
+        ...(query && {
+          OR: [{ title: { contains: query, mode: 'insensitive' } }],
+        }),
       };
 
+      if (priority && priority !== ExtendedTaskPriority.ALL) {
+        where.priority = priority;
+      }
+
+      const getStatOptions: GetStatsInput = {
+        user,
+        period,
+        search: query,
+      };
+
+      if (teamId) {
+        const team = await getTeamById({ userId: user.id, teamId });
+
+        getStatOptions.team = {
+          teamId: team.id,
+          teamEmail: team.teamEmail?.email,
+          currentTeamMemberRole: team.currentTeamMember?.role,
+          currentUserEmail: user.email,
+          userId: user.id,
+        };
+      }
+
+      let createdAt: Prisma.TaskWhereInput['createdAt'];
+
+      if (period) {
+        const daysAgo = parseInt(period.replace(/d$/, ''), 10);
+
+        const startOfPeriod = DateTime.now().minus({ days: daysAgo }).startOf('day');
+
+        createdAt = {
+          gte: startOfPeriod.toJSDate(),
+        };
+      }
+
+      where.createdAt = createdAt;
+
+      const [stats] = await Promise.all([getStats(getStatOptions)]);
+      console.log('stats', stats);
       // Obtener todas las tareas que coincidan con los filtros
       const tasks = await prisma.task.findMany({
         where,
@@ -113,8 +163,9 @@ export const taskRouter = router({
         },
       });
 
-      return tasks;
+      return { tasks, stats };
     }),
+
   updateTask: authenticatedProcedure
     .input(
       z.object({

@@ -15,6 +15,7 @@ import { PDFViewer } from '@documenso/ui/primitives/pdf-viewer';
 import { TemplateBulkSendDialog } from '~/components/dialogs/template-bulk-send-dialog';
 import { TemplateDirectLinkDialogWrapper } from '~/components/dialogs/template-direct-link-dialog-wrapper';
 import { TemplateUseDialog } from '~/components/dialogs/template-use-dialog';
+import { TaskPriority } from '~/components/general/document/task/task-priority';
 import { TemplateDirectLinkBadge } from '~/components/general/template/template-direct-link-badge';
 import { TemplatePageViewDocumentsTable } from '~/components/general/template/template-page-view-documents-table';
 import { TemplatePageViewInformation } from '~/components/general/template/template-page-view-information';
@@ -116,6 +117,7 @@ export default function TemplatePage() {
           </h1>
 
           <div className="mt-2.5 flex items-center">
+            <TaskPriority inheritColor priority={'HIGH'} className="text-muted-foreground" />
             <TemplateType inheritColor className="text-muted-foreground" type={template.type} />
 
             {template.directLink?.token && (

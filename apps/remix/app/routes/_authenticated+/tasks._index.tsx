@@ -1,19 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { Bird, HomeIcon, Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
+import { z } from 'zod';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
+import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formTasksPath } from '@documenso/lib/utils/teams';
-import type { Team } from '@documenso/prisma/client';
+import { type Team } from '@documenso/prisma/client';
+import { ExtendedTaskPriority } from '@documenso/prisma/types/extended-task-priority';
 import { trpc } from '@documenso/trpc/react';
+import {
+  type TFindTaskInternalResponse,
+  ZFindDocumentsInternalRequestSchema,
+  ZFindTaskInternalResponseSchema,
+  ZFindTasksInternalRequestSchema,
+} from '@documenso/trpc/server/document-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
+import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 
 import { TaskCreateDialog } from '~/components/dialogs/task-create-dialog';
+import { DocumentSearch } from '~/components/general/document/document-search';
+import { TaskPriority } from '~/components/general/document/task/task-priority';
+import { PeriodSelector } from '~/components/general/period-selector';
 import { TasksTable } from '~/components/lists/tasks-list';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
@@ -27,22 +41,67 @@ export function meta() {
   return appMetaTags('Tasks');
 }
 
+const ZSearchParamsSchema = ZFindTasksInternalRequestSchema.pick({
+  priority: true,
+  period: true,
+  page: true,
+  perPage: true,
+  query: true,
+});
+
 export default function TasksPage() {
+  const [searchParams] = useSearchParams();
+  const findDocumentSearchParams = useMemo(
+    () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+    [searchParams],
+  );
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const taskRootPath = formTasksPath(team?.url);
   const { user } = useSession();
   const { data, isLoading, isLoadingError, refetch } = trpc.task.findTasks.useQuery({
-    userId: user.id,
-    teamId: team?.id,
     // projectId: null,
+    query: findDocumentSearchParams.query,
+    priority: findDocumentSearchParams.priority,
+    period: findDocumentSearchParams.period,
+    page: findDocumentSearchParams.page,
+    perPage: findDocumentSearchParams.perPage,
     // parentTaskId: null,
-    status: 'PENDING',
   });
+
+  const [stats, setStats] = useState<TFindTaskInternalResponse['stats']>({
+    [ExtendedTaskPriority.LOW]: 0,
+    [ExtendedTaskPriority.MEDIUM]: 0,
+    [ExtendedTaskPriority.HIGH]: 0,
+    [ExtendedTaskPriority.CRITICAL]: 0,
+    [ExtendedTaskPriority.ALL]: 0,
+  });
+
+  useEffect(() => {
+    if (data?.stats) {
+      setStats(data.stats);
+    }
+  }, [data?.stats]);
 
   useEffect(() => {
     void refetch();
   }, [team?.url]);
+
+  const getTabHref = (value: keyof typeof ExtendedTaskPriority) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set('priority', value);
+
+    if (value === ExtendedTaskPriority.ALL) {
+      params.delete('priority');
+    }
+
+    if (params.has('page')) {
+      params.delete('page');
+    }
+
+    return `${formTasksPath(team?.url)}?${params.toString()}`;
+  };
 
   const handleTaskClick = (taskId: number) => {
     void navigate(`${taskRootPath}/${taskId}`);
@@ -84,6 +143,42 @@ export default function TasksPage() {
           </h1>
         </div>
 
+        <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
+          <Tabs value={findDocumentSearchParams.priority || 'ALL'} className="overflow-x-auto">
+            <TabsList>
+              {[
+                ExtendedTaskPriority.LOW,
+                ExtendedTaskPriority.MEDIUM,
+                ExtendedTaskPriority.HIGH,
+                ExtendedTaskPriority.CRITICAL,
+                ExtendedTaskPriority.ALL,
+              ].map((value) => (
+                <TabsTrigger
+                  key={value}
+                  className="hover:text-foreground min-w-[60px]"
+                  value={value}
+                  asChild
+                >
+                  <Link to={getTabHref(value)} preventScrollReset>
+                    <TaskPriority priority={value} />
+
+                    {value !== ExtendedTaskPriority.ALL && (
+                      <span className="ml-1 inline-block opacity-50">{stats[value]}</span>
+                    )}
+                  </Link>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+
+          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <PeriodSelector />
+          </div>
+          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <DocumentSearch initialValue={findDocumentSearchParams.query} />
+          </div>
+        </div>
+
         <div className="mt-8">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
@@ -93,7 +188,7 @@ export default function TasksPage() {
             <div className="flex h-64 items-center justify-center text-red-500">
               <Trans>Error al cargar las tareas</Trans>
             </div>
-          ) : data && data.length === 0 ? (
+          ) : data && data.tasks.length === 0 ? (
             <div className="text-muted-foreground/60 flex h-96 flex-col items-center justify-center gap-y-4">
               <Bird className="h-12 w-12" strokeWidth={1.5} />
 
@@ -111,7 +206,7 @@ export default function TasksPage() {
             </div>
           ) : (
             <TasksTable
-              tasks={(data || [])
+              tasks={(data?.tasks || [])
                 .filter(
                   (task): task is { status: 'PENDING' | 'COMPLETED' } & typeof task =>
                     task.status === 'PENDING' || task.status === 'COMPLETED',

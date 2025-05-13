@@ -99,7 +99,7 @@ export const TaskCreateDialog = ({
       });
 
       setShowTaskCreateDialog(false);
-      await navigate(`${taskRootPath}/${id}`);
+      // await navigate(`${taskRootPath}/${id}`);
     } catch (error) {
       console.error('Error creating task:', error);
 

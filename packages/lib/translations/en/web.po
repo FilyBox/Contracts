@@ -728,8 +728,8 @@ msgstr "Action"
 msgid "Actions"
 msgstr "Actions"
 
-#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._index.tsx
+#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
 msgid "Active"
 msgstr "Active"
@@ -890,6 +890,7 @@ msgid "After submission, a document will be automatically generated and added to
 msgstr "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "All"
 msgstr "All"
 
@@ -1626,7 +1627,6 @@ msgid "Chat documents"
 msgstr "Chat documents"
 
 #: apps/remix/app/components/general/app-nav-mobile.tsx
-#: apps/remix/app/components/general/app-nav-desktop.tsx
 msgid "Chats"
 msgstr "Chats"
 
@@ -2156,6 +2156,10 @@ msgstr "Created on"
 msgid "Created on {0}"
 msgstr "Created on {0}"
 
+#: apps/remix/app/components/general/document/task/task-priority.tsx
+msgid "Critical"
+msgstr "Critical"
+
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "CSV Structure"
@@ -2487,6 +2491,7 @@ msgid "Document access auth updated"
 msgstr "Document access auth updated"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document All"
 msgstr "Document All"
 
@@ -2501,6 +2506,7 @@ msgid "Document Cancelled"
 msgstr "Document Cancelled"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 #: packages/lib/utils/document-audit-logs.ts
 #: packages/lib/utils/document-audit-logs.ts
 msgid "Document completed"
@@ -2568,6 +2574,7 @@ msgid "Document Distribution Method"
 msgstr "Document Distribution Method"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document draft"
 msgstr "Document draft"
 
@@ -2576,6 +2583,7 @@ msgid "Document Duplicated"
 msgstr "Document Duplicated"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document error"
 msgstr "Document error"
 
@@ -2642,6 +2650,7 @@ msgid "Document opened"
 msgstr "Document opened"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document pending"
 msgstr "Document pending"
 
@@ -2738,10 +2747,11 @@ msgid "Document will be permanently deleted"
 msgstr "Document will be permanently deleted"
 
 #: apps/remix/app/routes/_profile+/p.$url.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId._index.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId._index.tsx
@@ -3075,12 +3085,12 @@ msgstr "Enter your name"
 msgid "Enter your text here"
 msgstr "Enter your text here"
 
-#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/users.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
 #: apps/remix/app/components/general/verify-email-banner.tsx
 #: apps/remix/app/components/general/template/template-edit-form.tsx
 #: apps/remix/app/components/general/template/template-edit-form.tsx
@@ -3379,8 +3389,8 @@ msgstr "Go Back"
 msgid "Go back home"
 msgstr "Go back home"
 
-#: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
 #: apps/remix/app/routes/_recipient+/sign.$token+/_index.tsx
+#: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
 msgid "Go Back Home"
 msgstr "Go Back Home"
 
@@ -3468,6 +3478,10 @@ msgstr "Hide"
 #: apps/remix/app/components/general/document/document-history-sheet.tsx
 msgid "Hide additional information"
 msgstr "Hide additional information"
+
+#: apps/remix/app/components/general/document/task/task-priority.tsx
+msgid "High"
+msgstr "High"
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "I am a signer of this document"
@@ -3766,6 +3780,10 @@ msgstr "Loading..."
 msgid "Login"
 msgstr "Login"
 
+#: apps/remix/app/components/general/document/task/task-priority.tsx
+msgid "Low"
+msgstr "Low"
+
 #: apps/remix/app/components/tables/user-settings-current-teams-table.tsx
 msgid "Manage"
 msgstr "Manage"
@@ -3881,6 +3899,10 @@ msgstr "Maximum file size: 4MB. Maximum 100 rows per upload. Blank values will u
 #: apps/remix/app/components/lists/tasks-list.tsx
 msgid "Media"
 msgstr "Media"
+
+#: apps/remix/app/components/general/document/task/task-priority.tsx
+msgid "Medium"
+msgstr "Medium"
 
 #: packages/lib/constants/teams.ts
 msgid "Member"
@@ -4317,8 +4339,8 @@ msgstr "Passkey name"
 msgid "Passkey Re-Authentication"
 msgstr "Passkey Re-Authentication"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security.passkeys.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
+#: apps/remix/app/routes/_authenticated+/settings+/security.passkeys.tsx
 msgid "Passkeys"
 msgstr "Passkeys"
 
@@ -5441,8 +5463,8 @@ msgstr "Since {0}"
 msgid "Site Banner"
 msgstr "Site Banner"
 
-#: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/_layout.tsx
+#: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Site Settings"
 msgstr "Site Settings"
 
@@ -5598,9 +5620,9 @@ msgstr "Subscribe"
 msgid "Subscription"
 msgstr "Subscription"
 
+#: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 #: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
 #: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 #: apps/remix/app/components/tables/user-settings-pending-teams-table-actions.tsx
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
@@ -5814,14 +5836,14 @@ msgstr "Teams"
 msgid "Teams restricted"
 msgstr "Teams restricted"
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/templates.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/templates.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/tasks.$id.edit.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
@@ -5884,9 +5906,9 @@ msgstr "Template title"
 msgid "Template updated successfully"
 msgstr "Template updated successfully"
 
+#: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
@@ -7421,8 +7443,8 @@ msgstr "We will generate signing links for you, which you can send to the recipi
 msgid "We won't send anything to notify recipients."
 msgstr "We won't send anything to notify recipients."
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "We're all empty"
@@ -7723,8 +7745,8 @@ msgstr "You have initiated the document {0} that requires you to {recipientActio
 msgid "You have no webhooks yet. Your webhooks will be shown here once you create them."
 msgstr "You have no webhooks yet. Your webhooks will be shown here once you create them."
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
 msgid "You have not yet created any templates. To create a template please upload one."
 msgstr "You have not yet created any templates. To create a template please upload one."

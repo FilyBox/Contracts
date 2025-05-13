@@ -662,7 +662,6 @@ model TaskAuditLog {
   type      String
   data      Json
 
-  // Details of the person who performed the action which caused the audit log.
   name      String?
   email     String?
   userId    Int?
