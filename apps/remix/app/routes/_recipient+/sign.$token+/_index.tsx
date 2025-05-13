@@ -7,6 +7,7 @@ import { getOptionalLoaderContext } from 'server/utils/get-loader-session';
 import signingCelebration from '@documenso/assets/images/signing-celebration.png';
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { useOptionalSession } from '@documenso/lib/client-only/providers/session';
+import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document/get-document-by-token';
 import { isRecipientAuthorized } from '@documenso/lib/server-only/document/is-recipient-authorized';
 import { viewedDocument } from '@documenso/lib/server-only/document/viewed-document';
@@ -215,7 +216,7 @@ export default function SigningPage() {
               <Trans>
                 Want to send slick signing links like this one?{' '}
                 <Link
-                  to="https://disturbed-tiffanie-latain-27ff5f7d.koyeb.app/"
+                  to={`${NEXT_PUBLIC_WEBAPP_URL()}`}
                   className="text-documenso-700 hover:text-documenso-600"
                 >
                   Check out our platform.

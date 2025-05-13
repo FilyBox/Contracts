@@ -16,6 +16,7 @@ import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from 'remix-themes'
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { SessionProvider } from '@documenso/lib/client-only/providers/session';
+import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
 import { APP_I18N_OPTIONS, type SupportedLanguageCodes } from '@documenso/lib/constants/i18n';
 import { type TGetTeamsResponse, getTeams } from '@documenso/lib/server-only/team/get-teams';
 import { createPublicEnv, env } from '@documenso/lib/utils/env';
@@ -32,7 +33,7 @@ import { themeSessionResolver } from './storage/theme-session.server';
 import { appMetaTags } from './utils/meta';
 
 const { trackPageview } = Plausible({
-  domain: 'https://disturbed-tiffanie-latain-27ff5f7d.koyeb.app',
+  domain: NEXT_PUBLIC_WEBAPP_URL(),
   trackLocalhost: false,
 });
 

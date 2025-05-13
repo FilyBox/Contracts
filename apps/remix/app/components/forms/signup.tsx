@@ -534,7 +534,7 @@ export const SignUpForm = ({
           <Trans>
             By proceeding, you agree to our{' '}
             <Link
-              to="https://disturbed-tiffanie-latain-27ff5f7d.koyeb.apps/terms"
+              to={`${NEXT_PUBLIC_WEBAPP_URL()}/terms`}
               target="_blank"
               className="text-documenso-700 duration-200 hover:opacity-70"
             >
@@ -542,7 +542,7 @@ export const SignUpForm = ({
             </Link>{' '}
             and{' '}
             <Link
-              to="https://disturbed-tiffanie-latain-27ff5f7d.koyeb.app/privacy"
+              to={`${NEXT_PUBLIC_WEBAPP_URL()}/privacy`}
               target="_blank"
               className="text-documenso-700 duration-200 hover:opacity-70"
             >
