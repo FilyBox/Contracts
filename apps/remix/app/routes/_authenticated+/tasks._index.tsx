@@ -4,20 +4,16 @@ import { Trans } from '@lingui/react/macro';
 import { Bird, HomeIcon, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
-import { z } from 'zod';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
-import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formTasksPath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { ExtendedTaskPriority } from '@documenso/prisma/types/extended-task-priority';
 import { trpc } from '@documenso/trpc/react';
 import {
   type TFindTaskInternalResponse,
-  ZFindDocumentsInternalRequestSchema,
-  ZFindTaskInternalResponseSchema,
   ZFindTasksInternalRequestSchema,
 } from '@documenso/trpc/server/document-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
@@ -207,10 +203,10 @@ export default function TasksPage() {
           ) : (
             <TasksTable
               tasks={(data?.tasks || [])
-                .filter(
-                  (task): task is { status: 'PENDING' | 'COMPLETED' } & typeof task =>
-                    task.status === 'PENDING' || task.status === 'COMPLETED',
-                )
+                // .filter(
+                //   (task): task is { status: 'PENDING' | 'COMPLETED' } & typeof task =>
+                //     task.status === 'PENDING' || task.status === 'COMPLETED',
+                // )
                 .map((task) => ({
                   ...task,
                   priority: task.priority === 'CRITICAL' ? 'HIGH' : task.priority,

@@ -1,5 +1,5 @@
 // import { TRPCError } from '@trpc/server';
-import type { Prisma, User } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 
@@ -101,13 +101,12 @@ export const taskRouter = router({
         orderDirection = 'desc',
       } = input;
       const { user, teamId } = ctx;
-      const user_Id = user.id;
+      const userId = user.id;
       // Construir el objeto where para los filtros
-      let where: any = {
-        userId: user_Id, // Note: changed from user_Id to userId to match Prisma schema
+      const where: Prisma.TaskWhereInput = {
+        userId: userId,
         ...(teamId && { teamId }),
         ...(projectId && { projectId }),
-        // ...(folderId && { folderId }),
         ...(query && {
           OR: [{ title: { contains: query, mode: 'insensitive' } }],
         }),
@@ -266,8 +265,4 @@ export const taskRouter = router({
 
   //     return { success: true };
   //   }),
-
-  ///Integrar despues
-
-  // ... otros procedimientos de tareas
 });

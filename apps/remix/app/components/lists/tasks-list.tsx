@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro';
-import { CheckCircle, Circle, Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
+import { Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
 
+import type { ExtendedTaskStatus } from '@documenso/prisma/types/extended-task-status';
 import { Button } from '@documenso/ui/primitives/button';
 import {
   DropdownMenu,
@@ -17,6 +18,8 @@ import {
   TableRow,
 } from '@documenso/ui/primitives/table';
 
+import { TaskStatusComponent } from '../general/document/task/task-status';
+
 export const TasksTable = ({
   tasks,
   isLoading,
@@ -27,7 +30,7 @@ export const TasksTable = ({
     id: number;
     title: string;
     description: string | null;
-    status: 'PENDING' | 'COMPLETED';
+    status: ExtendedTaskStatus;
     priority: 'LOW' | 'MEDIUM' | 'HIGH';
     dueDate: Date | null;
     assignees: Array<{ name: string }>;
@@ -80,17 +83,20 @@ export const TasksTable = ({
         {tasks.map((task) => (
           <TableRow key={task.id} className="hover:bg-muted/50 cursor-pointer">
             <TableCell onClick={() => onTaskClick(task.id)}>
-              {task.status === 'COMPLETED' ? (
+              <TaskStatusComponent status={task.status} />
+              {/* {task.status === 'COMPLETED' ? (
                 <CheckCircle className="h-5 w-5 text-green-500" />
               ) : (
                 <Circle className="text-muted-foreground h-5 w-5" />
-              )}
+              )} */}
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
-              <div className="font-medium">{task.title}</div>
-              {task.description && (
+              <div className="font-medium">
+                {task.title.length > 20 ? `${task.title.substring(0, 20)}...` : task.title}
+              </div>
+              {/* {task.description && (
                 <div className="text-muted-foreground line-clamp-1 text-sm">{task.description}</div>
-              )}
+              )} */}
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
               <div className="flex items-center gap-2">

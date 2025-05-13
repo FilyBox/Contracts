@@ -895,6 +895,7 @@ msgid "After submission, a document will be automatically generated and added to
 msgstr "Nach der Übermittlung wird ein Dokument automatisch generiert und zu Ihrer Dokumentenseite hinzugefügt. Sie erhalten außerdem eine Benachrichtigung per E-Mail."
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "All"
 msgstr "Alle"
@@ -1433,6 +1434,10 @@ msgstr "Abrechnung"
 msgid "Black"
 msgstr "Schwarz"
 
+#: apps/remix/app/components/general/document/task/task-status.tsx
+msgid "Blocked"
+msgstr ""
+
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Blue"
 msgstr "Blau"
@@ -1584,6 +1589,10 @@ msgstr "Kann vorbereiten"
 #: packages/ui/primitives/document-flow/field-item-advanced-settings.tsx
 msgid "Cancel"
 msgstr "Abbrechen"
+
+#: apps/remix/app/components/general/document/task/task-status.tsx
+msgid "Cancelled"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 msgid "Cancelled by user"
@@ -1776,6 +1785,7 @@ msgstr "Betrachten abschließen"
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: packages/lib/constants/document.ts
 #: packages/email/template-components/template-document-self-signed.tsx
 #: packages/email/template-components/template-document-recipient-signed.tsx
@@ -2496,6 +2506,7 @@ msgid "Document access auth updated"
 msgstr "Die Authentifizierung für den Dokumentenzugriff wurde aktualisiert"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document All"
 msgstr "Dokument Alle"
@@ -2511,6 +2522,7 @@ msgid "Document Cancelled"
 msgstr "Dokument storniert"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 #: packages/lib/utils/document-audit-logs.ts
 #: packages/lib/utils/document-audit-logs.ts
@@ -2655,6 +2667,7 @@ msgid "Document opened"
 msgstr "Dokument geöffnet"
 
 #: apps/remix/app/components/general/document/document-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: apps/remix/app/components/general/document/task/task-priority.tsx
 msgid "Document pending"
 msgstr "Dokument ausstehend"
@@ -3533,6 +3546,10 @@ msgstr "Wenn Sie den Bestätigungslink nicht in Ihrem Posteingang finden, könne
 msgid "If your authenticator app does not support QR codes, you can use the following code instead:"
 msgstr "Wenn Ihre Authenticator-App keine QR-Codes unterstützt, können Sie stattdessen den folgenden Code verwenden:"
 
+#: apps/remix/app/components/general/document/task/task-status.tsx
+msgid "In Progress"
+msgstr ""
+
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Inbox"
 msgstr "Posteingang"
@@ -4404,6 +4421,7 @@ msgstr "Zahlung überfällig"
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 #: apps/remix/app/components/general/document/document-page-view-recipients.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
 #: packages/ui/components/document/document-read-only-fields.tsx
 #: packages/lib/constants/document.ts
 msgid "Pending"
@@ -5688,8 +5706,17 @@ msgstr "Systemthema"
 msgid "Tareas"
 msgstr ""
 
+#: apps/remix/app/components/general/document/task/task-status.tsx
+#: apps/remix/app/components/general/document/task/task-status.tsx
+msgid "Task cancelled"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/task-create-dialog.tsx
 msgid "Task created successfully"
+msgstr ""
+
+#: apps/remix/app/components/general/document/task/task-status.tsx
+msgid "Task in progress"
 msgstr ""
 
 #: apps/remix/app/components/general/app-nav-desktop.tsx

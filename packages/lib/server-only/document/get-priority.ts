@@ -1,8 +1,7 @@
-import { TeamMemberRole } from '@prisma/client';
+import type { TeamMemberRole } from '@prisma/client';
 import type { Prisma, User } from '@prisma/client';
 import { TaskStatus } from '@prisma/client';
 import { DateTime } from 'luxon';
-import { match } from 'ts-pattern';
 
 import type { PeriodSelectorValue } from '@documenso/lib/server-only/document/find-documents';
 import { prisma } from '@documenso/prisma';
@@ -18,8 +17,7 @@ export type GetStatsInput = {
 
 export const getStats = async ({ user, period, search = '', ...options }: GetStatsInput) => {
   let createdAt: Prisma.TaskWhereInput['createdAt'];
-  console.log('period', period);
-  console.log('search getpriority', search);
+
   if (period) {
     const daysAgo = parseInt(period.replace(/d$/, ''), 10);
 
@@ -29,7 +27,6 @@ export const getStats = async ({ user, period, search = '', ...options }: GetSta
       gte: startOfPeriod.toJSDate(),
     };
   }
-  console.log('createdAt', createdAt);
   const [ownerCounts, notCompletedCounts, completedCounts] = await (options.team
     ? getTeamCounts({
         ...options.team,
@@ -84,16 +81,14 @@ type GetCountsOption = {
 };
 
 const getCounts = async ({ user, createdAt, search }: GetCountsOption) => {
-  console.log('search', search);
-  const searchFilter: Prisma.TaskWhereInput = {
-    OR: [
-      { title: { contains: search, mode: 'insensitive' } },
-      // { priority: { equals: search.toUpperCase() as any } },
-    ],
-  };
-  console.log('searchFilter', searchFilter);
+  // const searchFilter: Prisma.TaskWhereInput = {
+  //   OR: [
+  //     { title: { contains: search, mode: 'insensitive' } },
+  //     // { priority: { equals: search.toUpperCase() as any } },
+  //   ],
+  // };
 
-  let whereCondition: Prisma.TaskWhereInput = {
+  const whereCondition: Prisma.TaskWhereInput = {
     userId: user.id,
     deletedAt: null,
   };
