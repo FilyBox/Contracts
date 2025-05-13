@@ -91,6 +91,7 @@ const getCounts = async ({ user, createdAt, search }: GetCountsOption) => {
   const whereCondition: Prisma.TaskWhereInput = {
     userId: user.id,
     deletedAt: null,
+    teamId: null,
   };
 
   // Agregar createdAt solo si existe

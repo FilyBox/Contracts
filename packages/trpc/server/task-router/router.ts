@@ -28,31 +28,47 @@ export const taskRouter = router({
         priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
         dueDate: z.date().optional(),
         tags: z.array(z.string()).optional().default([]),
-        userId: z.number(),
-        teamId: z.number().optional(),
+        // userId: z.number(),
+        // teamId: z.number().optional(),
         projectId: z.number().optional(),
         parentTaskId: z.number().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const { user, teamId } = ctx;
       // Desestructuración correcta que incluye projectId
-      const { userId, teamId, projectId, parentTaskId, ...data } = input;
-
+      const { projectId, parentTaskId, ...data } = input;
+      const userId = user.id;
       // Verificar permisos si es tarea de equipo
       if (teamId && ctx.teamId !== teamId) {
         throw new Error('No tienes permisos para crear tareas en este equipo');
+      }
+
+      if (teamId) {
+        const team = await getTeamById({ userId, teamId });
+        if (!team) {
+          throw new Error('Team not found');
+        }
+
+        return await prisma.task.create({
+          data: {
+            ...data,
+            status: 'PENDING',
+            userId,
+            teamId: team.id,
+            ...(projectId && { projectId }),
+            ...(parentTaskId && { parentTaskId }),
+          },
+        });
       }
 
       return await prisma.task.create({
         data: {
           ...data,
           status: 'PENDING',
-          user: {
-            connect: { id: userId },
-          },
-          ...(teamId && { team: { connect: { id: teamId } } }),
-          ...(projectId && { project: { connect: { id: projectId } } }),
-          ...(parentTaskId && { parentTask: { connect: { id: parentTaskId } } }),
+          userId,
+          ...(projectId && { projectId }),
+          ...(parentTaskId && { parentTaskId }),
         },
       });
     }),
@@ -124,7 +140,6 @@ export const taskRouter = router({
 
       if (teamId) {
         const team = await getTeamById({ userId: user.id, teamId });
-
         getStatOptions.team = {
           teamId: team.id,
           teamEmail: team.teamEmail?.email,
@@ -146,10 +161,13 @@ export const taskRouter = router({
         };
       }
 
+      if (!teamId) {
+        where.teamId = null;
+      }
+
       where.createdAt = createdAt;
 
       const [stats] = await Promise.all([getStats(getStatOptions)]);
-      console.log('stats', stats);
       // Obtener todas las tareas que coincidan con los filtros
       const tasks = await prisma.task.findMany({
         where,

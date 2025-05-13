@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { msg } from '@lingui/core/macro';
@@ -63,7 +63,7 @@ export const FolderSettingsDialog = ({
 
   const { toast } = useToast();
   const { mutateAsync: updateFolder } = trpc.folder.updateFolder.useMutation();
-
+  const [isEditing, setIsEditing] = useState(false);
   const isTeamContext = !!team;
 
   const form = useForm<z.infer<typeof ZUpdateFolderFormSchema>>({
@@ -85,7 +85,7 @@ export const FolderSettingsDialog = ({
 
   const onFormSubmit = async (data: TUpdateFolderFormSchema) => {
     if (!folder) return;
-
+    setIsEditing(true);
     try {
       await updateFolder({
         id: folder.id,
@@ -108,6 +108,8 @@ export const FolderSettingsDialog = ({
           title: _(msg`Folder not found`),
         });
       }
+    } finally {
+      setIsEditing(false);
     }
   };
 
@@ -115,8 +117,8 @@ export const FolderSettingsDialog = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Folder Settings</DialogTitle>
-          <DialogDescription>Manage the settings for this folder.</DialogDescription>
+          <DialogTitle>Folder Edit</DialogTitle>
+          <DialogDescription>Manage your folder.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -163,7 +165,9 @@ export const FolderSettingsDialog = ({
             )}
 
             <DialogFooter>
-              <Button type="submit">Save Changes</Button>
+              <Button loading={isEditing} disabled={isEditing} type="submit">
+                Save Changes
+              </Button>
             </DialogFooter>
           </form>
         </Form>

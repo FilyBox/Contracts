@@ -86,8 +86,8 @@ export const TaskCreateDialog = ({
       const { id } = await createTask({
         ...taskData,
         dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-        userId: user.id, // Usamos el ID del usuario de la sesión
-        teamId,
+        // userId: user.id, // Usamos el ID del usuario de la sesión
+        // teamId,
         projectId,
         parentTaskId,
       });
@@ -120,7 +120,7 @@ export const TaskCreateDialog = ({
         description: errorDescription,
         variant: 'destructive',
       });
-
+    } finally {
       setIsCreatingTask(false);
     }
   };
@@ -226,7 +226,12 @@ export const TaskCreateDialog = ({
               <Trans>Cancel</Trans>
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onCreateTask} disabled={!canCreateTask}>
+          <Button
+            type="button"
+            onClick={onCreateTask}
+            disabled={!canCreateTask || isCreatingTask}
+            loading={isCreatingTask}
+          >
             <Trans>Create Task</Trans>
           </Button>
         </DialogFooter>
