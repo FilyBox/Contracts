@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { Trans } from '@lingui/react/macro';
 import { ChevronLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 
@@ -14,7 +13,9 @@ export async function loader({ params, request }: { params: { id: string }; requ
 
   const { id } = params;
   const taskId = Number(id);
-
+  const taskById = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
   if (!taskId || Number.isNaN(taskId)) {
     throw new Response('Task not found', { status: 404 });
   }
@@ -22,8 +23,8 @@ export async function loader({ params, request }: { params: { id: string }; requ
   // Replace this with your logic to fetch task data
   const task = {
     id: taskId,
-    title: `Task ${taskId}`,
-    description: 'Task description',
+    title: taskById?.title || 'Task Title',
+    description: taskById?.description || 'Task Description',
     tags: [],
     priority: 'LOW',
     dueDate: new Date().toISOString(),
@@ -109,12 +110,12 @@ export default function TaskPage() {
     <div className="mx-auto -mt-4 w-full max-w-screen-xl px-4 md:px-8">
       <Link to="/tasks" className="flex items-center text-[#7AC455] hover:opacity-80">
         <ChevronLeft className="mr-2 inline-block h-5 w-5" />
-        <Trans>Tasks</Trans>
+        {/* <Trans>Tasks</Trans> */}
       </Link>
 
       <div className="mt-4">
         <h1 className="text-2xl font-semibold">{task.title}</h1>
-        <p className="text-muted-foreground mt-2">{task.priority}</p>
+        <p className="text-muted-foreground mt-2">{task.description}</p>
       </div>
       <div className="m-52 mt-6">
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -128,7 +129,7 @@ export default function TaskPage() {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
               required
             />
           </div>
@@ -141,7 +142,7 @@ export default function TaskPage() {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 text-base text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
             />
           </div>
           <div>
@@ -154,7 +155,7 @@ export default function TaskPage() {
               placeholder="tag1, tag2, tag3"
               value={formData.tags}
               onChange={handleChange}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:focus:border-green-500 dark:focus:ring-green-500"
             />
           </div>
           <div>
@@ -166,7 +167,7 @@ export default function TaskPage() {
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-green-500 focus:ring-green-500 dark:border-gray-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-green-500 dark:focus:ring-green-500"
             >
               <option value="LOW">Low</option>
               <option value="MEDIUM">Medium</option>
