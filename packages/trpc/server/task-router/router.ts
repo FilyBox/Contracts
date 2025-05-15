@@ -218,7 +218,44 @@ export const taskRouter = router({
         },
       });
 
-      return { tasks, stats };
+      const taskAssignees = await prisma.taskAssignee.findMany({
+        where: {
+          taskId: { in: tasks.map((task) => task.id) },
+        },
+        select: {
+          userId: false,
+          taskId: true,
+          assignedBy: false,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+        // include: {
+        //   user: {
+        //     select: {
+        //       name: true,
+        //       email: true,
+        //     },
+        //   },
+        // },
+      });
+      const tasksWithAssignees = tasks.map((task) => {
+        // Find all assignees for this task
+        const assignees = taskAssignees
+          .filter((assignee) => assignee.taskId === task.id)
+          .map((assignee) => assignee.user);
+
+        // Return task with enhanced assignee information
+        return {
+          ...task,
+          enhancedAssignees: assignees.length > 0 ? assignees : [],
+        };
+      });
+
+      return { tasks: tasksWithAssignees, stats, taskAssignees };
     }),
 
   updateTask: authenticatedProcedure

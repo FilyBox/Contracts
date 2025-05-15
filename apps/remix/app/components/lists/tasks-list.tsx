@@ -20,6 +20,7 @@ import {
 
 import { TaskPriority } from '../general/document/task/task-priority';
 import { TaskStatusComponent } from '../general/document/task/task-status';
+import { StackAvatarsTasksWithTooltip } from '../general/stack-avatars-tasks-with-tooltip';
 
 export const TasksTable = ({
   tasks,
@@ -35,7 +36,12 @@ export const TasksTable = ({
     priority: 'LOW' | 'MEDIUM' | 'HIGH';
     dueDate: Date | null;
     assignees: Array<{ name: string }>;
+    enhancedAssignees: Array<{
+      name: string | null;
+      email: string;
+    }>;
   }>;
+
   isLoading: boolean;
   isLoadingError: boolean;
   onTaskClick: (taskId: number) => void;
@@ -117,7 +123,10 @@ export const TasksTable = ({
               </div> */}
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
-              {task.assignees.length > 0 ? task.assignees.map((a) => a.name).join(', ') : '-'}
+              {/* {task.enhancedAssignees.length > 0
+                ? task.enhancedAssignees.map((a) => a.name).join(', ')
+                : '-'} */}
+              <StackAvatarsTasksWithTooltip enhancedAssignees={task.enhancedAssignees} />
             </TableCell>
             <TableCell onClick={() => onTaskClick(task.id)}>
               {task.dueDate ? (
