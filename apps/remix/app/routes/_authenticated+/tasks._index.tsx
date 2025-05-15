@@ -81,6 +81,22 @@ export default function TasksPage() {
     void refetch();
   }, [team?.url]);
 
+  type TeamMember = {
+    name: string | null;
+    email: string;
+  };
+  let teamMembers = [] as TeamMember[];
+  let isloadingTeamMembers = false;
+  let isLoadingErrorTeamMembers = false;
+  if (team) {
+    const { data, isLoading, isLoadingError } = trpc.team.findTeamMembersLimited.useQuery({
+      teamId: team.id,
+    });
+    isloadingTeamMembers = isLoading;
+    isLoadingErrorTeamMembers = isLoadingError;
+    teamMembers = data?.data || [];
+  }
+
   const getTabHref = (value: keyof typeof ExtendedTaskPriority) => {
     const params = new URLSearchParams(searchParams);
 
@@ -103,6 +119,7 @@ export default function TasksPage() {
 
   return (
     <div className="mx-auto max-w-screen-xl gap-y-8 px-4 md:px-8">
+      {/* <CardsChat /> */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 items-center">
           <Button
@@ -117,7 +134,11 @@ export default function TasksPage() {
         </div>
 
         <div className="flex gap-4 sm:flex-row sm:justify-end">
-          <TaskCreateDialog taskRootPath={taskRootPath} />
+          <TaskCreateDialog
+            teamMembers={teamMembers}
+            isLoading={isloadingTeamMembers}
+            taskRootPath={taskRootPath}
+          />
         </div>
       </div>
 

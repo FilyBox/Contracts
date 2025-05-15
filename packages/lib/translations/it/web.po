@@ -7731,6 +7731,7 @@ msgid "You have been invited by <0>{0}</0> to join their team."
 msgstr "Sei stato invitato da <0>{0}</0> a unirti al loro team."
 
 #. placeholder {0}: team.name
+#: packages/lib/server-only/team/create-team-task-notification.ts
 #: packages/lib/server-only/team/create-team-member-invites.ts
 msgid "You have been invited to join {0}"
 msgstr ""

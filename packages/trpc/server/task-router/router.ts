@@ -30,6 +30,15 @@ export const taskRouter = router({
         tags: z.array(z.string()).optional().default([]),
         // userId: z.number(),
         // teamId: z.number().optional(),
+        assignees: z
+          .array(
+            z.object({
+              email: z.string(),
+              name: z.string().nullable(),
+            }),
+          )
+          .optional()
+          .default([]),
         projectId: z.number().optional(),
         parentTaskId: z.number().optional(),
       }),
@@ -37,8 +46,9 @@ export const taskRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { user, teamId } = ctx;
       // Desestructuración correcta que incluye projectId
-      const { projectId, parentTaskId, ...data } = input;
+      const { projectId, parentTaskId, assignees, ...data } = input;
       const userId = user.id;
+      console.log('assignees', assignees);
       // Verificar permisos si es tarea de equipo
       if (teamId && ctx.teamId !== teamId) {
         throw new Error('No tienes permisos para crear tareas en este equipo');
@@ -50,7 +60,14 @@ export const taskRouter = router({
           throw new Error('Team not found');
         }
 
-        return await prisma.task.create({
+        const [users] = await Promise.all([
+          prisma.user.findMany({
+            where: { email: { in: assignees.map((assignee) => assignee.email) } },
+          }),
+        ]);
+        console.log('users in task', users);
+
+        const taskCreated = await prisma.task.create({
           data: {
             ...data,
             status: 'PENDING',
@@ -60,9 +77,28 @@ export const taskRouter = router({
             ...(parentTaskId && { parentTaskId }),
           },
         });
-      }
 
-      return await prisma.task.create({
+        // Create a TaskAssignee entry for each user
+        if (assignees.length > 0) {
+          await Promise.all(
+            assignees.map(async (assignee) => {
+              const user = users.find((u) => u.email === assignee.email);
+              if (user) {
+                return prisma.taskAssignee.create({
+                  data: {
+                    taskId: taskCreated.id,
+                    assignedBy: userId,
+                    userId: user.id,
+                  },
+                });
+              }
+            }),
+          );
+        }
+
+        return taskCreated;
+      }
+      const taskCreated = await prisma.task.create({
         data: {
           ...data,
           status: 'PENDING',
@@ -71,6 +107,8 @@ export const taskRouter = router({
           ...(parentTaskId && { parentTaskId }),
         },
       });
+
+      return taskCreated;
     }),
 
   findTaskById: authenticatedProcedure
@@ -120,7 +158,6 @@ export const taskRouter = router({
       const userId = user.id;
       // Construir el objeto where para los filtros
       const where: Prisma.TaskWhereInput = {
-        userId: userId,
         ...(teamId && { teamId }),
         ...(projectId && { projectId }),
         ...(query && {
@@ -163,10 +200,11 @@ export const taskRouter = router({
 
       if (!teamId) {
         where.teamId = null;
+        where.userId = userId;
       }
 
       where.createdAt = createdAt;
-
+      console.log('where', where);
       const [stats] = await Promise.all([getStats(getStatOptions)]);
       // Obtener todas las tareas que coincidan con los filtros
       const tasks = await prisma.task.findMany({

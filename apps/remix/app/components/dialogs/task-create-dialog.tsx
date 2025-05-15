@@ -1,13 +1,15 @@
 import { useState } from 'react';
+import React from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { FilePlus } from 'lucide-react';
+import { FilePlus, PlusIcon } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import { trpc } from '@documenso/trpc/react';
+import { Avatar, AvatarFallback } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import {
   Dialog,
@@ -20,6 +22,7 @@ import {
   DialogTrigger,
 } from '@documenso/ui/primitives/dialog';
 import { Input } from '@documenso/ui/primitives/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@documenso/ui/primitives/popover';
 import {
   Select,
   SelectContent,
@@ -30,16 +33,26 @@ import {
 import { Textarea } from '@documenso/ui/primitives/textarea';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { PopoverMembers } from '../general/document/task/popover-member';
+
+type TeamMember = {
+  name: string | null;
+  email: string;
+};
 type TaskCreateDialogProps = {
   taskRootPath: string;
   teamId?: number;
+  teamMembers?: TeamMember[];
   projectId?: number;
   parentTaskId?: number;
+  isLoading?: boolean;
 };
 
 export const TaskCreateDialog = ({
   taskRootPath,
   teamId,
+  teamMembers,
+  isLoading,
   projectId,
   parentTaskId,
 }: TaskCreateDialogProps) => {
@@ -49,7 +62,7 @@ export const TaskCreateDialog = ({
   const { _ } = useLingui();
 
   const { mutateAsync: createTask } = trpc.task.createTask.useMutation();
-
+  const [selectedUsers, setSelectedUsers] = React.useState<TeamMember[]>([]);
   const [showTaskCreateDialog, setShowTaskCreateDialog] = useState(false);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [taskData, setTaskData] = useState<{
@@ -83,14 +96,26 @@ export const TaskCreateDialog = ({
     setIsCreatingTask(true);
 
     try {
-      const { id } = await createTask({
-        ...taskData,
-        dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-        // userId: user.id, // Usamos el ID del usuario de la sesión
-        // teamId,
-        projectId,
-        parentTaskId,
-      });
+      if (selectedUsers.length > 0) {
+        const { id } = await createTask({
+          ...taskData,
+          dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+          assignees: selectedUsers,
+          // userId: user.id, // Usamos el ID del usuario de la sesión
+          // teamId,
+          projectId,
+          parentTaskId,
+        });
+      } else {
+        const { id } = await createTask({
+          ...taskData,
+          dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+          // userId: user.id, // Usamos el ID del usuario de la sesión
+          // teamId,
+          projectId,
+          parentTaskId,
+        });
+      }
 
       toast({
         title: _(msg`Task created successfully`),
@@ -122,6 +147,15 @@ export const TaskCreateDialog = ({
       });
     } finally {
       setIsCreatingTask(false);
+      setTaskData({
+        title: '',
+        description: '',
+        priority: 'MEDIUM',
+        dueDate: '',
+        tags: [],
+      });
+      setSelectedUsers([]);
+      setShowTaskCreateDialog(false);
     }
   };
 
@@ -133,7 +167,7 @@ export const TaskCreateDialog = ({
       onOpenChange={(value) => !isCreatingTask && setShowTaskCreateDialog(value)}
     >
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" disabled={!user.emailVerified}>
+        <Button className="cursor-pointer" disabled={!user.emailVerified || isLoading}>
           <FilePlus className="-ml-1 mr-2 h-4 w-4" />
           <Trans>New Task</Trans>
         </Button>
@@ -151,7 +185,7 @@ export const TaskCreateDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex w-full flex-col space-y-4">
           <div>
             <Trans>Title</Trans>
             <Input
@@ -204,6 +238,74 @@ export const TaskCreateDialog = ({
               />
             </div>
           </div>
+
+          {/* <Command className="overflow-hidden rounded-t-none border-t bg-transparent">
+            <CommandInput placeholder="Search user..." />
+            <CommandList>
+              <CommandEmpty>No users found.</CommandEmpty>
+              <CommandGroup className="p-2">
+                {users.map((user) => (
+                  <CommandItem
+                    key={user.email}
+                    className="flex items-center px-2"
+                    onSelect={() => {
+                      if (selectedUsers.some((selectedUser) => selectedUser.email === user.email)) {
+                        // Si el usuario ya está seleccionado, lo quitamos
+                        setSelectedUsers(
+                          selectedUsers.filter((selectedUser) => selectedUser.email !== user.email),
+                        );
+                      } else {
+                        // Si no está seleccionado, lo añadimos a la lista actual
+                        setSelectedUsers([...selectedUsers, user]);
+                      }
+                    }}
+                  >
+                    <Avatar>
+                      <AvatarImage src={user.avatar} alt="Image" />
+                      <AvatarFallback>{user.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-2">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-muted-foreground text-sm">{user.email}</p>
+                    </div>
+                    {selectedUsers.some((selectedUser) => selectedUser.email === user.email) ? (
+                      <Check className="text-primary ml-auto flex h-5 w-5" />
+                    ) : null}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command> */}
+          {teamMembers && teamMembers.length > 0 && (
+            <Popover modal={true}>
+              <PopoverTrigger asChild className="w-fit">
+                <Button size="icon" className="min-h-9 min-w-9">
+                  <PlusIcon width="25" height="25" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="z-9999 w-fit">
+                <PopoverMembers
+                  selectedUsers={selectedUsers}
+                  setSelectedUsers={setSelectedUsers}
+                  userArray={teamMembers}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
+
+          {selectedUsers.length > 0 ? (
+            <div className="flex -space-x-2 overflow-hidden">
+              {selectedUsers.map((user) => (
+                <Avatar key={user.email} className="border-background inline-block border-2">
+                  {user.name && <AvatarFallback>{user.name[0]}</AvatarFallback>}
+                </Avatar>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground h-10 text-sm">
+              Select users to add to this thread.
+            </p>
+          )}
         </div>
 
         <DialogFooter>
