@@ -767,14 +767,6 @@ msgstr "Ajouter un authentificateur pour servir de méthode d'authentification s
 msgid "Add an authenticator to serve as a secondary authentication method when signing in, or when signing documents."
 msgstr "Ajouter un authentificateur pour servir de méthode d'authentification secondaire lors de la connexion ou lors de la signature de documents."
 
-#: packages/ui/primitives/document-flow/add-settings.tsx
-msgid "Add an external ID to the document. This can be used to identify the document in external systems."
-msgstr "Ajouter un ID externe au document. Cela peut être utilisé pour identifier le document dans les systèmes externes."
-
-#: packages/ui/primitives/template-flow/add-template-settings.tsx
-msgid "Add an external ID to the template. This can be used to identify in external systems."
-msgstr "Ajouter un ID externe au modèle. Cela peut être utilisé pour l'identifier dans les systèmes externes."
-
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/dropdown-field.tsx
 msgid "Add another option"
 msgstr "Ajouter une autre option"
@@ -3064,11 +3056,6 @@ msgstr "Expiré"
 #: apps/remix/app/routes/_authenticated+/settings+/tokens.tsx
 msgid "Expires on {0}"
 msgstr "Expire le {0}"
-
-#: packages/ui/primitives/template-flow/add-template-settings.tsx
-#: packages/ui/primitives/document-flow/add-settings.tsx
-msgid "External ID"
-msgstr "ID externe"
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx

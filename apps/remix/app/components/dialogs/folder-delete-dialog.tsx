@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { msg } from '@lingui/core/macro';
@@ -42,7 +42,7 @@ export const FolderDeleteDialog = ({ folder, isOpen, onOpenChange }: FolderDelet
 
   const { toast } = useToast();
   const { mutateAsync: deleteFolder } = trpc.folder.deleteFolder.useMutation();
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const deleteMessage = _(msg`delete ${folder?.name ?? 'folder'}`);
 
   const ZDeleteFolderFormSchema = z.object({
@@ -62,7 +62,7 @@ export const FolderDeleteDialog = ({ folder, isOpen, onOpenChange }: FolderDelet
 
   const onFormSubmit = async () => {
     if (!folder) return;
-
+    setIsDeleting(true);
     try {
       await deleteFolder({
         id: folder.id,
@@ -91,6 +91,8 @@ export const FolderDeleteDialog = ({ folder, isOpen, onOpenChange }: FolderDelet
         description: _(msg`An unknown error occurred while deleting the folder.`),
         variant: 'destructive',
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -147,7 +149,12 @@ export const FolderDeleteDialog = ({ folder, isOpen, onOpenChange }: FolderDelet
               <Button variant="secondary" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button variant="destructive" type="submit" disabled={!form.formState.isValid}>
+              <Button
+                variant="destructive"
+                type="submit"
+                loading={isDeleting}
+                disabled={!form.formState.isValid || isDeleting}
+              >
                 Delete
               </Button>
             </DialogFooter>
