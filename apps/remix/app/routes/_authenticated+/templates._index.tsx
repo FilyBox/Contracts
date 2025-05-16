@@ -119,7 +119,7 @@ export default function TemplatesPage() {
             onClick={() => navigateToFolder(null)}
           >
             <HomeIcon className="h-4 w-4" />
-            <span>Home</span>
+            <span>Casa</span>
           </Button>
 
           {foldersData?.breadcrumbs.map((folder) => (
