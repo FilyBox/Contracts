@@ -5,9 +5,11 @@ import { documentRouter } from './document-router/router';
 import { embeddingPresignRouter } from './embedding-router/_router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
+import { lpmRouter } from './lpm-router/router';
 import { profileRouter } from './profile-router/router';
 import { recipientRouter } from './recipient-router/router';
 import { shareLinkRouter } from './share-link-router/router';
+import { taskRouter } from './task-router/router';
 import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
 import { router } from './trpc';
@@ -20,6 +22,8 @@ export const appRouter = router({
   field: fieldRouter,
   folder: folderRouter,
   recipient: recipientRouter,
+  task: taskRouter,
+  lpm: lpmRouter,
   admin: adminRouter,
   shareLink: shareLinkRouter,
   apiToken: apiTokenRouter,

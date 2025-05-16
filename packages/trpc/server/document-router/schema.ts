@@ -5,6 +5,7 @@ import {
   DocumentStatus,
   DocumentVisibility,
   FieldType,
+  TaskPriority,
 } from '@prisma/client';
 import { z } from 'zod';
 
@@ -30,8 +31,10 @@ import {
 } from '@documenso/lib/types/field';
 import { ZFieldAndMetaSchema } from '@documenso/lib/types/field-meta';
 import { ZFindResultResponse, ZFindSearchParamsSchema } from '@documenso/lib/types/search-params';
+import { ZTaskManySchema } from '@documenso/lib/types/task';
 import { isValidRedirectUrl } from '@documenso/lib/utils/is-valid-redirect-url';
 import { ExtendedDocumentStatus } from '@documenso/prisma/types/extended-document-status';
+import { ExtendedTaskPriority } from '@documenso/prisma/types/extended-task-priority';
 
 import { ZCreateRecipientSchema } from '../recipient-router/schema';
 
@@ -135,13 +138,42 @@ export const ZFindDocumentsRequestSchema = ZFindSearchParamsSchema.extend({
   orderByDirection: z.enum(['asc', 'desc']).describe('').default('desc'),
 });
 
+export const ZFindTaskRequestSchema = ZFindSearchParamsSchema.extend({
+  templateId: z
+    .number()
+    .describe('Filter documents by the template ID used to create it.')
+    .optional(),
+  source: z.nativeEnum(TaskPriority).describe('Filter tasks by how it was created.').optional(),
+  status: z.nativeEnum(TaskPriority).describe('Filter tsasks by the current priority').optional(),
+  folderId: z.string().describe('Filter documents by folder ID').optional(),
+  orderByColumn: z.enum(['createdAt']).optional(),
+  orderByDirection: z.enum(['asc', 'desc']).describe('').default('desc'),
+});
+
 export const ZFindDocumentsResponseSchema = ZFindResultResponse.extend({
   data: ZDocumentManySchema.array(),
+});
+
+export const zFindTaskResponseSchema = ZFindResultResponse.extend({
+  data: ZTaskManySchema.array(),
 });
 
 export type TFindDocumentsResponse = z.infer<typeof ZFindDocumentsResponseSchema>;
 
 export const ZFindDocumentsInternalRequestSchema = ZFindDocumentsRequestSchema.extend({
+  period: z.enum(['7d', '14d', '30d']).optional(),
+  senderIds: z.array(z.number()).optional(),
+  status: z.nativeEnum(ExtendedDocumentStatus).optional(),
+  folderId: z.string().optional(),
+});
+
+export const ZFindTasksInternalRequestSchema = ZFindTaskRequestSchema.extend({
+  period: z.enum(['7d', '14d', '30d']).optional(),
+  priority: z.nativeEnum(ExtendedTaskPriority).optional(),
+  folderId: z.string().optional(),
+});
+
+export const ZFindTaskInternalRequestSchema = ZFindDocumentsRequestSchema.extend({
   period: z.enum(['7d', '14d', '30d']).optional(),
   senderIds: z.array(z.number()).optional(),
   status: z.nativeEnum(ExtendedDocumentStatus).optional(),
@@ -160,6 +192,19 @@ export const ZFindDocumentsInternalResponseSchema = ZFindResultResponse.extend({
     [ExtendedDocumentStatus.ALL]: z.number(),
   }),
 });
+
+export const ZFindTaskInternalResponseSchema = ZFindResultResponse.extend({
+  data: ZTaskManySchema.array(),
+  stats: z.object({
+    [ExtendedTaskPriority.LOW]: z.number(),
+    [ExtendedTaskPriority.MEDIUM]: z.number(),
+    [ExtendedTaskPriority.HIGH]: z.number(),
+    [ExtendedTaskPriority.CRITICAL]: z.number(),
+    [ExtendedTaskPriority.ALL]: z.number(),
+  }),
+});
+
+export type TFindTaskInternalResponse = z.infer<typeof ZFindTaskInternalResponseSchema>;
 
 export type TFindDocumentsInternalResponseChat = z.infer<
   typeof ZFindDocumentsInternalResponseChatSchema

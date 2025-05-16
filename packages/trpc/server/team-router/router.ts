@@ -19,7 +19,10 @@ import { deleteTeamPending } from '@documenso/lib/server-only/team/delete-team-p
 import { deleteTeamTransferRequest } from '@documenso/lib/server-only/team/delete-team-transfer-request';
 import { findTeamInvoices } from '@documenso/lib/server-only/team/find-team-invoices';
 import { findTeamMemberInvites } from '@documenso/lib/server-only/team/find-team-member-invites';
-import { findTeamMembers } from '@documenso/lib/server-only/team/find-team-members';
+import {
+  findTeamMembers,
+  findTeamMembersLimited,
+} from '@documenso/lib/server-only/team/find-team-members';
 import { findTeams } from '@documenso/lib/server-only/team/find-teams';
 import { findTeamsPending } from '@documenso/lib/server-only/team/find-teams-pending';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
@@ -292,6 +295,24 @@ export const teamRouter = router({
     .input(ZFindTeamMembersQuerySchema)
     .query(async ({ input, ctx }) => {
       return await findTeamMembers({
+        userId: ctx.user.id,
+        ...input,
+      });
+    }),
+
+  findTeamMembersLimited: authenticatedProcedure
+    // .meta({
+    //   openapi: {
+    //     method: 'GET',
+    //     path: '/team/{teamId}/member/find',
+    //     summary: 'Find members',
+    //     description: 'Find team members based on a search criteria',
+    //     tags: ['Teams'],
+    //   },
+    // })
+    .input(ZFindTeamMembersQuerySchema)
+    .query(async ({ input, ctx }) => {
+      return await findTeamMembersLimited({
         userId: ctx.user.id,
         ...input,
       });

@@ -1585,7 +1585,6 @@ msgid "Chat documents"
 msgstr ""
 
 #: apps/remix/app/components/general/app-nav-mobile.tsx
-#: apps/remix/app/components/general/app-nav-desktop.tsx
 msgid "Chats"
 msgstr ""
 
@@ -3820,6 +3819,10 @@ msgstr "Mover al equipo"
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 msgid "Moving..."
 msgstr "Moviendo..."
+
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
