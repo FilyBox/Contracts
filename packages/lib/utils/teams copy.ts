@@ -13,24 +13,16 @@ export const formatDocumentsPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/documents` : '/documents';
 };
 
-export const formatTemplatesPath = (teamUrl?: string) => {
-  return teamUrl ? `/t/${teamUrl}/templates` : '/templates';
-};
-
 export const formatChatPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/chatspace` : '/chatspace';
 };
 
+export const formatTemplatesPath = (teamUrl?: string) => {
+  return teamUrl ? `/t/${teamUrl}/templates` : '/templates';
+};
+
 export const formTasksPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/tasks` : '/tasks';
-};
-
-export const formLpmPath = (teamUrl?: string) => {
-  return teamUrl ? `/t/${teamUrl}/lpm` : '/lpm';
-};
-
-export const formArtistsPath = (teamUrl?: string) => {
-  return teamUrl ? `/t/${teamUrl}/artists` : '/artists';
 };
 /**
  * Determines whether a team member can execute a given action.

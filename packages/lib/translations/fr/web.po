@@ -19,7 +19,6 @@ msgstr ""
 "X-Crowdin-File-ID: 8\n"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid " Enable direct link signing"
 msgstr " Activer la signature de lien direct"
 
@@ -429,7 +428,6 @@ msgid "<0>{teamName}</0> has requested to use your email address for their team.
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "<0>Click to upload</0> or drag and drop"
 msgstr "<0>Cliquez pour importer</0> ou faites glisser et déposez"
 
@@ -553,7 +551,6 @@ msgid "A document was created by your direct template that requires you to {reci
 msgstr "Un document a été créé par votre modèle direct qui vous oblige à {recipientActionVerb}."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "A draft document will be created"
 msgstr "Un document brouillon sera créé"
 
@@ -677,10 +674,6 @@ msgstr "Acceptation et consentement"
 msgid "Accepted team invitation"
 msgstr "Invitation d'équipe acceptée"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Acciones"
-msgstr ""
-
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 msgid "Account Authentication"
 msgstr "Authentification de compte"
@@ -725,8 +718,8 @@ msgstr "Action"
 msgid "Actions"
 msgstr "Actions"
 
-#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._index.tsx
+#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
 msgid "Active"
 msgstr "Actif"
@@ -847,7 +840,6 @@ msgid "Add the people who will sign the document."
 msgstr "Ajouter les personnes qui signeront le document."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Add the recipients to create the document with"
 msgstr "Ajouter les destinataires pour créer le document avec"
 
@@ -911,7 +903,6 @@ msgid "All documents related to the electronic signing process will be provided 
 msgstr "Tous les documents relatifs au processus de signature électronique vous seront fournis électroniquement via notre plateforme ou par e-mail. Il est de votre responsabilité de vous assurer que votre adresse e-mail est à jour et que vous pouvez recevoir et ouvrir nos e-mails."
 
 #: apps/remix/app/routes/_authenticated+/templates.folders._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.folders._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.folders._index.tsx
 msgid "All Folders"
 msgstr ""
@@ -964,10 +955,6 @@ msgstr "Permet d'authentifier en utilisant des biométries, des gestionnaires de
 msgid "Already have an account? <0>Sign in instead</0>"
 msgstr "Vous avez déjà un compte ? <0>Connectez-vous plutôt</0>"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Alta"
-msgstr ""
-
 #: apps/remix/app/components/tables/team-settings-billing-invoices-table.tsx
 msgid "Amount"
 msgstr "Montant"
@@ -989,7 +976,6 @@ msgid "An email containing an invitation will be sent to each member."
 msgstr "Un e-mail contenant une invitation sera envoyé à chaque membre."
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "An email requesting the transfer of this team has been sent."
 msgstr "Un e-mail demandant le transfert de cette équipe a été envoyé."
 
@@ -1020,7 +1006,6 @@ msgid "An error occurred while auto-signing the document, some fields may not be
 msgstr "Une erreur est survenue lors de la signature automatique du document, certains champs peuvent ne pas être signés. Veuillez vérifier et signer manuellement tous les champs restants."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "An error occurred while creating document from template."
 msgstr "Une erreur est survenue lors de la création du document à partir d'un modèle."
 
@@ -1033,7 +1018,6 @@ msgid "An error occurred while deleting the user."
 msgstr "Une erreur s'est produite lors de la suppression de l'utilisateur."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "An error occurred while disabling direct link signing."
 msgstr "Une erreur est survenue lors de la désactivation de la signature par lien direct."
 
@@ -1052,12 +1036,10 @@ msgid "An error occurred while downloading your document."
 msgstr "Une erreur est survenue lors du téléchargement de votre document."
 
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 msgid "An error occurred while duplicating template."
 msgstr "Une erreur est survenue lors de la duplication du modèle."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "An error occurred while enabling direct link signing."
 msgstr "Une erreur est survenue lors de l'activation de la signature par lien direct."
 
@@ -1066,7 +1048,6 @@ msgid "An error occurred while enabling the user."
 msgstr "Une erreur est survenue lors de l'activation de l'utilisateur."
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "An error occurred while loading team members. Please try again later."
 msgstr "Une erreur est survenue lors du chargement des membres de l'équipe. Veuillez réessayer plus tard."
 
@@ -1080,9 +1061,7 @@ msgid "An error occurred while moving the document."
 msgstr "Une erreur est survenue lors du déplacement du document."
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "An error occurred while moving the template."
 msgstr "Une erreur est survenue lors du déplacement du modèle."
 
@@ -1179,7 +1158,6 @@ msgstr "Une erreur inattendue est survenue."
 #: apps/remix/app/components/dialogs/webhook-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/token-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-invite-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
@@ -1196,25 +1174,21 @@ msgid "An unknown error occurred"
 msgstr "Une erreur inconnue est survenue"
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-create-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 msgid "An unknown error occurred while creating the folder."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 msgid "An unknown error occurred while deleting the folder."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-move-dialog.tsx
 msgid "An unknown error occurred while moving the folder."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "Any payment methods attached to this team will remain attached to this team. Please contact us if you need to update this information."
 msgstr "Tous les moyens de paiement associés à cette équipe resteront associés à cette équipe. Veuillez nous contacter si vous avez besoin de mettre à jour ces informations."
 
@@ -1287,7 +1261,6 @@ msgstr "Êtes-vous sûr de vouloir supprimer cette équipe ?"
 
 #: apps/remix/app/components/general/teams/team-email-usage.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-leave-dialog.tsx
 #: apps/remix/app/components/dialogs/team-email-delete-dialog.tsx
@@ -1295,10 +1268,6 @@ msgstr "Êtes-vous sûr de vouloir supprimer cette équipe ?"
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "Are you sure?"
 msgstr "Êtes-vous sûr ?"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Asignados"
-msgstr ""
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "Assist"
@@ -1394,10 +1363,6 @@ msgstr "Code de sauvegarde"
 msgid "Backup codes"
 msgstr "Codes de sauvegarde"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Baja"
-msgstr ""
-
 #: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Banner Updated"
 msgstr "Bannière mise à jour"
@@ -1450,7 +1415,6 @@ msgstr "Importation en masse"
 
 #. placeholder {0}: template.title
 #: packages/lib/jobs/definitions/internal/bulk-send-template.handler.ts
-#: packages/lib/jobs/definitions/internal/bulk-send-task.handler.ts
 msgid "Bulk Send Complete: {0}"
 msgstr "Envoi en masse terminé : {0}"
 
@@ -1459,13 +1423,11 @@ msgid "Bulk send operation complete for template \"{templateName}\""
 msgstr "Envoi groupé terminé pour le modèle \"{templateName}\""
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Bulk Send Template via CSV"
 msgstr "Envoi de modèle groupé via CSV"
 
 #: apps/remix/app/components/tables/templates-table-action-dropdown.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Bulk Send via CSV"
 msgstr "Envoi en masse via CSV"
 
@@ -1532,19 +1494,12 @@ msgstr "Peut préparer"
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 #: apps/remix/app/components/dialogs/token-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-invite-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
@@ -1555,7 +1510,6 @@ msgstr "Peut préparer"
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 #: apps/remix/app/components/dialogs/team-checkout-create-dialog.tsx
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 #: apps/remix/app/components/dialogs/document-resend-dialog.tsx
@@ -1620,12 +1574,10 @@ msgid "Checkout"
 msgstr "Passer à la caisse"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Choose an existing recipient from below to continue"
 msgstr "Choisissez un destinataire existant ci-dessous pour continuer"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Choose Direct Link Recipient"
 msgstr "Choisissez un destinataire pour le lien direct"
 
@@ -1654,7 +1606,6 @@ msgid "Claim your username now"
 msgstr "Revendiquer votre nom d'utilisateur maintenant"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Clear file"
 msgstr "Effacer le fichier"
 
@@ -1700,7 +1651,6 @@ msgstr "Cliquez pour insérer un champ"
 #: apps/remix/app/components/forms/2fa/view-recovery-codes-dialog.tsx
 #: apps/remix/app/components/forms/2fa/enable-authenticator-app-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-create-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
@@ -1824,13 +1774,11 @@ msgid "Configure the fields you want to place on the document."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 msgid "Confirm"
 msgstr "Confirmer"
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "Confirm by typing <0>{confirmTransferMessage}</0>"
 msgstr "Confirmer en tapant <0>{confirmTransferMessage}</0>"
 
@@ -1841,7 +1789,6 @@ msgstr "Confirmer en tapant <0>{deleteMessage}</0>"
 #: apps/remix/app/components/dialogs/webhook-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/token-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-folder-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 msgid "Confirm by typing: <0>{deleteMessage}</0>"
 msgstr "Confirmer en tapant : <0>{deleteMessage}</0>"
@@ -1947,7 +1894,6 @@ msgstr "Copié"
 #: apps/remix/app/components/general/document/document-page-view-recipients.tsx
 #: apps/remix/app/components/forms/public-profile-form.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 #: packages/ui/components/document/document-share-button.tsx
 msgid "Copied to clipboard"
@@ -1967,7 +1913,6 @@ msgid "Copy sharable link"
 msgstr "Copier le lien partageable"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Copy Shareable Link"
 msgstr "Copier le lien partageable"
 
@@ -1992,10 +1937,6 @@ msgstr "Créez un <0>compte gratuit</0> pour accéder à vos documents signés �
 msgid "Create a new account"
 msgstr "Créer un nouveau compte"
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Create a new task with details like title, description, priority and due date."
-msgstr ""
-
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 msgid "Create a team to collaborate with your team members."
 msgstr "Créer une équipe pour collaborer avec vos membres."
@@ -2007,56 +1948,40 @@ msgid "Create account"
 msgstr "Créer un compte"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create and send"
 msgstr "Créer et envoyer"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create as draft"
 msgstr "Créer en tant que brouillon"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create as pending"
 msgstr "Créer comme en attente"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog-wrapper.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog-wrapper copy.tsx
 msgid "Create Direct Link"
 msgstr "Créer un lien direct"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Create Direct Signing Link"
 msgstr "Créer un lien de signature directe"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create document from template"
 msgstr "Créer un document à partir du modèle"
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Create New Task"
-msgstr ""
 
 #: apps/remix/app/routes/_profile+/_layout.tsx
 msgid "Create now"
 msgstr "Créer maintenant"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Create one automatically"
 msgstr "Créer un automatiquement"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create signing links"
 msgstr "Créer des liens de signature"
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Create Task"
-msgstr ""
 
 #: apps/remix/app/components/general/menu-switcher.tsx
 #: apps/remix/app/components/general/menu-switcher.tsx
@@ -2070,7 +1995,6 @@ msgid "Create Team"
 msgstr "Créer une équipe"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Create the document as pending and ready to sign."
 msgstr "Créer le document comme en attente et prêt à signer."
 
@@ -2131,7 +2055,6 @@ msgid "Created on {0}"
 msgstr "Créé le {0}"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "CSV Structure"
 msgstr "Structure CSV"
 
@@ -2144,7 +2067,6 @@ msgid "Current password is incorrect."
 msgstr "Le mot de passe actuel est incorrect."
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Current recipients:"
 msgstr "Destinataires actuels :"
 
@@ -2211,7 +2133,6 @@ msgstr "supprimer"
 #: apps/remix/app/components/dialogs/webhook-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/token-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
@@ -2224,7 +2145,6 @@ msgstr "Supprimer"
 #: apps/remix/app/components/dialogs/webhook-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/token-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/template-folder-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 msgid "delete {0}"
 msgstr "supprimer {0}"
@@ -2293,10 +2213,6 @@ msgstr "Supprimé"
 msgid "Deleting account..."
 msgstr "Suppression du compte..."
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Description"
-msgstr ""
-
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 msgid "Details"
 msgstr "Détails"
@@ -2334,17 +2250,14 @@ msgid "Direct link receiver"
 msgstr "Receveur de lien direct"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Direct Link Signing"
 msgstr "Signature de lien direct"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Direct link signing has been disabled"
 msgstr "La signature de lien direct a été désactivée"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Direct link signing has been enabled"
 msgstr "La signature de lien direct a été activée"
 
@@ -2353,14 +2266,12 @@ msgid "Direct link templates contain one dynamic recipient placeholder. Anyone w
 msgstr "Les modèles de lien direct contiennent un espace réservé de destinataire dynamique. Quiconque ayant accès à ce lien peut signer le document, et il apparaîtra ensuite sur votre page de documents."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Direct template link deleted"
 msgstr "Modèle de lien direct supprimé"
 
 #. placeholder {0}: quota.directTemplates
 #. placeholder {1}: quota.directTemplates
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Direct template link usage exceeded ({0}/{1})"
 msgstr "L'utilisation du lien de modèle direct a été dépassée ({0}/{1})"
 
@@ -2393,7 +2304,6 @@ msgid "Disabled"
 msgstr "Désactivé"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Disabling direct link signing will prevent anyone from accessing the link."
 msgstr "Désactiver la signature de lien direct empêchera quiconque d'accéder au lien."
 
@@ -2414,12 +2324,10 @@ msgid "Distribution Method"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 msgid "Do you want to delete this template?"
 msgstr "Voulez-vous supprimer ce modèle ?"
 
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 msgid "Do you want to duplicate this template?"
 msgstr "Voulez-vous dupliquer ce modèle ?"
 
@@ -2485,7 +2393,6 @@ msgid "Document Completed!"
 msgstr "Document Complété !"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: packages/lib/utils/document-audit-logs.ts
 msgid "Document created"
 msgstr "Document créé"
@@ -2689,12 +2596,12 @@ msgid "Document will be permanently deleted"
 msgstr "Le document sera supprimé de manière permanente"
 
 #: apps/remix/app/routes/_profile+/p.$url.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId._index.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents._index.tsx
-#: apps/remix/app/routes/_authenticated+/documents.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/documents.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/_layout.tsx
 #: apps/remix/app/components/tables/admin-dashboard-users-table.tsx
 #: apps/remix/app/components/general/user-profile-timur.tsx
@@ -2708,8 +2615,6 @@ msgstr "Documents"
 
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
 msgid "Documents created from template"
 msgstr "Documents créés à partir du modèle"
 
@@ -2753,7 +2658,6 @@ msgid "Download Original"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Download Template CSV"
 msgstr "Télécharger le modèle CSV"
 
@@ -2800,10 +2704,6 @@ msgstr "Liste déroulante"
 msgid "Dropdown options"
 msgstr "Options de liste déroulante"
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Due Date"
-msgstr ""
-
 #: apps/remix/app/components/general/teams/team-layout-billing-banner.tsx
 msgid "Due to an unpaid invoice, your team has been restricted. Please settle the payment to restore full access to your team."
 msgstr "En raison d'une facture impayée, votre équipe a été restreinte. Veuillez régler le paiement pour rétablir l'accès complet à votre équipe."
@@ -2812,7 +2712,6 @@ msgstr "En raison d'une facture impayée, votre équipe a été restreinte. Veui
 #: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-duplicate-dialog.tsx
 #: apps/remix/app/components/dialogs/document-duplicate-dialog.tsx
 msgid "Duplicate"
@@ -2832,8 +2731,6 @@ msgstr "Modifier"
 
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
 msgid "Edit Template"
 msgstr "Modifier le modèle"
 
@@ -2842,10 +2739,6 @@ msgstr "Modifier le modèle"
 msgid "Edit webhook"
 msgstr "Modifier le webhook"
 
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Editar"
-msgstr ""
-
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Electronic Delivery of Documents"
 msgstr "Remise électronique de documents"
@@ -2853,10 +2746,6 @@ msgstr "Remise électronique de documents"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Electronic Signature Disclosure"
 msgstr "Divulgation de signature électronique"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Eliminar"
-msgstr ""
 
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
@@ -2876,8 +2765,6 @@ msgstr ""
 #: apps/remix/app/components/embed/authoring/configure-document-advanced-settings.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-email-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-email-add-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
@@ -2965,7 +2852,6 @@ msgid "Enable custom branding for all documents in this team."
 msgstr "Activer la personnalisation de la marque pour tous les documents de cette équipe."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: packages/lib/constants/template.ts
 msgid "Enable Direct Link Signing"
 msgstr "Activer la signature de lien direct"
@@ -3017,12 +2903,12 @@ msgstr "Entrez votre nom"
 msgid "Enter your text here"
 msgstr "Entrez votre texte ici"
 
-#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
-#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/users.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
+#: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
 #: apps/remix/app/components/general/verify-email-banner.tsx
 #: apps/remix/app/components/general/template/template-edit-form.tsx
 #: apps/remix/app/components/general/template/template-edit-form.tsx
@@ -3058,15 +2944,10 @@ msgstr "Entrez votre texte ici"
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
@@ -3078,22 +2959,8 @@ msgstr "Entrez votre texte ici"
 msgid "Error"
 msgstr "Erreur"
 
-#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
-#: apps/remix/app/routes/_authenticated+/events._index.tsx
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Error al cargar las tareas"
-msgstr ""
-
 #: apps/remix/app/components/embed/authoring/configure-document-upload.tsx
 msgid "Error uploading file"
-msgstr ""
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Estado"
-msgstr ""
-
-#: apps/remix/app/routes/_authenticated+/events._index.tsx
-msgid "Eventos"
 msgstr ""
 
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
@@ -3128,13 +2995,7 @@ msgstr "ID externe"
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-create-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-folder-create-dialog copy.tsx
 msgid "Failed to create folder"
-msgstr ""
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Failed to create task"
 msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
@@ -3165,10 +3026,6 @@ msgstr "Échec de la mise à jour du webhook"
 #: packages/email/templates/bulk-send-complete.tsx
 msgid "Failed: {failedCount}"
 msgstr "Échoués : {failedCount}"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Fecha límite"
-msgstr ""
 
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/text-field.tsx
 msgid "Field character limit"
@@ -3224,29 +3081,24 @@ msgid "File cannot be larger than {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB"
 msgstr "Le fichier ne peut pas dépasser {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} Mo"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 msgstr "La taille du fichier dépasse la limite de {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 msgid "Folder"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-create-dialog copy.tsx
 msgid "Folder created successfully"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-settings-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-settings-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-settings-dialog.tsx
 msgid "Folder not found"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-settings-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-settings-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-settings-dialog.tsx
 msgid "Folder updated successfully"
 msgstr ""
@@ -3265,7 +3117,6 @@ msgid "For any questions regarding this disclosure, electronic signatures, or an
 msgstr "Pour toute question concernant cette divulgation, les signatures électroniques ou tout processus y afférent, veuillez nous contacter à : <0>{SUPPORT_EMAIL}</0>"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "For each recipient, provide their email (required) and name (optional) in separate columns. Download the template CSV below for the correct format."
 msgstr "Pour chaque destinataire, fournissez son e-mail (obligatoire) et son nom (facultatif) dans des colonnes séparées. Téléchargez le modèle CSV ci-dessous pour obtenir le format requis."
 
@@ -3324,8 +3175,8 @@ msgstr "Retour"
 msgid "Go back home"
 msgstr "Revenir au tableau de bord"
 
-#: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
 #: apps/remix/app/routes/_recipient+/sign.$token+/_index.tsx
+#: apps/remix/app/routes/_recipient+/sign.$token+/complete.tsx
 msgid "Go Back Home"
 msgstr "Revenir au tableau de bord"
 
@@ -3391,7 +3242,6 @@ msgid "Here you can set preferences and defaults for your team."
 msgstr "Ici, vous pouvez définir des préférences et des valeurs par défaut pour votre équipe."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Here's how it works:"
 msgstr "Voici comment cela fonctionne :"
 
@@ -3693,7 +3543,6 @@ msgid "Loading Document..."
 msgstr "Chargement du Document..."
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 msgid "Loading teams..."
 msgstr "Chargement des équipes..."
@@ -3723,8 +3572,6 @@ msgstr "Gérer toutes les équipes avec lesquelles vous êtes actuellement assoc
 
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
 msgid "Manage and view template"
 msgstr "Gérer et afficher le modèle"
 
@@ -3737,7 +3584,6 @@ msgid "Manage details for this public template"
 msgstr "Gérer les détails de ce modèle public"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog-wrapper.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog-wrapper copy.tsx
 msgid "Manage Direct Link"
 msgstr "Gérer le lien direct"
 
@@ -3770,7 +3616,6 @@ msgid "Manage teams"
 msgstr "Gérer les équipes"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Manage the direct link signing for this template"
 msgstr "Gérer la signature de lien direct pour ce modèle"
 
@@ -3816,13 +3661,8 @@ msgid "Max"
 msgstr "Maximum"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Maximum file size: 4MB. Maximum 100 rows per upload. Blank values will use template defaults."
 msgstr "Taille maximale du fichier : 4 Mo. Maximum de 100 lignes par importation. Les valeurs vides utiliseront les valeurs par défaut du modèle."
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Media"
-msgstr ""
 
 #: packages/lib/constants/teams.ts
 msgid "Member"
@@ -3868,16 +3708,13 @@ msgid "Monthly Active Users: Users that had at least one of their documents comp
 msgstr "Utilisateurs actifs mensuels : utilisateurs ayant terminé au moins un de leurs documents"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 msgid "Move"
 msgstr "Déplacer"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 msgid "Move \"{templateTitle}\" to a folder"
 msgstr ""
 
@@ -3890,12 +3727,10 @@ msgid "Move Document to Team"
 msgstr "Déplacer le document vers l'équipe"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 msgid "Move Template to Folder"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "Move Template to Team"
 msgstr "Déplacer le modèle vers l'équipe"
 
@@ -3910,7 +3745,6 @@ msgid "Move to Team"
 msgstr "Déplacer vers l'équipe"
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 msgid "Moving..."
 msgstr "Déplacement..."
@@ -3932,8 +3766,6 @@ msgstr "Mes modèles"
 #: apps/remix/app/components/embed/authoring/configure-document-recipients.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-email-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-email-add-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
@@ -3975,12 +3807,7 @@ msgstr "Ne jamais expirer"
 msgid "New Password"
 msgstr "Nouveau Mot de Passe"
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "New Task"
-msgstr ""
-
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "New team owner"
 msgstr "Nouveau propriétaire d'équipe"
 
@@ -4008,16 +3835,6 @@ msgstr "Pas de brouillons actifs"
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
 msgid "No further action is required from you at this time."
 msgstr "Aucune autre action n'est requise de votre part pour le moment."
-
-#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
-#: apps/remix/app/routes/_authenticated+/events._index.tsx
-msgid "No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar."
-msgstr ""
-
-#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
-#: apps/remix/app/routes/_authenticated+/events._index.tsx
-msgid "No hay tareas"
-msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.billing.tsx
 msgid "No payment required"
@@ -4076,7 +3893,6 @@ msgid "No valid direct templates found"
 msgstr "Aucun modèle direct valide trouvé"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "No valid recipients found"
 msgstr "Aucun destinataire valide trouvé"
 
@@ -4194,7 +4010,6 @@ msgstr "Ouvert"
 
 #: apps/remix/app/components/forms/signup.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Or"
 msgstr "Ou"
 
@@ -4203,7 +4018,6 @@ msgid "Or continue with"
 msgstr "Ou continuez avec"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Otherwise, the document will be created as a draft."
 msgstr "Sinon, le document sera créé sous forme de brouillon."
 
@@ -4258,8 +4072,8 @@ msgstr "Nom de la clé d'accès"
 msgid "Passkey Re-Authentication"
 msgstr "Ré-authentification par clé d'accès"
 
-#: apps/remix/app/routes/_authenticated+/settings+/security.passkeys.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
+#: apps/remix/app/routes/_authenticated+/settings+/security.passkeys.tsx
 msgid "Passkeys"
 msgstr "Clés d'accès"
 
@@ -4434,7 +4248,6 @@ msgid "Please mark as viewed to complete"
 msgstr "Veuillez marquer comme vu pour terminer"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Please note that proceeding will remove direct linking recipient and turn it into a placeholder."
 msgstr "Veuillez noter que la poursuite supprimera le destinataire de lien direct et le transformera en espace réservé."
 
@@ -4447,7 +4260,6 @@ msgid "Please note that this action is <0>irreversible</0>. Once confirmed, this
 msgstr "Veuillez noter que cette action est <0>irréversible</0>. Une fois confirmée, ce document sera définitivement supprimé."
 
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 msgid "Please note that this action is irreversible. Once confirmed, your template will be permanently deleted."
 msgstr "Veuillez noter que cette action est irréversible. Une fois confirmée, votre modèle sera définitivement supprimé."
 
@@ -4480,7 +4292,6 @@ msgid "Please review the document before signing."
 msgstr "Veuillez examiner le document avant de signer."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Please select a PDF file"
 msgstr "Veuillez sélectionner un fichier PDF"
 
@@ -4489,7 +4300,6 @@ msgid "Please try again and make sure you enter the correct email address."
 msgstr "Veuillez réessayer et assurez-vous d'entrer la bonne adresse email."
 
 #: apps/remix/app/components/dialogs/template-create-dialog.tsx
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 msgid "Please try again later."
 msgstr "Veuillez réessayer plus tard."
 
@@ -4509,7 +4319,6 @@ msgid "Please type <0>{0}</0> to confirm."
 msgstr "Veuillez taper <0>{0}</0> pour confirmer."
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Pre-formatted CSV template with example data."
 msgstr "Modèle CSV pré-formaté avec des données d'exemple."
 
@@ -4526,14 +4335,6 @@ msgstr "Aperçu"
 #: apps/remix/app/components/general/direct-template/direct-template-page.tsx
 msgid "Preview and configure template."
 msgstr "Aperçu et configurer le modèle."
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Prioridad"
-msgstr ""
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Priority"
-msgstr ""
 
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/general/template/template-type.tsx
@@ -4661,7 +4462,6 @@ msgstr "Documents récents"
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: packages/lib/utils/document-audit-logs.ts
 #: packages/lib/utils/document-audit-logs.ts
 msgid "Recipient"
@@ -4782,9 +4582,7 @@ msgstr "Rappel : Veuillez {recipientActionVerb} votre document"
 #: apps/remix/app/components/forms/team-branding-preferences-form.tsx
 #: apps/remix/app/components/forms/avatar-image.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-email-delete-dialog.tsx
 #: packages/ui/primitives/document-flow/add-fields.tsx
 msgid "Remove"
@@ -4808,7 +4606,6 @@ msgid "Repeat Password"
 msgstr "Répéter le mot de passe"
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "Request transfer"
 msgstr "Demander le transfert"
 
@@ -4911,7 +4708,6 @@ msgstr "Révoquer l'accès"
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-recipients.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-invite-dialog.tsx
 msgid "Role"
@@ -4923,7 +4719,6 @@ msgid "Roles"
 msgstr "Rôles"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 msgid "Root (No Folder)"
 msgstr ""
@@ -4937,7 +4732,6 @@ msgstr "Lignes par page"
 #: apps/remix/app/components/embed/authoring/configure-fields-view.tsx
 #: apps/remix/app/components/embed/authoring/configure-fields-view.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: packages/ui/primitives/document-flow/field-item-advanced-settings.tsx
 msgid "Save"
 msgstr "Sauvegarder"
@@ -4996,7 +4790,6 @@ msgid "Select a folder to move this document to."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 msgid "Select a team"
 msgstr "Sélectionner une équipe"
@@ -5006,7 +4799,6 @@ msgid "Select a team to move this document to. This action cannot be undone."
 msgstr "Sélectionnez une équipe pour déplacer ce document. Cette action ne peut pas être annulée."
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "Select a team to move this template to. This action cannot be undone."
 msgstr "Sélectionnez une équipe pour déplacer ce modèle. Cette action ne peut pas être annulée."
 
@@ -5046,7 +4838,6 @@ msgid "Send confirmation email"
 msgstr "Envoyer l'e-mail de confirmation"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Send document"
 msgstr "Envoyer le document"
 
@@ -5075,7 +4866,6 @@ msgid "Send documents on behalf of the team using the email address"
 msgstr "Envoyer des documents au nom de l'équipe en utilisant l'adresse e-mail"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Send documents to recipients immediately"
 msgstr "Envoyer les documents aux destinataires immédiatement"
 
@@ -5373,8 +5163,8 @@ msgstr "Depuis {0}"
 msgid "Site Banner"
 msgstr "Bannière du site"
 
-#: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/_layout.tsx
+#: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Site Settings"
 msgstr "Paramètres du site"
 
@@ -5417,11 +5207,7 @@ msgstr "Certains signataires n'ont pas été assignés à un champ de signature.
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-create-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-invite-dialog.tsx
 #: apps/remix/app/components/dialogs/team-email-delete-dialog.tsx
@@ -5522,9 +5308,9 @@ msgstr "S'abonner"
 msgid "Subscription"
 msgstr "Abonnement"
 
+#: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 #: apps/remix/app/routes/embed+/v1+/authoring+/template.edit.$id.tsx
 #: apps/remix/app/routes/embed+/v1+/authoring+/document.edit.$id.tsx
-#: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 #: apps/remix/app/components/tables/user-settings-pending-teams-table-actions.tsx
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
@@ -5540,12 +5326,8 @@ msgstr "Abonnement"
 #: apps/remix/app/components/forms/public-profile-form.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 #: apps/remix/app/components/dialogs/team-member-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-invite-dialog.tsx
 #: apps/remix/app/components/dialogs/team-member-delete-dialog.tsx
@@ -5580,18 +5362,6 @@ msgstr "Exigences du système"
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "System Theme"
 msgstr "Thème système"
-
-#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
-msgid "Tareas"
-msgstr ""
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Task created successfully"
-msgstr ""
-
-#: apps/remix/app/components/general/app-nav-desktop.tsx
-msgid "Tasks"
-msgstr ""
 
 #: apps/remix/app/components/tables/user-settings-pending-teams-table.tsx
 #: apps/remix/app/components/tables/user-settings-current-teams-table.tsx
@@ -5737,14 +5507,10 @@ msgstr "Équipes"
 msgid "Teams restricted"
 msgstr "Équipes restreintes"
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/templates.$id.edit.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/templates.$id.edit.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
@@ -5758,7 +5524,6 @@ msgid "Template Created"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 msgid "Template deleted"
 msgstr "Modèle supprimé"
 
@@ -5767,7 +5532,6 @@ msgid "Template document uploaded"
 msgstr "Document modèle importé"
 
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 msgid "Template duplicated"
 msgstr "Modèle dupliqué"
 
@@ -5784,14 +5548,11 @@ msgid "Template is using legacy field insertion"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "Template moved"
 msgstr "Modèle déplacé"
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "Template not found or already associated with a team."
 msgstr "Modèle introuvable ou déjà associé à une équipe."
 
@@ -5807,13 +5568,10 @@ msgstr "Titre du modèle"
 msgid "Template updated successfully"
 msgstr ""
 
+#: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
 #: apps/remix/app/components/general/app-nav-mobile.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-command-menu.tsx
@@ -5884,7 +5642,6 @@ msgstr "Le contenu à afficher dans la bannière, le HTML est autorisé"
 #: apps/remix/app/components/tables/settings-public-profile-templates-table.tsx
 #: apps/remix/app/components/general/template/template-direct-link-badge.tsx
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "The direct link has been copied to your clipboard"
 msgstr "Le lien direct a été copié dans votre presse-papiers"
 
@@ -5914,7 +5671,6 @@ msgid "The document owner has been notified of your decision. They may contact y
 msgstr "Le propriétaire du document a été informé de votre décision. Il peut vous contacter pour des instructions supplémentaires si nécessaire."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "The document was created but could not be sent to recipients."
 msgstr "Le document a été créé mais n'a pas pu être envoyé aux destinataires."
 
@@ -5923,7 +5679,6 @@ msgid "The document will be hidden from your account"
 msgstr "Le document sera caché de votre compte"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "The document will be immediately sent to recipients if this is checked."
 msgstr "Le document sera immédiatement envoyé aux destinataires si cela est coché."
 
@@ -5945,13 +5700,11 @@ msgid "The fields have been updated to the new field insertion method successful
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 msgid "The folder you are trying to delete does not exist."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-folder-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-move-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-move-dialog.tsx
 msgid "The folder you are trying to move does not exist."
 msgstr ""
@@ -5961,7 +5714,6 @@ msgid "The folder you are trying to move the document to does not exist."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 msgid "The folder you are trying to move the template to does not exist."
 msgstr ""
 
@@ -6031,7 +5783,6 @@ msgid "The recipient is required to view the document for it to be completed."
 msgstr "Le destinataire doit visualiser le document pour qu'il soit complété."
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "The selected team member will receive an email which they must accept before the team is transferred"
 msgstr "Le membre d'équipe sélectionné recevra un e-mail qu'il devra accepter avant que l'équipe soit transférée"
 
@@ -6062,14 +5813,6 @@ msgstr "Le lien de signature a été copié dans votre presse-papiers."
 msgid "The site banner is a message that is shown at the top of the site. It can be used to display important information to your users."
 msgstr "La bannière du site est un message affiché en haut du site. Elle peut être utilisée pour afficher des informations importantes à vos utilisateurs."
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "The specified project does not exist or you don't have access."
-msgstr ""
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "The specified team does not exist or you don't have access."
-msgstr ""
-
 #: packages/email/templates/team-email-removed.tsx
 msgid "The team email <0>{teamEmail}</0> has been removed from the following team"
 msgstr "L'email d'équipe <0>{teamEmail}</0> a été supprimé de l'équipe suivante"
@@ -6090,12 +5833,10 @@ msgid ""
 msgstr "L'équipe que vous cherchez a peut-être été supprimée, renommée ou n'a peut-être jamais existé."
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-to-folder-dialog copy.tsx
 msgid "The template has been moved successfully."
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "The template has been successfully moved to the selected team."
 msgstr "Le modèle a été déplacé avec succès vers l'équipe sélectionnée."
 
@@ -6276,7 +6017,6 @@ msgid "This field cannot be modified or deleted. When you share this template's 
 msgstr "Ce champ ne peut pas être modifié ou supprimé. Lorsque vous partagez le lien direct de ce modèle ou l'ajoutez à votre profil public, toute personne qui y accède peut saisir son nom et son email, et remplir les champs qui lui sont attribués."
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-create-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 msgid "This folder name is already taken."
 msgstr ""
@@ -6322,7 +6062,6 @@ msgid "This team, and any associated data excluding billing invoices will be per
 msgstr "Cette équipe, et toutes les données associées à l'exception des factures de facturation, seront définitivement supprimées."
 
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 msgid "This template could not be deleted at this time. Please try again."
 msgstr "Ce modèle n'a pas pu être supprimé pour le moment. Veuillez réessayer."
 
@@ -6389,7 +6128,6 @@ msgstr "Fuseau horaire"
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-view.tsx
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: packages/ui/primitives/document-flow/add-settings.tsx
 msgid "Title"
 msgstr "Titre"
@@ -6397,10 +6135,6 @@ msgstr "Titre"
 #: packages/ui/primitives/document-flow/add-settings.types.ts
 msgid "Title cannot be empty"
 msgstr "Le titre ne peut pas être vide"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Título"
-msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/team.invite.$token.tsx
 msgid "To accept this invitation you must create an account."
@@ -6516,20 +6250,16 @@ msgid "Total Users"
 msgstr "Total des utilisateurs"
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "transfer {teamName}"
 msgstr "transférer {teamName}"
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "Transfer ownership of this team to a selected team member."
 msgstr "Transférer la propriété de cette équipe à un membre d'équipe sélectionné."
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._index.tsx
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "Transfer team"
 msgstr "Transférer l'équipe"
 
@@ -6602,7 +6332,6 @@ msgid "Unable to copy token"
 msgstr "Impossible de copier le token"
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "Unable to create direct template access. Please try again later."
 msgstr "Impossible de créer un accès direct au modèle. Veuillez réessayer plus tard."
 
@@ -6783,17 +6512,14 @@ msgid "Upload"
 msgstr "Télécharger"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Upload a CSV file to create multiple documents from this template. Each row represents one document with its recipient details."
 msgstr "Importer un fichier CSV pour créer plusieurs documents à partir de ce modèle. Chaque ligne représente un document avec les coordonnées de son destinataire."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Upload a custom document to use instead of the template's default document"
 msgstr "Importer un document personnalisé à utiliser à la place du modèle par défaut"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Upload and Process"
 msgstr "Importer et traiter"
 
@@ -6802,12 +6528,10 @@ msgid "Upload Avatar"
 msgstr "Importer un avatar"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Upload CSV"
 msgstr "Importer le CSV"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Upload custom document"
 msgstr "Importer un document personnalisé"
 
@@ -6853,8 +6577,6 @@ msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.$id._index.tsx
 msgid "Use"
 msgstr "Utiliser"
 
@@ -6869,7 +6591,6 @@ msgid "Use Backup Code"
 msgstr "Utiliser le code de secours"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Use Template"
 msgstr "Utiliser le modèle"
 
@@ -6895,10 +6616,6 @@ msgstr "Utilisateur non trouvé."
 #: apps/remix/app/components/forms/signup.tsx
 msgid "User profiles are here!"
 msgstr "Les profils des utilisateurs sont ici !"
-
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "User session is invalid. Please log in again."
-msgstr ""
 
 #: apps/remix/app/components/general/menu-switcher.tsx
 msgid "User settings"
@@ -6926,10 +6643,6 @@ msgstr "Validation"
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/number-field.tsx
 msgid "Value"
 msgstr "Valeur"
-
-#: apps/remix/app/components/lists/tasks-list.tsx
-msgid "Ver detalles"
-msgstr ""
 
 #: apps/remix/app/components/general/verify-email-banner.tsx
 msgid "Verification Email Sent"
@@ -7114,7 +6827,6 @@ msgid "We are unable to update this passkey at the moment. Please try again late
 msgstr "Nous ne pouvons pas mettre à jour cette clé de passkey pour le moment. Veuillez réessayer plus tard."
 
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "We encountered an error while removing the direct template link. Please try again later."
 msgstr "Une erreur s'est produite lors de la suppression du lien direct vers le modèle. Veuillez réessayer plus tard."
 
@@ -7172,7 +6884,6 @@ msgid "We encountered an unknown error while attempting to remove this user. Ple
 msgstr "Une erreur inconnue s'est produite lors de la suppression de cet utilisateur. Veuillez réessayer plus tard."
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "We encountered an unknown error while attempting to request a transfer of this team. Please try again later."
 msgstr "Une erreur inconnue s'est produite lors de la demande de transfert de cette équipe. Veuillez réessayer plus tard."
 
@@ -7305,19 +7016,16 @@ msgid "We will generate signing links for with you, which you can send to the re
 msgstr "Nous générerons des liens de signature pour vous, que vous pourrez envoyer aux destinataires par votre méthode de choix."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "We will generate signing links for you, which you can send to the recipients through your method of choice."
 msgstr "Nous allons générer des liens de signature pour vous, que vous pouvez envoyer aux destinataires par votre méthode de choix."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 msgid "We won't send anything to notify recipients."
 msgstr "Nous n'enverrons rien pour notifier les destinataires."
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "We're all empty"
 msgstr "Nous sommes tous vides"
@@ -7469,7 +7177,6 @@ msgid "You are currently updating the <0>{passkeyName}</0> passkey."
 msgstr "Vous mettez à jour actuellement la clé de passkey <0>{passkeyName}</0>."
 
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
-#: apps/remix/app/components/dialogs/template-move-dialog copy.tsx
 msgid "You are not a member of this team."
 msgstr "Vous n'êtes pas membre de cette équipe."
 
@@ -7616,9 +7323,8 @@ msgstr "Vous avez initié le document {0} qui nécessite que vous {recipientActi
 msgid "You have no webhooks yet. Your webhooks will be shown here once you create them."
 msgstr "Vous n'avez pas encore de webhooks. Vos webhooks seront affichés ici une fois que vous les aurez créés."
 
-#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
-#: apps/remix/app/routes/_authenticated+/tasks.f.$folderId._index.tsx
+#: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
 msgid "You have not yet created any templates. To create a template please upload one."
 msgstr "Vous n'avez pas encore créé de modèles. Pour créer un modèle, veuillez en importer un."
 
@@ -7628,7 +7334,6 @@ msgstr "Vous n'avez pas encore créé ou reçu de documents. Pour créer un docu
 
 #. placeholder {0}: quota.directTemplates
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
-#: apps/remix/app/components/dialogs/template-direct-link-dialog copy.tsx
 msgid "You have reached the maximum limit of {0} direct templates. <0>Upgrade your account to continue!</0>"
 msgstr "Vous avez atteint la limite maximale de {0} modèles directs. <0>Mettez à niveau votre compte pour continuer !</0>"
 
@@ -7700,7 +7405,6 @@ msgid "You must enter '{deleteMessage}' to proceed"
 msgstr "Vous devez entrer '{deleteMessage}' pour continuer"
 
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
-#: apps/remix/app/components/dialogs/team-transfer-dialog copy.tsx
 msgid "You must have at least one other team member to transfer ownership."
 msgstr "Vous devez avoir au moins un autre membre de l'équipe pour transférer la propriété."
 
@@ -7709,7 +7413,6 @@ msgid "You must set a profile URL before enabling your public profile."
 msgstr "Vous devez définir une URL de profil avant d'activer votre profil public."
 
 #: apps/remix/app/components/dialogs/template-folder-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-folder-delete-dialog copy.tsx
 #: apps/remix/app/components/dialogs/folder-delete-dialog.tsx
 msgid "You must type '{deleteMessage}' to confirm"
 msgstr ""
@@ -7763,7 +7466,6 @@ msgid "Your branding preferences have been updated"
 msgstr "Vos préférences de branding ont été mises à jour"
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
-#: apps/remix/app/components/dialogs/template-bulk-send-dialog copy.tsx
 msgid "Your bulk send has been initiated. You will receive an email notification upon completion."
 msgstr "Votre envoi groupé a été initié. Vous recevrez une notification par email une fois terminé."
 
@@ -7786,7 +7488,6 @@ msgid "Your document failed to upload."
 msgstr "L'importation de votre document a échoué."
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
-#: apps/remix/app/components/dialogs/template-use-dialog copy.tsx
 msgid "Your document has been created from the template successfully."
 msgstr "Votre document a été créé à partir du modèle avec succès."
 
@@ -7888,10 +7589,6 @@ msgstr "Vos codes de récupération sont listés ci-dessous. Veuillez les conser
 msgid "Your subscription is currently active."
 msgstr "Votre abonnement est actuellement actif."
 
-#: apps/remix/app/components/dialogs/task-create-dialog.tsx
-msgid "Your task has been created. You will be redirected to the task page."
-msgstr ""
-
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 msgid "Your team has been created."
 msgstr "Votre équipe a été créée."
@@ -7914,17 +7611,14 @@ msgid "Your template has been created successfully"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 msgid "Your template has been duplicated successfully."
 msgstr "Votre modèle a été dupliqué avec succès."
 
 #: apps/remix/app/components/dialogs/template-delete-dialog.tsx
-#: apps/remix/app/components/dialogs/template-delete-dialog copy.tsx
 msgid "Your template has been successfully deleted."
 msgstr "Votre modèle a été supprimé avec succès."
 
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
-#: apps/remix/app/components/dialogs/template-duplicate-dialog copy.tsx
 msgid "Your template will be duplicated."
 msgstr "Votre modèle sera dupliqué."
 

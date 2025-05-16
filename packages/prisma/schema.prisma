@@ -81,8 +81,75 @@ model User {
   siteSettings       SiteSettings[]
   passkeys           Passkey[]
   avatarImage        AvatarImage?           @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  // lpms               Lpm[]
 
   @@index([email])
+}
+
+model Lpm {
+  id                                  Int      @id @default(autoincrement())
+  productId                           String
+  productType                         String   @map("Product Type") @db.VarChar
+  productTitle                        String   @map("Product Title") @db.VarChar
+  productVersion                      String?  @map("Product Version") @db.VarChar
+  productDisplayArtist                String   @map("Product Display Artist") @db.VarChar
+  parentLabel                         String?  @map("Parent Label") @db.VarChar
+  label                               String   @db.VarChar
+  originalReleaseDate                 String?  @map("Original Release Date") @db.VarChar
+  releaseDate                         String   @map("Release Date") @db.VarChar
+  upc                                 String   @map("UPC") @db.VarChar
+  catalog                             String   @map("Catalog ") @db.VarChar
+  productPriceTier                    String?  @map("Product Price Tier") @db.VarChar
+  productGenre                        String   @map("Product Genre") @db.VarChar
+  submissionStatus                    String   @map("Submission Status") @db.VarChar
+  productCLine                        String   @map("Product C Line") @db.VarChar
+  productPLine                        String   @map("Product P Line") @db.VarChar
+  preOrderDate                        String?  @map("PreOrder Date") @db.VarChar
+  exclusives                          String?  @map("Exclusives") @db.VarChar
+  explicitLyrics                      String   @map("ExplicitLyrics") @db.VarChar
+  productPlayLink                     String?  @map("Product Play Link") @db.VarChar
+  linerNotes                          String?  @map("Liner Notes") @db.VarChar
+  primaryMetadataLanguage             String   @map("Primary Metadata Language") @db.VarChar
+  compilation                         String?  @map("Compilation") @db.VarChar
+  pdfBooklet                          String?  @map("PDF Booklet") @db.VarChar
+  timedReleaseDate                    String?  @map("Timed Release Date") @db.VarChar
+  timedReleaseMusicServices           String?  @map("Timed Release Music Services") @db.VarChar
+  lastProcessDate                     String   @map("Last Process Date") @db.VarChar
+  importDate                          String   @map("Import Date") @db.VarChar
+  createdBy                           String   @map("Created By") @db.VarChar
+  lastModified                        String   @map("Last Modified") @db.VarChar
+  submittedAt                         String   @map("Submitted At") @db.VarChar
+  submittedBy                         String?  @map("Submitted By") @db.VarChar
+  vevoChannel                         String?  @map("Vevo Channel") @db.VarChar
+  trackType                           String   @map("TrackType") @db.VarChar
+  trackId                             String   @map("Track Id") @db.VarChar
+  trackVolume                         Boolean? @map("Track Volume")
+  trackNumber                         String   @map("Track Number") @db.VarChar
+  trackName                           String   @map("Track Name") @db.VarChar
+  trackVersion                        String?  @map("Track Version") @db.VarChar
+  trackDisplayArtist                  String   @map("Track Display Artist") @db.VarChar
+  isrc                                String   @map("Isrc") @db.VarChar
+  trackPriceTier                      String?  @map("Track Price Tier") @db.VarChar
+  trackGenre                          String   @map("Track Genre") @db.VarChar
+  audioLanguage                       String   @map("Audio Language") @db.VarChar
+  trackCLine                          String   @map("Track C Line") @db.VarChar
+  trackPLine                          String   @map("Track P Line") @db.VarChar
+  writersComposers                    String   @map("WritersComposers") @db.VarChar
+  publishersCollectionSocieties       String   @map("PublishersCollection Societies") @db.VarChar
+  withholdMechanicals                 String   @map("Withhold Mechanicals") @db.VarChar
+  preOrderType                        String?  @map("PreOrder Type") @db.VarChar
+  instantGratificationDate            String?  @map("Instant Gratification Date") @db.VarChar
+  duration                            String   @map("Duration") @db.VarChar
+  sampleStartTime                     String?  @map("Sample Start Time") @db.VarChar
+  explicitLyricsTrack                 String   @map("Explicit Lyrics") @db.VarChar
+  albumOnly                           String   @map("Album Only") @db.VarChar
+  lyrics                              String?  @map("Lyrics") @db.VarChar
+  additionalContributorsPerforming    String?  @map("AdditionalContributorsPerforming") @db.VarChar
+  additionalContributorsNonPerforming String?  @map("AdditionalContributorsNonPerforming") @db.VarChar
+  producers                           String?  @map("Producers") @db.VarChar
+  continuousMix                       String?  @map("Continuous Mix") @db.VarChar
+  continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song") @db.VarChar
+  trackPlayLink                       String?  @map("Track Play Link") @db.VarChar
 }
 
 model Songs {

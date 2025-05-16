@@ -2,49 +2,48 @@ import { Trans } from '@lingui/react/macro';
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router';
 
-import { getSession } from '@documenso/auth/server/lib/utils/get-session';
 import { prisma } from '@documenso/prisma';
 
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
-export async function loader({ params, request }: { params: { id: string }; request: Request }) {
-  const { user } = await getSession(request);
+export async function loader({ params }: { params: { id: string }; request: Request }) {
+  // const { user } = await getSession(request);
 
   const { id } = params;
-  const taskId = Number(id);
+  const lpmId = Number(id);
 
-  if (!taskId || Number.isNaN(taskId)) {
-    throw new Response('Task not found', { status: 404 });
+  if (!lpmId || Number.isNaN(lpmId)) {
+    throw new Response('lpm not found', { status: 404 });
   }
-  const taskById = await prisma.task.findUnique({
-    where: { id: taskId },
+  const lpmById = await prisma.lpm.findUnique({
+    where: { id: lpmId },
   });
-  if (!taskId || Number.isNaN(taskId)) {
-    throw new Response('Task not found', { status: 404 });
+  if (!lpmId || Number.isNaN(lpmId)) {
+    throw new Response('lpm not found', { status: 404 });
   }
 
-  // Replace this with your logic to fetch task data
-  const task = {
-    id: taskId,
-    title: taskById?.title || 'Task Title',
-    description: taskById?.description || 'Task Description',
+  // Replace this with your logic to fetch lpm data
+  const lpm = {
+    id: lpmId,
+    title: lpmById?.trackName || 'lpm Title',
+    description: lpmById?.lyrics || 'lpm Description',
   };
 
-  return superLoaderJson({ user, task });
+  return superLoaderJson({ lpm });
 }
 
-export default function TaskPage() {
-  const { user: _user, task } = useSuperLoaderData<typeof loader>();
+export default function LpmPage() {
+  const { lpm } = useSuperLoaderData<typeof loader>();
 
   return (
     <div className="mx-auto -mt-4 w-full max-w-screen-xl px-4 md:px-8">
-      <Link to="/tasks" className="flex items-center text-[#7AC455] hover:opacity-80">
+      <Link to="/lpm" className="flex items-center text-[#7AC455] hover:opacity-80">
         <ChevronLeft className="mr-2 inline-block h-5 w-5" />
-        <Trans>Tasks</Trans>
+        <Trans>LPM songs</Trans>
       </Link>
 
       <div className="mt-4">
-        <h1 className="text-2xl font-semibold">{task.title}</h1>
+        <h1 className="text-2xl font-semibold">{lpm.title}</h1>
       </div>
 
       <div className="mt-5 max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -54,10 +53,10 @@ export default function TaskPage() {
         <div className="p-5">
           <a href="#">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {task.title.length > 5 ? `${task.title.substring(0, 5)}...` : task.title}
+              {lpm.title.length > 5 ? `${lpm.title.substring(0, 5)}...` : lpm.title}
             </h5>
           </a>
-          <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{task.description}</p>
+          <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{lpm.description}</p>
           <a
             href="#"
             className="inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"

@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro';
-import { CheckCircle, Circle, Clock, Flag, Loader2, MoreVertical } from 'lucide-react';
+import { Loader2, MoreVertical } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -20,37 +20,39 @@ import {
   TableRow,
 } from '@documenso/ui/primitives/table';
 
-export const TasksTable = ({
-  tasks,
+export const ArtistTable = ({
+  artists,
   isLoading,
   isLoadingError,
-  onTaskClick,
+  onartistClick,
   refetch,
 }: {
-  tasks: Array<{
+  artists: Array<{
     id: number;
-    title: string;
-    description: string | null;
-    status: 'PENDING' | 'COMPLETED';
-    priority: 'LOW' | 'MEDIUM' | 'HIGH';
-    dueDate: Date | null;
-    assignees: Array<{ name: string }>;
+    name: string;
+    role: 'ADMIN' | 'USER';
+    events: Array<{ name: string }>;
+    songs: Array<{ name: string }>;
+    url: string;
+    disable: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   }>;
   isLoading: boolean;
   isLoadingError: boolean;
-  onTaskClick: (taskId: number) => void;
+  onartistClick: (artistId: number) => void;
   refetch: () => Promise<void>;
 }) => {
   const navigate = useNavigate();
-  const { mutateAsync: deleteTask } = trpc.task.deleteTask.useMutation();
-  const handleDeleteTask = async (taskId: number) => {
+  const { mutateAsync: deleteartist } = trpc.artist.deleteArtist.useMutation();
+  const handleDeleteartist = async (artistId: number) => {
     try {
-      await deleteTask({ taskId });
+      await deleteartist({ artistId });
       toast.success('Tarea eliminada correctamente');
       await refetch();
     } catch (error) {
       toast.error('Error al eliminar la tarea');
-      console.error('Error deleting task:', error);
+      console.error('Error deleting artist:', error);
     }
   };
 
@@ -95,55 +97,53 @@ export const TasksTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {tasks.map((task) => (
-          <TableRow key={task.id} className="hover:bg-muted/50 cursor-pointer">
-            <TableCell onClick={() => onTaskClick(task.id)}>
-              {task.status === 'COMPLETED' ? (
+        {artists.map((artist) => (
+          <TableRow key={artist.id} className="hover:bg-muted/50 cursor-pointer">
+            <TableCell onClick={() => onartistClick(artist.id)}>
+              {/* {artist.status === 'COMPLETED' ? (
                 <CheckCircle className="h-5 w-5 text-green-500" />
               ) : (
                 <Circle className="text-muted-foreground h-5 w-5" />
-              )}
+              )} */}
             </TableCell>
-            <TableCell onClick={() => onTaskClick(task.id)}>
+            <TableCell onClick={() => onartistClick(artist.id)}>
               <div className="font-medium">
-                {task.title.length > 20 ? `${task.title.substring(0, 20)}...` : task.title}
+                {artist.name.length > 20 ? `${artist.name.substring(0, 20)}...` : artist.name}
               </div>
-              {/* {task.description && (
+              {/* {artist.description && (
                 <div className="text-muted-foreground line-clamp-1 text-sm">
-                  {task.description.length > 20
-                    ? `${task.description.substring(0, 20)}...`
-                    : task.description}
+                  {artist.description.length > 20
+                    ? `${artist.description.substring(0, 20)}...`
+                    : artist.description}
                 </div>
               )} */}
             </TableCell>
-            <TableCell onClick={() => onTaskClick(task.id)}>
-              <div className="flex items-center gap-2">
-                {task.priority === 'HIGH' && <Flag className="h-4 w-4 fill-red-500 text-red-500" />}
-                {task.priority === 'MEDIUM' && (
+            <TableCell onClick={() => onartistClick(artist.id)}>
+              {/* <div className="flex items-center gap-2">
+                {artist.priority === 'HIGH' && <Flag className="h-4 w-4 fill-red-500 text-red-500" />}
+                {artist.priority === 'MEDIUM' && (
                   <Flag className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                 )}
-                {task.priority === 'LOW' && (
+                {artist.priority === 'LOW' && (
                   <Flag className="h-4 w-4 fill-blue-500 text-blue-500" />
                 )}
                 <span>
-                  {task.priority === 'HIGH' && <Trans>Alta</Trans>}
-                  {task.priority === 'MEDIUM' && <Trans>Media</Trans>}
-                  {task.priority === 'LOW' && <Trans>Baja</Trans>}
+                  {artist.priority === 'HIGH' && <Trans>Alta</Trans>}
+                  {artist.priority === 'MEDIUM' && <Trans>Media</Trans>}
+                  {artist.priority === 'LOW' && <Trans>Baja</Trans>}
                 </span>
-              </div>
+              </div> */}
             </TableCell>
-            <TableCell onClick={() => onTaskClick(task.id)}>
-              {task.assignees.length > 0 ? task.assignees.map((a) => a.name).join(', ') : '-'}
-            </TableCell>
-            <TableCell onClick={() => onTaskClick(task.id)}>
-              {task.dueDate ? (
+            <TableCell onClick={() => onartistClick(artist.id)}>{artist.role || '-'}</TableCell>
+            <TableCell onClick={() => onartistClick(artist.id)}>
+              {/* {artist.dueDate ? (
                 <div className="flex items-center gap-2">
                   <Clock className="text-muted-foreground h-4 w-4" />
-                  {new Date(task.dueDate).toLocaleDateString()}
+                  {new Date(artist.dueDate).toLocaleDateString()}
                 </div>
               ) : (
                 '-'
-              )}
+              )} */}
             </TableCell>
             <TableCell>
               <DropdownMenu>
@@ -153,17 +153,17 @@ export const TasksTable = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onTaskClick(task.id)}>
+                  <DropdownMenuItem onClick={() => onartistClick(artist.id)}>
                     <Trans>Ver detalles</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={async () => navigate(`/tasks/${task.id}/edit`)}>
+                  <DropdownMenuItem onClick={async () => navigate(`/artists/${artist.id}/edit`)}>
                     <Trans>Editar</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-red-500"
                     onClick={(e) => {
                       e.stopPropagation();
-                      void handleDeleteTask(task.id);
+                      void handleDeleteartist(artist.id);
                     }}
                   >
                     <Trans>Eliminar</Trans>
