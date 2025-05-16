@@ -1,5 +1,9 @@
 import type { Recipient } from '@prisma/client';
 
+type enhancedAssignees = {
+  name: string | null;
+  email: string;
+};
 export const extractInitials = (text: string) =>
   text
     .split(' ')
@@ -9,4 +13,8 @@ export const extractInitials = (text: string) =>
 
 export const recipientAbbreviation = (recipient: Recipient) => {
   return extractInitials(recipient.name) || recipient.email.slice(0, 1).toUpperCase();
+};
+
+export const usereAbbreviation = (user: enhancedAssignees) => {
+  return extractInitials(user.name || '') || user.email.slice(0, 1).toUpperCase();
 };

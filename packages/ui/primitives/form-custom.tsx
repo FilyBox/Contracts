@@ -11,6 +11,14 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 import { Button } from './button';
 import { Card, CardContent } from './card';
 import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './dropdown-menu';
+import {
   Form,
   FormControl,
   FormDescription,
@@ -577,18 +585,25 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                               <div className="relative">
                                 <Select
                                   onValueChange={(value) => {
+                                    // Crea una copia del array de valores actuales
                                     const currentValues = Array.isArray(field.value)
-                                      ? field.value
+                                      ? [...field.value]
                                       : [];
-                                    // Si el valor ya está seleccionado, lo eliminamos
-                                    if (currentValues.includes(value)) {
-                                      field.onChange(
-                                        currentValues.filter((item: string) => item !== value),
-                                      );
+
+                                    // Verifica si el valor ya está seleccionado
+                                    const valueIndex = currentValues.indexOf(value);
+
+                                    // Si ya está seleccionado, lo eliminamos
+                                    if (valueIndex !== -1) {
+                                      currentValues.splice(valueIndex, 1);
+                                      field.onChange(currentValues);
                                     } else {
-                                      // Si no está seleccionado, lo añadimos al array
+                                      // Si no está seleccionado, lo añadimos
                                       field.onChange([...currentValues, value]);
                                     }
+
+                                    // Fuerza un refresco del componente
+                                    field.onBlur();
                                   }}
                                 >
                                   <FormControl>
@@ -656,9 +671,14 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                           type="button"
                                           className="text-secondary-foreground/70 hover:text-secondary-foreground ml-1"
                                           onClick={() => {
-                                            field.onChange(
-                                              field.value.filter((item: string) => item !== value),
-                                            );
+                                            // Eliminar este género del array
+                                            const newValues = Array.isArray(field.value)
+                                              ? field.value.filter((item: string) => item !== value)
+                                              : [];
+                                            field.onChange(newValues);
+
+                                            // Fuerza actualización del componente
+                                            field.onBlur();
                                           }}
                                         >
                                           <svg
