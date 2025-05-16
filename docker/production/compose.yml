@@ -2,6 +2,7 @@ name: documenso-production
 
 services:
   database:
+    container_name: documenso-database
     image: postgres:15
     environment:
       - POSTGRES_USER=${POSTGRES_USER:?err}
@@ -16,6 +17,7 @@ services:
       - database:/var/lib/postgresql/data
 
   documenso:
+    container_name: documenso
     image: documenso/documenso:latest
     depends_on:
       database:

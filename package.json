@@ -58,6 +58,9 @@
     "turbo": "^1.9.3",
     "vite": "^6.1.0"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "4.9.5"
+  },
   "name": "@documenso/root",
   "workspaces": [
     "apps/*",
