@@ -5,6 +5,7 @@ import { documentRouter } from './document-router/router';
 import { embeddingPresignRouter } from './embedding-router/_router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
+import { lpmRouter } from './lpm-router/router';
 import { profileRouter } from './profile-router/router';
 import { recipientRouter } from './recipient-router/router';
 import { shareLinkRouter } from './share-link-router/router';
@@ -22,6 +23,7 @@ export const appRouter = router({
   folder: folderRouter,
   recipient: recipientRouter,
   task: taskRouter,
+  lpm: lpmRouter,
   admin: adminRouter,
   shareLink: shareLinkRouter,
   apiToken: apiTokenRouter,

@@ -1682,10 +1682,6 @@ msgstr "Claim your username now"
 msgid "Clear file"
 msgstr "Clear file"
 
-#: packages/ui/primitives/data-table.tsx
-msgid "Clear filters"
-msgstr "Clear filters"
-
 #: packages/ui/primitives/signature-pad/signature-pad-draw.tsx
 msgid "Clear Signature"
 msgstr "Clear Signature"
@@ -4003,6 +3999,10 @@ msgstr "Move to Team"
 msgid "Moving..."
 msgstr "Moving..."
 
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr "Music"
+
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
 msgstr "My templates"
@@ -4144,10 +4144,6 @@ msgstr "No recipients with this role"
 #: packages/ui/components/document/document-global-auth-access-select.tsx
 msgid "No restrictions"
 msgstr "No restrictions"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "No results found"
-msgstr "No results found"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "No results found."
@@ -5568,10 +5564,6 @@ msgstr "Something went wrong while updating the team billing subscription, pleas
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Something went wrong!"
 msgstr "Something went wrong!"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "Something went wrong."
-msgstr "Something went wrong."
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "Something went wrong. Please try again later."

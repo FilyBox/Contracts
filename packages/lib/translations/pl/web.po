@@ -1687,10 +1687,6 @@ msgstr "Zgłoś swoją nazwę użytkownika teraz"
 msgid "Clear file"
 msgstr "Wyczyść plik"
 
-#: packages/ui/primitives/data-table.tsx
-msgid "Clear filters"
-msgstr "Wyczyść filtry"
-
 #: packages/ui/primitives/signature-pad/signature-pad-draw.tsx
 msgid "Clear Signature"
 msgstr "Wyczyść podpis"
@@ -4008,6 +4004,10 @@ msgstr "Przenieś do zespołu"
 msgid "Moving..."
 msgstr "Przenoszenie..."
 
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
 msgstr "Moje szablony"
@@ -4149,10 +4149,6 @@ msgstr "Brak odbiorców z tą rolą"
 #: packages/ui/components/document/document-global-auth-access-select.tsx
 msgid "No restrictions"
 msgstr "Brak ograniczeń"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "No results found"
-msgstr "Nie znaleziono wyników"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "No results found."
@@ -5573,10 +5569,6 @@ msgstr "Coś poszło nie tak podczas aktualizacji subskrypcji płatniczej zespo�
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Something went wrong!"
 msgstr "Coś poszło nie tak!"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "Something went wrong."
-msgstr "Coś poszło nie tak."
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "Something went wrong. Please try again later."

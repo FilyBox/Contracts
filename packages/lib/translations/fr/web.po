@@ -1687,10 +1687,6 @@ msgstr "Revendiquer votre nom d'utilisateur maintenant"
 msgid "Clear file"
 msgstr "Effacer le fichier"
 
-#: packages/ui/primitives/data-table.tsx
-msgid "Clear filters"
-msgstr "Effacer les filtres"
-
 #: packages/ui/primitives/signature-pad/signature-pad-draw.tsx
 msgid "Clear Signature"
 msgstr "Effacer la signature"
@@ -4008,6 +4004,10 @@ msgstr "Déplacer vers l'équipe"
 msgid "Moving..."
 msgstr "Déplacement..."
 
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
 msgstr "Mes modèles"
@@ -4149,10 +4149,6 @@ msgstr "Aucun destinataire avec ce rôle"
 #: packages/ui/components/document/document-global-auth-access-select.tsx
 msgid "No restrictions"
 msgstr "Aucune restriction"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "No results found"
-msgstr "Aucun résultat trouvé"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "No results found."
@@ -5573,10 +5569,6 @@ msgstr "Quelque chose a mal tourné lors de la mise à jour de l'abonnement de l
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Something went wrong!"
 msgstr "Quelque chose a mal tourné !"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "Something went wrong."
-msgstr "Quelque chose a mal tourné."
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "Something went wrong. Please try again later."

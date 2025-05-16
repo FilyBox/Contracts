@@ -1687,10 +1687,6 @@ msgstr "Rivendica il tuo nome utente ora"
 msgid "Clear file"
 msgstr "Rimuovi file"
 
-#: packages/ui/primitives/data-table.tsx
-msgid "Clear filters"
-msgstr "Cancella filtri"
-
 #: packages/ui/primitives/signature-pad/signature-pad-draw.tsx
 msgid "Clear Signature"
 msgstr "Cancella firma"
@@ -4008,6 +4004,10 @@ msgstr "Sposta nel team"
 msgid "Moving..."
 msgstr "Spostamento..."
 
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
 msgstr "I miei modelli"
@@ -4149,10 +4149,6 @@ msgstr "Nessun destinatario con questo ruolo"
 #: packages/ui/components/document/document-global-auth-access-select.tsx
 msgid "No restrictions"
 msgstr "Nessuna restrizione"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "No results found"
-msgstr "Nessun risultato trovato"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "No results found."
@@ -5573,10 +5569,6 @@ msgstr "Qualcosa è andato storto durante l'aggiornamento dell'abbonamento di fa
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Something went wrong!"
 msgstr "Qualcosa è andato storto!"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "Something went wrong."
-msgstr "Qualcosa è andato storto."
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "Something went wrong. Please try again later."

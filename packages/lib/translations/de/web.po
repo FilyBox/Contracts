@@ -1687,10 +1687,6 @@ msgstr "Benutzername jetzt beanspruchen"
 msgid "Clear file"
 msgstr "Datei löschen"
 
-#: packages/ui/primitives/data-table.tsx
-msgid "Clear filters"
-msgstr "Filter löschen"
-
 #: packages/ui/primitives/signature-pad/signature-pad-draw.tsx
 msgid "Clear Signature"
 msgstr "Unterschrift löschen"
@@ -4008,6 +4004,10 @@ msgstr "In Team verschieben"
 msgid "Moving..."
 msgstr "Verschieben..."
 
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+msgid "Music"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "My templates"
 msgstr "Meine Vorlagen"
@@ -4149,10 +4149,6 @@ msgstr "Keine Empfänger mit dieser Rolle"
 #: packages/ui/components/document/document-global-auth-access-select.tsx
 msgid "No restrictions"
 msgstr "Keine Einschränkungen"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "No results found"
-msgstr "Keine Ergebnisse gefunden"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
 msgid "No results found."
@@ -5573,10 +5569,6 @@ msgstr "Etwas ist schiefgelaufen beim Aktualisieren des Abonnements für die Tea
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Something went wrong!"
 msgstr "Etwas ist schiefgelaufen!"
-
-#: packages/ui/primitives/data-table.tsx
-msgid "Something went wrong."
-msgstr "Etwas ist schief gelaufen."
 
 #: apps/remix/app/components/forms/token.tsx
 msgid "Something went wrong. Please try again later."

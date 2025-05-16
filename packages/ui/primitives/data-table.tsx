@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import type {
   ColumnDef,
+  ColumnFiltersState,
   PaginationState,
   Table as TTable,
   Updater,
@@ -10,7 +11,6 @@ import type {
 } from '@tanstack/react-table';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
-import { Skeleton } from './skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
 export type DataTableChildren<TData> = (_table: TTable<TData>) => React.ReactNode;
@@ -26,6 +26,9 @@ export interface DataTableProps<TData, TValue> {
   totalPages?: number;
   onPaginationChange?: (_page: number, _perPage: number) => void;
   onClearFilters?: () => void;
+  onAdd?: () => void;
+  onEdit?: (record: TData) => void;
+  onDelete?: (id: number) => void;
   hasFilters?: boolean;
   children?: DataTableChildren<TData>;
   skeleton?: {
@@ -49,6 +52,9 @@ export function DataTable<TData, TValue>({
   totalPages,
   skeleton,
   hasFilters,
+  onAdd,
+  onEdit,
+  onDelete,
   onClearFilters,
   onPaginationChange,
   children,
@@ -66,6 +72,7 @@ export function DataTable<TData, TValue>({
       pageSize: 0,
     };
   }, [currentPage, perPage]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const manualPagination = Boolean(currentPage !== undefined && totalPages !== undefined);
 
@@ -83,85 +90,63 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    state: {
-      pagination: manualPagination ? pagination : undefined,
-      columnVisibility,
-    },
+    // state: {
+    //   pagination: manualPagination ? pagination : undefined,
+    //   columnVisibility,
+    // },
+    onColumnFiltersChange: setColumnFilters,
+
     manualPagination,
     pageCount: totalPages,
     onPaginationChange: onTablePaginationChange,
+    state: {
+      columnFilters,
+    },
+    meta: {
+      onEdit,
+      onDelete,
+    },
   });
 
   return (
-    <>
-      <div className="rounded-md border">
-        <Table>
+    <div className="">
+      <div className="">
+        <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+
+          <TableBody className="">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        width: `${cell.column.getSize()}px`,
-                      }}
-                    >
+                    <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
-            ) : error?.enable ? (
-              <TableRow>
-                {error.component ?? (
-                  <TableCell colSpan={columns.length} className="h-32 text-center">
-                    <Trans>Something went wrong.</Trans>
-                  </TableCell>
-                )}
-              </TableRow>
-            ) : skeleton?.enable ? (
-              Array.from({ length: skeleton.rows }).map((_, i) => (
-                <TableRow key={`skeleton-row-${i}`}>{skeleton.component ?? <Skeleton />}</TableRow>
-              ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center">
-                  <p>
-                    <Trans>No results found</Trans>
-                  </p>
-
-                  {hasFilters && onClearFilters !== undefined && (
-                    <button
-                      onClick={() => onClearFilters()}
-                      className="text-foreground mt-1 text-sm"
-                    >
-                      <Trans>Clear filters</Trans>
-                    </button>
-                  )}
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
-      {children && <div className="mt-8 w-full">{children(table)}</div>}
-    </>
+    </div>
   );
 }

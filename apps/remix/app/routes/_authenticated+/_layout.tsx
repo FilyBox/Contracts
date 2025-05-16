@@ -58,7 +58,7 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
 
       <Header user={user} teams={teams} />
 
-      <main className="mt-8 pb-8 md:mt-12 md:pb-12">
+      <main className="mt-8 overflow-x-hidden pb-8 md:mt-12 md:pb-12">
         <Outlet />
       </main>
     </LimitsProvider>
