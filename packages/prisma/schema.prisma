@@ -36,6 +36,18 @@ enum Role {
   USER
 }
 
+enum TypeSongAlbum {
+  SONG
+  ALBUM
+}
+
+enum StatusSongAlbum {
+  DELETED
+  RELEASED
+  PENDING
+  DRAFT
+}
+
 model User {
   id               Int              @id @default(autoincrement())
   name             String?
@@ -71,6 +83,10 @@ model User {
   verificationTokens VerificationToken[]
   apiTokens          ApiToken[]
   templates          Template[]
+  taskAssignees      TaskAssignee[]
+  taskComments       TaskComment[]
+  taskAttachments    TaskAttachment[]
+  taskSubtasks       Task[]
   securityAuditLogs  UserSecurityAuditLog[]
   webhooks           Webhook[]
   siteSettings       SiteSettings[]
@@ -90,6 +106,116 @@ model UserProfile {
   bio     String?
 
   User User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Artist {
+  id            Int            @id @default(autoincrement())
+  name          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  roles         Role[]         @default([USER])
+  avatarImageId String?
+  teamId        Int?
+  disabled      Boolean        @default(false)
+  event         Event[]
+  url           String?        @unique
+  ArtistProfile ArtistProfile?
+  songs         Songs[]
+  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model ArtistProfile {
+  id       String  @id @default(cuid())
+  enabled  Boolean @default(false)
+  artistId Int     @unique
+  bio      String?
+
+  Artist Artist? @relation(fields: [artistId], references: [id], onDelete: Cascade)
+}
+
+model Songs {
+  id                Int               @id @default(autoincrement())
+  name              String?
+  author            String?
+  teamId            Int?
+  publisherMexico   String?
+  publisherUSA      String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @default(now()) @updatedAt
+  disabled          Boolean           @default(false)
+  artists           Artist[]
+  url               String?           @unique
+  type              TypeSongAlbum[]
+  status            StatusSongAlbum[]
+  uniqueIdentifier  String?           @unique @default(cuid())
+  royaltyPercentage String?
+  team              Team?             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model lpm {
+  id                                  Int      @id @default(autoincrement())
+  productId                           String   @map("productId")
+  productType                         String   @map("Product Type")
+  productTitle                        String   @map("Product Title")
+  productVersion                      String?  @map("Product Version")
+  productDisplayArtist                String   @map("Product Display Artist")
+  parentLabel                         String?  @map("Parent Label")
+  label                               String   @map("label")
+  originalReleaseDate                 String?  @map("Original Release Date")
+  releaseDate                         String   @map("Release Date")
+  upc                                 String   @map("UPC")
+  catalog                             String   @map("Catalog ")
+  productPriceTier                    String?  @map("Product Price Tier")
+  productGenre                        String   @map("Product Genre")
+  submissionStatus                    String   @map("Submission Status")
+  productCLine                        String   @map("Product C Line")
+  productPLine                        String   @map("Product P Line")
+  preOrderDate                        String?  @map("PreOrder Date")
+  exclusives                          String?  @map("Exclusives")
+  explicitLyrics                      String   @map("ExplicitLyrics")
+  productPlayLink                     String?  @map("Product Play Link")
+  linerNotes                          String?  @map("Liner Notes")
+  primaryMetadataLanguage             String   @map("Primary Metadata Language")
+  compilation                         String?  @map("Compilation")
+  pdfBooklet                          String?  @map("PDF Booklet")
+  timedReleaseDate                    String?  @map("Timed Release Date")
+  timedReleaseMusicServices           String?  @map("Timed Release Music Services")
+  lastProcessDate                     String   @map("Last Process Date")
+  importDate                          String   @map("Import Date")
+  createdBy                           String   @map("Created By")
+  lastModified                        String   @map("Last Modified")
+  submittedAt                         String   @map("Submitted At")
+  submittedBy                         String?  @map("Submitted By")
+  vevoChannel                         String?  @map("Vevo Channel")
+  trackType                           String   @map("TrackType")
+  trackId                             String   @map("Track Id")
+  trackVolume                         Boolean? @map("Track Volume")
+  trackNumber                         String   @map("Track Number")
+  trackName                           String   @map("Track Name")
+  trackVersion                        String?  @map("Track Version")
+  trackDisplayArtist                  String   @map("Track Display Artist")
+  isrc                                String   @map("Isrc")
+  trackPriceTier                      String?  @map("Track Price Tier")
+  trackGenre                          String   @map("Track Genre")
+  audioLanguage                       String   @map("Audio Language")
+  trackCLine                          String   @map("Track C Line")
+  trackPLine                          String   @map("Track P Line")
+  writersComposers                    String   @map("WritersComposers")
+  publishersCollectionSocieties       String   @map("PublishersCollection Societies")
+  withholdMechanicals                 String   @map("Withhold Mechanicals")
+  preOrderType                        String?  @map("PreOrder Type")
+  instantGratificationDate            String?  @map("Instant Gratification Date")
+  duration                            String   @map("Duration")
+  sampleStartTime                     String?  @map("Sample Start Time")
+  explicitLyricsTrack                 String   @map("Explicit Lyrics")
+  albumOnly                           String   @map("Album Only")
+  lyrics                              String?  @map("Lyrics")
+  additionalContributorsPerforming    String?  @map("AdditionalContributorsPerforming")
+  additionalContributorsNonPerforming String?  @map("AdditionalContributorsNonPerforming")
+  producers                           String?  @map("Producers")
+  continuousMix                       String?  @map("Continuous Mix")
+  continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song")
+  trackPlayLink                       String?  @map("Track Play Link")
 }
 
 model TeamProfile {
@@ -526,6 +652,129 @@ model Recipient {
   @@index([token])
 }
 
+model Task {
+  id          Int            @id @default(autoincrement())
+  externalId  String? /// @zod.string.describe("A custom external ID you can use to identify the task.")
+  userId      Int /// @zod.number.describe("The ID of the user that created this task.")
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TaskStatus     @default(PENDING)
+  priority    TaskPriority   @default(MEDIUM)
+  dueDate     DateTime?
+  assignees   TaskAssignee[]
+  comments    TaskComment[]
+
+  tags         String[]  @default([])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  completedAt  DateTime?
+  deletedAt    DateTime?
+  teamId       Int?
+  projectId    Int?
+  parentTaskId Int?
+
+  team       Team?    @relation(fields: [teamId], references: [id])
+  project    Project? @relation(fields: [projectId], references: [id])
+  parentTask Task?    @relation("TaskHierarchy", fields: [parentTaskId], references: [id])
+  subtasks   Task[]   @relation("TaskHierarchy")
+
+  auditLogs TaskAuditLog[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@index([teamId])
+  @@index([projectId])
+}
+
+model TaskAssignee {
+  id         Int      @id @default(autoincrement())
+  taskId     Int
+  userId     Int
+  assignedAt DateTime @default(now())
+  assignedBy Int /// User who assigned the task
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model TaskComment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model TaskAttachment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int? // Requerido
+  userId    Int // Requerido
+  name      String // Requerido
+  createdAt DateTime @default(now()) // Automático
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model TaskAuditLog {
+  id        String   @id @default(cuid())
+  taskId    Int
+  createdAt DateTime @default(now())
+  type      String
+  data      Json
+
+  name      String?
+  email     String?
+  userId    Int?
+  userAgent String?
+  ipAddress String?
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// Modelo opcional para proyectos (si necesitas agrupar tareas)
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  status      ProjectStatus @default(ACTIVE)
+  teamId      Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+
+  team  Team?  @relation(fields: [teamId], references: [id])
+  tasks Task[]
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+  ON_HOLD
+}
+
 enum FieldType {
   SIGNATURE
   FREE_SIGNATURE
@@ -628,14 +877,14 @@ model TeamGlobalSettings {
 }
 
 model Team {
-  id            Int      @id @default(autoincrement())
-  name          String
-  url           String   @unique
-  createdAt     DateTime @default(now())
-  avatarImageId String?
-  customerId    String?  @unique
-  ownerUserId   Int
-
+  id                   Int                       @id @default(autoincrement())
+  name                 String
+  url                  String                    @unique
+  createdAt            DateTime                  @default(now())
+  avatarImageId        String?
+  customerId           String?                   @unique
+  ownerUserId          Int
+  Event                Event[]
   members              TeamMember[]
   invites              TeamMemberInvite[]
   teamEmail            TeamEmail?
@@ -643,13 +892,16 @@ model Team {
   transferVerification TeamTransferVerification?
   teamGlobalSettings   TeamGlobalSettings?
   avatarImage          AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-
-  profile      TeamProfile?
-  owner        User          @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  subscription Subscription?
+  songs                Songs[]
+  artists              Artist[]
+  profile              TeamProfile?
+  owner                User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  subscription         Subscription?
 
   documents         Document[]
+  tasks             Task[]
   templates         Template[]
+  projects          Project[]
   folders           Folder[]
   apiTokens         ApiToken[]
   webhooks          Webhook[]
@@ -987,4 +1239,85 @@ model Suggestion {
   document ChatDocument @relation(fields: [documentId, documentCreatedAt], references: [id, createdAt])
 
   @@map("Suggestion")
+}
+
+// Events table
+model Event {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(300)
+  description String?   @db.VarChar(200)
+  image       String?   @db.Text
+  teamId      Int?
+  venue       String?   @db.VarChar(300)
+  artists     Artist[]
+  beginning   DateTime  @default(now())
+  end         DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  team         Team?         @relation(fields: [teamId], references: [id])
+  ticketTypes  TicketType[]
+  ticketBuyers TicketBuyer[]
+}
+
+// Buyers table
+model Buyer {
+  id               String    @id @default(cuid())
+  password         String?
+  uid              String?
+  rfc              String?   @unique @db.VarChar(13)
+  fullname         String    @db.VarChar(250)
+  email            String    @unique @db.VarChar(250)
+  image            String?   @db.Text
+  emailVerified    DateTime?
+  phoneNumber      String?   @db.VarChar(20)
+  stripeCustomerId String    @unique @db.VarChar(255)
+  createdAt        DateTime  @default(now())
+  deletedAt        DateTime?
+
+  ticketBuyers TicketBuyer[]
+}
+
+// Ticket types table
+model TicketType {
+  id                 Int       @id @default(autoincrement())
+  name               String?   @db.VarChar(100)
+  eventId            Int
+  price              Int?
+  uid                String?
+  maxQuantityPerUser Int       @default(5)
+  quantity           Int?
+  available          Int?
+  description        String?
+  seatNumber         Int?
+  stripeProductId    String?   @db.Text
+  stripePriceId      String?   @db.Text
+  imageUrl           String?   @db.Text
+  status             String    @default("valid") @db.VarChar(20)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+}
+
+// Tickets buyers table
+model TicketBuyer {
+  id              Int       @id @default(autoincrement())
+  name            String?   @db.VarChar(100)
+  eventId         Int
+  buyerId         String
+  ticketId        Int?
+  price           Int?
+  quantity        Int?
+  stripeProductId String?   @db.Text
+  imageUrl        String?   @db.Text
+  status          String    @default("valid") @db.VarChar(20)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  event Event @relation(fields: [eventId], references: [id])
+  buyer Buyer @relation(fields: [buyerId], references: [id])
 }
