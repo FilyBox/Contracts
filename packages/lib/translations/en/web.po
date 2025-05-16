@@ -1273,6 +1273,10 @@ msgstr "Are you sure you wish to delete this team?"
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Artist created successfully"
+msgstr "Artist created successfully"
+
 #: packages/lib/constants/recipient-roles.ts
 msgid "Assist"
 msgstr "Assist"
@@ -1527,6 +1531,7 @@ msgstr "Can prepare"
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 #: packages/ui/primitives/signature-pad/signature-pad-dialog.tsx
 #: packages/ui/primitives/document-flow/send-document-action-dialog.tsx
 #: packages/ui/primitives/document-flow/field-item-advanced-settings.tsx
@@ -1578,10 +1583,6 @@ msgstr "Chat"
 #: apps/remix/app/components/general/menu-switcher.tsx
 msgid "Chat documents"
 msgstr "Chat documents"
-
-#: apps/remix/app/components/general/app-nav-mobile.tsx
-msgid "Chats"
-msgstr "Chats"
 
 #: packages/ui/primitives/document-flow/types.ts
 msgid "Checkbox"
@@ -1959,6 +1960,10 @@ msgstr "Create a <0>free account</0> to access your signed documents at any time
 msgid "Create a new account"
 msgstr "Create a new account"
 
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Create a new artist with details like name, roles, events, songs, and url."
+msgstr "Create a new artist with details like name, roles, events, songs, and url."
+
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 msgid "Create a team to collaborate with your team members."
 msgstr "Create a team to collaborate with your team members."
@@ -1972,6 +1977,10 @@ msgstr "Create account"
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Create and send"
 msgstr "Create and send"
+
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Create Artist"
+msgstr "Create Artist"
 
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Create as draft"
@@ -1992,6 +2001,10 @@ msgstr "Create Direct Signing Link"
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Create document from template"
 msgstr "Create document from template"
+
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Create New Artist"
+msgstr "Create New Artist"
 
 #: apps/remix/app/routes/_profile+/_layout.tsx
 msgid "Create now"
@@ -3051,6 +3064,10 @@ msgstr "Expired"
 msgid "Expires on {0}"
 msgstr "Expires on {0}"
 
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Failed to create artist"
+msgstr "Failed to create artist"
+
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 msgid "Failed to create folder"
@@ -3815,7 +3832,9 @@ msgstr "Move to Team"
 msgid "Moving..."
 msgstr "Moving..."
 
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Music"
 msgstr "Music"
 
@@ -3839,6 +3858,7 @@ msgstr "My templates"
 #: apps/remix/app/components/dialogs/team-email-update-dialog.tsx
 #: apps/remix/app/components/dialogs/team-email-add-dialog.tsx
 #: apps/remix/app/components/dialogs/assistant-confirmation-dialog.tsx
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 #: packages/ui/primitives/template-flow/add-template-placeholder-recipients.tsx
 #: packages/ui/primitives/template-flow/add-template-placeholder-recipients.tsx
 #: packages/ui/primitives/template-flow/add-template-fields.tsx
@@ -3872,6 +3892,10 @@ msgstr "Never"
 #: apps/remix/app/components/forms/token.tsx
 msgid "Never expire"
 msgstr "Never expire"
+
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "New Artist"
+msgstr "New Artist"
 
 #: apps/remix/app/components/forms/password.tsx
 msgid "New Password"
@@ -4370,6 +4394,7 @@ msgid "Please try again and make sure you enter the correct email address."
 msgstr "Please try again and make sure you enter the correct email address."
 
 #: apps/remix/app/components/dialogs/template-create-dialog.tsx
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 msgid "Please try again later."
 msgstr "Please try again later."
 
@@ -6688,6 +6713,10 @@ msgstr "uploader"
 msgid "Uploading document..."
 msgstr "Uploading document..."
 
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "URL"
+msgstr "URL"
+
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.$id._index.tsx
 msgid "Use"
@@ -7568,6 +7597,10 @@ msgstr "You will receive an Email copy of the signed document once everyone has 
 #: apps/remix/app/components/dialogs/account-delete-dialog.tsx
 msgid "Your account has been deleted successfully."
 msgstr "Your account has been deleted successfully."
+
+#: apps/remix/app/components/dialogs/artist-create-dialog.tsx
+msgid "Your artist has been created."
+msgstr "Your artist has been created."
 
 #: apps/remix/app/components/forms/avatar-image.tsx
 msgid "Your avatar has been updated successfully."

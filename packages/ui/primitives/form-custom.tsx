@@ -8,10 +8,8 @@ import * as z from 'zod';
 import { type lpm } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
-import { cn } from '../lib/utils';
 import { Button } from './button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card';
-import { Checkbox } from './checkbox';
+import { Card, CardContent } from './card';
 import {
   Form,
   FormControl,
@@ -192,6 +190,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       'productTitle',
       'productDisplayArtist',
       'label',
+      'originalReleaseDate',
       'releaseDate',
       'upc',
       'catalog',
@@ -199,13 +198,23 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       'submissionStatus',
       'productCLine',
       'productPLine',
+      'preOrderDate',
+      'exclusives',
       'explicitLyrics',
+      'productPlayLink',
+      'linerNotes',
       'primaryMetadataLanguage',
+      'compilation',
+      'pdfBooklet',
+      'timedReleaseDate',
+      'timedReleaseMusicServices',
       'lastProcessDate',
       'importDate',
       'createdBy',
       'lastModified',
       'submittedAt',
+      'submittedBy',
+      'vevoChannel',
     ];
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const isValid = await form.trigger(productFields as any);
@@ -435,6 +444,22 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                       <div className="col-span-12 md:col-span-6">
                         <FormField
                           control={form.control}
+                          name="originalReleaseDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Fecha de Lanzamiento Original</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
                           name="parentLabel"
                           render={({ field }) => (
                             <FormItem>
@@ -559,6 +584,37 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           )}
                         />
                       </div>
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="preOrderDate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Fecha de Pre-Orden</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="exclusives"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Exclusivas</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Exclusivas" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                       <div className="col-span-12 md:col-span-6">
                         <FormField
@@ -613,6 +669,102 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           )}
                         />
                       </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="productPlayLink"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>productPlayLink(URL)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enlace de Reproducción" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="compilation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Compilación</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Compilation" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="pdfBooklet"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>PDF Booklet</FormLabel>
+                            <FormControl>
+                              <Input placeholder="PDF Booklet" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="timedReleaseDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha de Lanzamiento Programada</FormLabel>
+                            <FormControl>
+                              <Input type="datetime-local" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="timedReleaseMusicServices"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha de Lanzamiento en Servicios de Música</FormLabel>
+                            <FormControl>
+                              <Input type="datetime-local" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12">
+                      <FormField
+                        disabled={isLoading}
+                        control={form.control}
+                        name="linerNotes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>LinerNotes</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="LinerNotes" className="min-h-32" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <Separator />
@@ -685,6 +837,38 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Creado Por</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="submittedBy"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Subido por</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="vevoChannel"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>vevoChannel(URL)</FormLabel>
                               <FormControl>
                                 <Input {...field} />
                               </FormControl>
@@ -866,6 +1050,24 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           )}
                         />
                       </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          disabled={isLoading}
+                          control={form.control}
+                          name="trackPriceTier"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Track Price Tier</FormLabel>
+                              <FormControl>
+                                <Input placeholder="" {...field} />
+                              </FormControl>
+                              <FormDescription>Nivel de precio para la pista</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
 
                     <Separator />
@@ -1017,6 +1219,24 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         <FormField
                           disabled={isLoading}
                           control={form.control}
+                          name="sampleStartTime"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Sample Start Time</FormLabel>
+                              <FormControl>
+                                <Input placeholder="03:45" {...field} />
+                              </FormControl>
+                              <FormDescription>Formato mm:ss</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          disabled={isLoading}
+                          control={form.control}
                           name="albumOnly"
                           render={({ field }) => (
                             <FormItem>
@@ -1080,6 +1300,67 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           )}
                         />
                       </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          disabled={isLoading}
+                          control={form.control}
+                          name="withholdMechanicals"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>withholdMechanicals</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona una opción" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {yesNoOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        disabled={isLoading}
+                        control={form.control}
+                        name="preOrderType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tipo de Pre-Orden</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Tipo de Pre-Orden" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="instantGratificationDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha de Gratificación Instantánea</FormLabel>
+                            <FormControl>
+                              <Input type="datetime-local" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <Separator />
@@ -1107,7 +1388,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         />
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
+                      <div className="col-span-12">
                         <FormField
                           disabled={isLoading}
                           control={form.control}
@@ -1127,7 +1408,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         />
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
+                      <div className="col-span-12">
                         <FormField
                           disabled={isLoading}
                           control={form.control}
@@ -1139,6 +1420,41 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                               </FormLabel>
                               <FormControl>
                                 <Input placeholder="Músicos, vocalistas, etc." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12">
+                        <FormField
+                          disabled={isLoading}
+                          control={form.control}
+                          name="additionalContributorsNonPerforming"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                Colaboradores Adicionales (No Intérpretes) (Opcional)
+                              </FormLabel>
+                              <FormControl>
+                                <Input placeholder="Músicos, vocalistas, etc." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12">
+                        <FormField
+                          control={form.control}
+                          name="trackPlayLink"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Track Play Link(URL)</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1185,7 +1501,6 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                 size="lg"
                 variant="secondary"
                 className="flex-1"
-                loading={isLoading}
                 disabled={step === 'PRODUCT_INFO' || isLoading}
                 onClick={() => setStep('PRODUCT_INFO')}
               >

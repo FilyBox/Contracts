@@ -39,6 +39,10 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
       text: msg`Templates`,
     },
     {
+      href: `/music`,
+      text: msg`Music`,
+    },
+    {
       href: '/settings/teams',
       text: msg`Teams`,
     },

@@ -11,6 +11,8 @@ import {
 } from '@tanstack/react-table';
 import { ArrowDownUp, ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react';
 
+import { ArtistCreateDialog } from '@documenso/remix/app/components/dialogs/artist-create-dialog';
+
 import { Button } from './button';
 import {
   ContextMenu,
@@ -77,6 +79,8 @@ export function DataTableCustom<TData, TValue>({
             className="max-w-sm"
           />
           <Button onClick={onAdd}>Add Item</Button>
+
+          <ArtistCreateDialog />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -161,6 +165,24 @@ export function DataTableCustom<TData, TValue>({
                           typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
                           ) : cell.column.id === 'productPlayLink' && cell.getValue() ? (
+                            <a
+                              href={cell.getValue() as string}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Link
+                            </a>
+                          ) : cell.column.id === 'trackPlayLink' && cell.getValue() ? (
+                            <a
+                              href={cell.getValue() as string}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Link
+                            </a>
+                          ) : cell.column.id === 'vevoChannel' && cell.getValue() ? (
                             <a
                               href={cell.getValue() as string}
                               target="_blank"
