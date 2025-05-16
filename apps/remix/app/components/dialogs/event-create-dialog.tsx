@@ -21,109 +21,118 @@ import {
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
-type ArtistCreateDialogProps = {
+type EventCreateDialogProps = {
   teamId?: number;
 };
 
 type Role = 'USER' | 'ADMIN'; // Enum según tu backend
 
-export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps) => {
+export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) => {
   const { user } = useSession();
   const { toast } = useToast();
   const { _ } = useLingui();
 
-  const { mutateAsync: createArtist } = trpc.artist.createArtist.useMutation();
+  const { mutateAsync: createEvent } = trpc.event.createEvent.useMutation();
 
-  const [showArtistCreateDialog, setShowArtistCreateDialog] = useState(false);
-  const [isCreatingArtist, setIsCreatingArtist] = useState(false);
-  const [artistData, setArtistData] = useState<{
+  const [showEventCreateDialog, setShowEventCreateDialog] = useState(false);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [EventData, setEventData] = useState<{
     name: string;
-    role: Role[];
-    event: string[];
-    song: string[];
-    url: string;
-    disabled?: boolean;
+    description: string | undefined;
+    image: string | undefined;
     teamId?: number;
+    venue: string | undefined;
+    artists: string[] | undefined;
+    beginning: Date;
+    end: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt?: Date | null;
   }>({
     name: '',
-    role: [],
-    event: [],
-    song: [],
-    url: '',
-    disabled: false,
+    description: undefined,
+    image: undefined,
     teamId: _teamId,
+    venue: undefined,
+    artists: undefined,
+    beginning: new Date(),
+    end: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'teamId') {
-      setArtistData((prev) => ({ ...prev, teamId: value ? Number(value) : undefined }));
+      setEventData((prev) => ({ ...prev, teamId: value ? Number(value) : undefined }));
+    } else if (name === 'beginning') {
+      setEventData((prev) => ({ ...prev, beginning: value ? new Date(value) : new Date() }));
     } else {
-      setArtistData((prev) => ({ ...prev, [name]: value }));
+      setEventData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setArtistData((prev) => ({ ...prev, [name]: value ? [value as Role] : [] }));
+    setEventData((prev) => ({ ...prev, [name]: value ? [value as Role] : [] }));
   };
 
-  const onCreateArtist = async () => {
-    if (isCreatingArtist || !user.id) return;
-    setIsCreatingArtist(true);
+  const onCreateEvent = async () => {
+    if (isCreatingEvent || !user.id) return;
+    setIsCreatingEvent(true);
 
     try {
-      await createArtist({
-        name: artistData.name,
-        role: artistData.role,
-        event: artistData.event,
-        song: artistData.song,
-        url: artistData.url,
-        disabled: artistData.disabled,
-        teamId: artistData.teamId,
+      await createEvent({
+        name: EventData.name,
+        description: EventData.description,
+        image: EventData.image,
+        teamId: EventData.teamId,
+        venue: EventData.venue,
+        artists: EventData.artists,
+        beginning: EventData.beginning,
+        end: EventData.end,
       });
 
       toast({
-        title: _(msg`Artist created successfully`),
-        description: _(msg`Your artist has been created.`),
+        title: _(msg`Event created successfully`),
+        description: _(msg`Your Event has been created.`),
         duration: 5000,
       });
 
-      setShowArtistCreateDialog(false);
-      setIsCreatingArtist(false);
+      setShowEventCreateDialog(false);
+      setIsCreatingEvent(false);
     } catch (error) {
       toast({
-        title: _(msg`Failed to create artist`),
+        title: _(msg`Failed to create Event`),
         description: _(msg`Please try again later.`),
         variant: 'destructive',
       });
-      setIsCreatingArtist(false);
+      setIsCreatingEvent(false);
     }
   };
 
-  const canCreateArtist = Boolean(user.id) && !isCreatingArtist && artistData.name;
+  const canCreateEvent = Boolean(user.id) && !isCreatingEvent && EventData.name;
 
   return (
     <Dialog
-      open={showArtistCreateDialog}
-      onOpenChange={(value) => !isCreatingArtist && setShowArtistCreateDialog(value)}
+      open={showEventCreateDialog}
+      onOpenChange={(value) => !isCreatingEvent && setShowEventCreateDialog(value)}
     >
       <DialogTrigger asChild>
         <Button className="cursor-pointer" disabled={!user.emailVerified}>
           <FilePlus className="-ml-1 mr-2 h-4 w-4" />
-          <Trans>New Artist</Trans>
+          <Trans>New Event</Trans>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Create New Artist</Trans>
+            <Trans>Create New Event</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              Create a new artist with details like name, roles, events, songs, and url.
-            </Trans>
+            <Trans>Create a new Event with details like name, roles, events, songs, and url.</Trans>
           </DialogDescription>
         </DialogHeader>
 
@@ -135,7 +144,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
             <Input
               id="name"
               name="name"
-              value={artistData.name}
+              value={EventData.name}
               onChange={handleInputChange}
               className="mt-1"
               required
@@ -144,16 +153,31 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
 
           <div>
             <label htmlFor="url" className="block text-sm font-medium text-gray-100">
-              <Trans>URL</Trans>
+              <Trans>Description</Trans>
             </label>
             <Input
-              id="url"
-              name="url"
-              value={artistData.url}
+              id="description"
+              name="description"
+              value={EventData.description}
               onChange={handleInputChange}
               className="mt-1"
             />
           </div>
+
+          <div>
+            <label htmlFor="beginning" className="block text-sm font-medium text-gray-700">
+              <Trans>Beginning</Trans>
+            </label>
+            <Input
+              id="beginning"
+              name="beginning"
+              type="date"
+              value={EventData.beginning ? EventData.beginning.toISOString().slice(0, 10) : ''}
+              onChange={handleInputChange}
+              className="mt-1"
+            />
+          </div>
+          {/*
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-gray-100">
               <Trans>Role</Trans>
@@ -161,7 +185,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
             <select
               id="role"
               name="role"
-              value={artistData.role[0] || ''}
+              value={EventData.role[0] || ''}
               onChange={handleSelectChange}
               className="mt-1"
             >
@@ -175,7 +199,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
                 <Trans>admin</Trans>
               </option>
             </select>
-          </div>
+          </div> */}
 
           <div>
             <label htmlFor="teamId" className="block text-sm font-medium text-gray-100">
@@ -185,14 +209,28 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
               id="teamId"
               name="teamId"
               type="number"
-              value={artistData.teamId ?? ''}
+              value={EventData.teamId ?? ''}
+              onChange={handleInputChange}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="venue" className="block text-sm font-medium text-gray-100">
+              <Trans>Venue</Trans>
+            </label>
+            <Input
+              id="venue"
+              name="venue"
+              type="string"
+              value={EventData.venue ?? ''}
               onChange={handleInputChange}
               className="mt-1"
             />
           </div>
         </div>
 
-        {isCreatingArtist && (
+        {isCreatingEvent && (
           <div className="flex items-center justify-center rounded-lg py-4">
             <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
           </div>
@@ -200,12 +238,12 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary" disabled={isCreatingArtist}>
+            <Button type="button" variant="secondary" disabled={isCreatingEvent}>
               <Trans>Cancel</Trans>
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onCreateArtist} disabled={!canCreateArtist}>
-            <Trans>Create Artist</Trans>
+          <Button type="button" onClick={onCreateEvent} disabled={!canCreateEvent}>
+            <Trans>Create Event</Trans>
           </Button>
         </DialogFooter>
       </DialogContent>

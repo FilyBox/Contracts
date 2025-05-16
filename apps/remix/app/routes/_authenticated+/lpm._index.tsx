@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router';
 import { formLpmPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 
+import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
+import { SongCreateDialog } from '~/components/dialogs/song-create-dialog';
 import { LpmTable } from '~/components/lists/lpm-list';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
@@ -31,6 +33,12 @@ export default function LpmPage() {
 
   return (
     <div className="mx-auto max-w-screen-xl px-4 md:px-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex gap-4 sm:flex-row sm:justify-end">
+          <SongCreateDialog />
+          <ArtistCreateDialog />
+        </div>
+      </div>
       {/* ...header y avatar igual... */}
       <div className="mt-8">
         {isLoading ? (

@@ -4,6 +4,7 @@ import { artistRouter } from './artist-router/router';
 import { authRouter } from './auth-router/router';
 import { documentRouter } from './document-router/router';
 import { embeddingPresignRouter } from './embedding-router/_router';
+import { eventRouter } from './events-router/router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
 import { lpmRouter } from './lpm-router/router';
@@ -21,6 +22,7 @@ export const appRouter = router({
   profile: profileRouter,
   lpm: lpmRouter,
   artist: artistRouter,
+  event: eventRouter,
   document: documentRouter,
   field: fieldRouter,
   folder: folderRouter,

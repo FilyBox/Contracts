@@ -118,7 +118,7 @@ model Lpm {
   importDate                          String   @map("Import Date") @db.VarChar
   createdBy                           String   @map("Created By") @db.VarChar
   lastModified                        String   @map("Last Modified") @db.VarChar
-  submittedAt                         String   @map("Submitted At") @db.VarChar
+  submittedAt                         String?  @map("Submitted At") @db.VarChar
   submittedBy                         String?  @map("Submitted By") @db.VarChar
   vevoChannel                         String?  @map("Vevo Channel") @db.VarChar
   trackType                           String   @map("TrackType") @db.VarChar
@@ -200,12 +200,12 @@ model Artist {
   id            Int            @id @default(autoincrement())
   name          String?
   createdAt     DateTime       @default(now())
-  teamId        Int
-  team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId        Int?
+  team          Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   updatedAt     DateTime       @default(now()) @updatedAt
   roles         Role[]         @default([USER])
   avatarImageId String?
-  disabled      Boolean        @default(false)
+  disabled      Boolean?       @default(false)
   event         Event[]
   url           String?        @unique
   ArtistProfile ArtistProfile?

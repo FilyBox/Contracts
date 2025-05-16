@@ -38,7 +38,8 @@ export async function action({ request, params }: { request: Request; params: { 
   }
 
   const formData = await request.formData();
-  const title = formData.get('title') as string;
+  const titleValue = formData.get('title');
+  const title = typeof titleValue === 'string' ? titleValue : '';
   const description = formData.get('description') as string;
   const link = formData.get('link') as string;
   const explicit = formData.get('explicit') as string;

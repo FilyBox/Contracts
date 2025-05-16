@@ -22,63 +22,72 @@ export const artistRouter = router({
   createArtist: authenticatedProcedure
     .input(
       z.object({
-        name: z.string().min(1),
+        name: z.string().min(1).optional(),
         role: z.nativeEnum(Role).array().optional(),
         event: z.array(z.string()).optional(),
         song: z.array(z.string()).optional(),
         url: z.string().optional(),
+        createdAt: z.date().optional(),
+        updatedAt: z.date().optional(),
         disabled: z.boolean().optional(),
         teamId: z.number().optional(),
+        avatarImageId: z.string().optional(),
       }),
     )
-    .mutation(async ({ input, ctx }) => {
-      const { teamId, ...data } = input;
-
-      // Verificar permisos si es tarea de equipo
-      if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para crear tareas en este equipo');
+    .mutation(async ({ input }) => {
+      if (!input.name) {
+        throw new Error('El nombre del artista es obligatorio');
       }
 
-      return await prisma.artist.create({
-        data: {
-          ...data,
-          name: input.name,
-          roles: input.role?.map((role) => role || '') || [],
-          event: input.event
-            ? {
-                connect: input.event.map((eventId) => ({ id: Number(eventId) })),
-              }
-            : undefined,
-          songs: input.song
-            ? {
-                connect: input.song.map((songId) => ({ id: Number(songId) })),
-              }
-            : undefined,
-          url: input.url,
-          disabled: input.disabled,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-
-          // status: 'PENDING', // Removed as it is not defined in the Prisma schema
-          team: teamId ? { connect: { id: teamId } } : { create: undefined },
-        },
-      });
+      try {
+        return await prisma.artist.create({
+          data: {
+            name: input.name,
+            roles: input.role ?? [],
+            event: input.event
+              ? {
+                  connect: input.event.map((eventId) => ({ id: Number(eventId) })),
+                }
+              : undefined,
+            songs: input.song
+              ? {
+                  connect: input.song.map((songId) => ({ id: Number(songId) })),
+                }
+              : undefined,
+            url: input.url,
+            disabled: input.disabled ?? false,
+            createdAt: input.createdAt ?? new Date(),
+            updatedAt: input.updatedAt ?? new Date(),
+            team: input.teamId ? { connect: { id: input.teamId } } : undefined,
+            avatarImageId: input.avatarImageId,
+          },
+        });
+      } catch (error) {
+        console.error('Error al crear artista:', error);
+        throw error;
+      }
     }),
+
   findArtistById: authenticatedProcedure
     .input(z.object({ artistId: z.string() }))
-    .query(async ({ input }: { input: { artistId: string } }) => {
+    .query(async ({ input }) => {
       const { artistId } = input;
-      return await prisma.artist.findUnique({
-        where: { id: Number(artistId) },
-        include: {
-          team: true,
-          event: true,
-          songs: true,
-
-          // tags: true, // Removed because 'tags' is not a valid property in 'TaskInclude<DefaultArgs>'
-        },
-      });
+      try {
+        return await prisma.artist.findUnique({
+          where: { id: Number(artistId) },
+          include: {
+            team: true,
+            event: true,
+            songs: true,
+            ArtistProfile: true,
+          },
+        });
+      } catch (error) {
+        console.error('Error al buscar artista por ID:', error);
+        throw error;
+      }
     }),
+
   findArtists: authenticatedProcedure
     .input(
       z.object({
@@ -87,70 +96,92 @@ export const artistRouter = router({
     )
     .query(async ({ input }) => {
       const { teamId } = input;
-
-      return await prisma.artist.findMany({
-        where: {
-          teamId: teamId,
-        },
-        include: {
-          team: true,
-          event: true,
-          songs: true,
-        },
-      });
+      try {
+        return await prisma.artist.findMany({
+          where: {
+            teamId: teamId,
+          },
+          include: {
+            team: true,
+            event: true,
+            songs: true,
+            ArtistProfile: true,
+          },
+        });
+      } catch (error) {
+        console.error('Error al buscar artistas:', error);
+        throw error;
+      }
     }),
 
   updateArtist: authenticatedProcedure
     .input(
       z.object({
         ArtistId: z.number(),
-        name: z.string().min(1),
+        name: z.string().min(1).optional(),
         role: z.nativeEnum(Role).array().optional(),
         event: z.array(z.string()).optional(),
         song: z.array(z.string()).optional(),
         url: z.string().optional(),
         disabled: z.boolean().optional(),
         teamId: z.number().optional(),
+        avatarImageId: z.string().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const { ArtistId, teamId, ...data } = input;
 
-      // Verificar permisos si es tarea de equipo
       if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para crear tareas en este equipo');
+        console.error('Permiso denegado para actualizar artista en este equipo', {
+          ctxTeamId: ctx.teamId,
+          inputTeamId: teamId,
+        });
+        throw new Error('No tienes permisos para actualizar artistas en este equipo');
       }
 
-      return await prisma.artist.update({
-        where: { id: Number(ArtistId) },
-        data: {
-          ...data,
-          name: input.name,
-          roles: input.role?.map((role) => role || '') || [],
-          event: input.event
-            ? {
-                connect: input.event.map((eventId) => ({ id: Number(eventId) })),
-              }
-            : undefined,
-          songs: input.song
-            ? {
-                connect: input.song.map((songId) => ({ id: Number(songId) })),
-              }
-            : undefined,
-          url: input.url,
-          disabled: input.disabled,
-          updatedAt: new Date(),
-        },
-      });
+      try {
+        return await prisma.artist.update({
+          where: { id: Number(ArtistId) },
+          data: {
+            ...data,
+            name: input.name,
+            roles: input.role ?? [],
+            event: input.event
+              ? {
+                  set: [],
+                  connect: input.event.map((eventId) => ({ id: Number(eventId) })),
+                }
+              : undefined,
+            songs: input.song
+              ? {
+                  set: [],
+                  connect: input.song.map((songId) => ({ id: Number(songId) })),
+                }
+              : undefined,
+            url: input.url,
+            disabled: input.disabled,
+            updatedAt: new Date(),
+            team: teamId ? { connect: { id: teamId } } : undefined,
+            avatarImageId: input.avatarImageId,
+          },
+        });
+      } catch (error) {
+        console.error('Error al actualizar artista:', error);
+        throw error;
+      }
     }),
 
   deleteArtist: authenticatedProcedure
     .input(z.object({ artistId: z.number() }))
     .mutation(async ({ input }) => {
       const { artistId } = input;
-
-      return await prisma.artist.delete({
-        where: { id: Number(artistId) },
-      });
+      try {
+        return await prisma.artist.delete({
+          where: { id: Number(artistId) },
+        });
+      } catch (error) {
+        console.error('Error al eliminar artista:', error);
+        throw error;
+      }
     }),
 });
