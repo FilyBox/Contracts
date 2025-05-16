@@ -39,7 +39,7 @@ const formSchema = z.object({
   upc: z.string(),
   catalog: z.string(),
   productPriceTier: z.string().optional(),
-  productGenre: z.string(),
+  productGenre: z.array(z.string()).default([]),
   submissionStatus: z.string(),
   productCLine: z.string(),
   productPLine: z.string(),
@@ -115,6 +115,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       withholdMechanicals: 'No',
       continuousMix: 'No',
       continuouslyMixedIndividualSong: 'No',
+      productGenre: [],
 
       // Add default empty strings for all optional fields
       productVersion: '',
@@ -158,13 +159,31 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
     }
   }, [form, initialData]);
 
+  useEffect(() => {
+    if (initialData?.productGenre) {
+      // Convertir string a array si es necesario
+      const genres =
+        typeof initialData.productGenre === 'string'
+          ? initialData.productGenre.split(',').filter(Boolean)
+          : initialData.productGenre;
+
+      form.setValue('productGenre', genres);
+    }
+  }, [initialData, form]);
+
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true);
       const dataToSubmit = initialData?.id ? { ...values, id: initialData.id } : values;
       console.log('Form submitted:', dataToSubmit);
+      const dataToSend = {
+        ...dataToSubmit,
+        productGenre: Array.isArray(dataToSubmit.productGenre)
+          ? dataToSubmit.productGenre.join(',')
+          : dataToSubmit.productGenre,
+      };
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      await onSubmit(dataToSubmit as unknown as lpm);
+      await onSubmit(dataToSend as unknown as lpm);
       console.log('Form submitted successfully', values);
       toast({
         description: 'Data submitted successfully',
@@ -521,7 +540,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         />
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
+                      {/* <div className="col-span-12 md:col-span-6">
                         <FormField
                           control={form.control}
                           name="productGenre"
@@ -542,6 +561,124 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                   ))}
                                 </SelectContent>
                               </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div> */}
+
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="productGenre"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Género Musical (múltiple)</FormLabel>
+                              <div className="relative">
+                                <Select
+                                  onValueChange={(value) => {
+                                    const currentValues = Array.isArray(field.value)
+                                      ? field.value
+                                      : [];
+                                    // Si el valor ya está seleccionado, lo eliminamos
+                                    if (currentValues.includes(value)) {
+                                      field.onChange(
+                                        currentValues.filter((item: string) => item !== value),
+                                      );
+                                    } else {
+                                      // Si no está seleccionado, lo añadimos al array
+                                      field.onChange([...currentValues, value]);
+                                    }
+                                  }}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue
+                                        placeholder="Selecciona géneros"
+                                        className="truncate"
+                                      >
+                                        {Array.isArray(field.value) && field.value.length > 0
+                                          ? field.value
+                                              .map((value: string) => {
+                                                const option = genreOptions.find(
+                                                  (opt) => opt.value === value,
+                                                );
+                                                return option ? option.label : value;
+                                              })
+                                              .join(', ')
+                                          : 'Selecciona géneros'}
+                                      </SelectValue>
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {genreOptions.map((option) => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <div className="border-primary flex h-4 w-4 items-center justify-center rounded-sm border">
+                                            {Array.isArray(field.value) &&
+                                              field.value.includes(option.value) && (
+                                                <svg
+                                                  xmlns="http://www.w3.org/2000/svg"
+                                                  viewBox="0 0 24 24"
+                                                  fill="none"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  className="h-3 w-3"
+                                                >
+                                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                              )}
+                                          </div>
+                                          <span>{option.label}</span>
+                                        </div>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="mt-1.5 flex flex-wrap gap-1">
+                                {Array.isArray(field.value) &&
+                                  field.value.map((value: string) => {
+                                    const option = genreOptions.find((opt) => opt.value === value);
+                                    return (
+                                      <div
+                                        key={value}
+                                        className="bg-secondary text-secondary-foreground flex items-center rounded-md px-2 py-1 text-xs"
+                                      >
+                                        {option?.label || value}
+                                        <button
+                                          type="button"
+                                          className="text-secondary-foreground/70 hover:text-secondary-foreground ml-1"
+                                          onClick={() => {
+                                            field.onChange(
+                                              field.value.filter((item: string) => item !== value),
+                                            );
+                                          }}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="h-3 w-3"
+                                          >
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    );
+                                  })}
+                              </div>
                               <FormMessage />
                             </FormItem>
                           )}
