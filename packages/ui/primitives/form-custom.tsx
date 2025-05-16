@@ -153,7 +153,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       Object.keys(initialData).forEach((key) => {
         if (key !== 'id') {
           // Skip the id field
-          // @ts-ignore - We know these fields exist in our form schema
+          // @ts-expect-error - We know these fields exist in our form schema
           form.setValue(key, initialData[key]);
         }
       });
@@ -207,7 +207,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       'submittedAt',
     ];
 
-    const isValid = await form.trigger(productFields as any);
+    const isValid = await form.trigger(productFields as lpm);
 
     if (isValid) {
       setStep('TRACK_INFO');

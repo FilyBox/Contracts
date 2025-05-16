@@ -63,6 +63,8 @@ COPY --from=builder /app/out/package-lock.json ./package-lock.json
 
 COPY --from=builder /app/lingui.config.ts ./lingui.config.ts
 
+RUN npm install @rollup/rollup-linux-x64-musl --no-save || echo "Optional dependency failed, continuing"
+
 RUN npm ci
 
 # Then copy all the source code (as it changes more often)
