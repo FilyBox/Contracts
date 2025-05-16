@@ -96,6 +96,8 @@ COPY --from=builder --chown=nodejs:nodejs /app/out/json/ .
 # Copy the tailwind config files across
 COPY --from=builder --chown=nodejs:nodejs /app/out/full/packages/tailwind-config ./packages/tailwind-config
 
+RUN npm install @rollup/rollup-linux-x64-musl --no-save || echo "Optional dependency failed, continuing"
+
 RUN npm ci --only=production
 
 # Automatically leverage output traces to reduce image size
