@@ -27,10 +27,6 @@ export const AppNavMobile = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileProps
 
   const menuNavigationLinks = [
     {
-      href: '/chatspace',
-      text: msg`Chats`,
-    },
-    {
       href: `${rootHref}/documents`,
       text: msg`Documents`,
     },
