@@ -13,16 +13,16 @@ import { Button } from '@documenso/ui/primitives/button';
 
 const navigationLinks = [
   {
-    href: '/chatspace',
-    label: msg`Chats`,
-  },
-  {
     href: '/documents',
     label: msg`Documents`,
   },
   {
     href: '/templates',
     label: msg`Templates`,
+  },
+  {
+    href: '/music',
+    label: msg`Music`,
   },
 ];
 

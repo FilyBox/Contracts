@@ -31,7 +31,15 @@ export const ZFindTeamMembersResponseSchema = ZFindResultResponse.extend({
   }).array(),
 });
 
+export const ZFindTeamMembersLimitedResponseSchema = ZFindResultResponse.extend({
+  data: UserSchema.pick({
+    name: true,
+    email: true,
+  }).array(),
+});
+
 export type TFindTeamMembersResponse = z.infer<typeof ZFindTeamMembersResponseSchema>;
+export type TFindTeamMembersLimitedResponse = z.infer<typeof ZFindTeamMembersLimitedResponseSchema>;
 
 export const findTeamMembers = async ({
   userId,
@@ -104,6 +112,88 @@ export const findTeamMembers = async ({
       where: whereClause,
     }),
   ]);
+
+  return {
+    data,
+    count,
+    currentPage: Math.max(page, 1),
+    perPage,
+    totalPages: Math.ceil(count / perPage),
+  } satisfies FindResultResponse<typeof data>;
+};
+
+export const findTeamMembersLimited = async ({
+  userId,
+  teamId,
+  query,
+  page = 1,
+  perPage = 10,
+  orderBy,
+}: FindTeamMembersOptions): Promise<TFindTeamMembersLimitedResponse> => {
+  const orderByColumn = orderBy?.column ?? 'name';
+  const orderByDirection = orderBy?.direction ?? 'desc';
+
+  // Check that the user belongs to the team they are trying to find members in.
+  const userTeam = await prisma.team.findUniqueOrThrow({
+    where: {
+      id: teamId,
+      members: {
+        some: {
+          userId,
+        },
+      },
+    },
+  });
+
+  const termFilters: Prisma.TeamMemberWhereInput | undefined = match(query)
+    .with(P.string.minLength(1), () => ({
+      user: {
+        name: {
+          contains: query,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+    }))
+    .otherwise(() => undefined);
+
+  const whereClause: Prisma.TeamMemberWhereInput = {
+    ...termFilters,
+    teamId: userTeam.id,
+  };
+
+  let orderByClause: Prisma.TeamMemberOrderByWithRelationInput = {
+    [orderByColumn]: orderByDirection,
+  };
+
+  // Name field is nested in the user so we have to handle it differently.
+  if (orderByColumn === 'name') {
+    orderByClause = {
+      user: {
+        name: orderByDirection,
+      },
+    };
+  }
+
+  const teamMembers = await prisma.teamMember.findMany({
+    where: whereClause,
+    skip: Math.max(page - 1, 0) * perPage,
+    take: perPage,
+    orderBy: orderByClause,
+    select: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  const count = await prisma.teamMember.count({
+    where: whereClause,
+  });
+
+  const data = teamMembers.map((member) => member.user);
 
   return {
     data,

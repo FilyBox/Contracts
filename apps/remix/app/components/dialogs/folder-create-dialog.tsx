@@ -55,6 +55,7 @@ export const CreateFolderDialog = ({ trigger, ...props }: CreateFolderDialogProp
   const team = useOptionalCurrentTeam();
 
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const { mutateAsync: createFolder } = trpc.folder.createFolder.useMutation();
 
@@ -66,6 +67,7 @@ export const CreateFolderDialog = ({ trigger, ...props }: CreateFolderDialogProp
   });
 
   const onSubmit = async (data: TCreateFolderFormSchema) => {
+    setIsCreating(true);
     try {
       const newFolder = await createFolder({
         name: data.name,
@@ -100,6 +102,8 @@ export const CreateFolderDialog = ({ trigger, ...props }: CreateFolderDialogProp
         description: _(msg`An unknown error occurred while creating the folder.`),
         variant: 'destructive',
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -149,11 +153,14 @@ export const CreateFolderDialog = ({ trigger, ...props }: CreateFolderDialogProp
                 type="button"
                 variant="secondary"
                 onClick={() => setIsCreateFolderOpen(false)}
+                disabled={isCreating}
               >
                 Cancel
               </Button>
 
-              <Button type="submit">Create</Button>
+              <Button type="submit" loading={isCreating} disabled={isCreating}>
+                Create
+              </Button>
             </DialogFooter>
           </form>
         </Form>
