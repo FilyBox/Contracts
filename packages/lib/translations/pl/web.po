@@ -680,6 +680,10 @@ msgstr "Akceptacja i Zgoda"
 msgid "Accepted team invitation"
 msgstr "Akceptowane zaproszenie do zespołu"
 
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Acciones"
+msgstr ""
+
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 msgid "Account Authentication"
 msgstr "Uwierzytelnianie konta"
@@ -886,6 +890,8 @@ msgstr "Po podpisaniu dokumentu elektronicznie, otrzymasz możliwość obejrzeni
 msgid "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 msgstr "Po przesłaniu dokumentu zostanie automatycznie wygenerowany i dodany do Twojej strony dokumentów. Otrzymasz również powiadomienie pocztą elektroniczną."
 
+#: apps/remix/app/components/general/task/task-status.tsx
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "All"
 msgstr "Wszystko"
@@ -1282,6 +1288,10 @@ msgstr "Czy na pewno?"
 msgid "Artist created successfully"
 msgstr ""
 
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Asignados"
+msgstr ""
+
 #: packages/lib/constants/recipient-roles.ts
 msgid "Assist"
 msgstr "Asysta"
@@ -1400,6 +1410,10 @@ msgstr "Fakturowanie"
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Black"
 msgstr "Czarny"
+
+#: apps/remix/app/components/general/task/task-status.tsx
+msgid "Blocked"
+msgstr ""
 
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Blue"
@@ -1527,6 +1541,7 @@ msgstr "Może przygotować"
 #: apps/remix/app/components/dialogs/team-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 #: apps/remix/app/components/dialogs/team-checkout-create-dialog.tsx
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 #: apps/remix/app/components/dialogs/document-resend-dialog.tsx
@@ -1542,6 +1557,10 @@ msgstr "Może przygotować"
 #: packages/ui/primitives/document-flow/field-item-advanced-settings.tsx
 msgid "Cancel"
 msgstr "Anuluj"
+
+#: apps/remix/app/components/general/task/task-status.tsx
+msgid "Cancelled"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
 msgid "Cancelled by user"
@@ -1725,6 +1744,7 @@ msgstr "Zakończ wyświetlanie"
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
+#: apps/remix/app/components/general/task/task-status.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 #: packages/lib/constants/document.ts
 #: packages/email/template-components/template-document-self-signed.tsx
@@ -1969,6 +1989,10 @@ msgstr "Utwórz nowe konto"
 msgid "Create a new artist with details like name, roles, events, songs, and url."
 msgstr ""
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Create a new task with details like title, description, priority and due date."
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 msgid "Create a team to collaborate with your team members."
 msgstr "Utwórz zespół, aby współpracować z członkami zespołu."
@@ -2011,6 +2035,10 @@ msgstr "Utwórz dokument z szablonu"
 msgid "Create New Artist"
 msgstr ""
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Create New Task"
+msgstr ""
+
 #: apps/remix/app/routes/_profile+/_layout.tsx
 msgid "Create now"
 msgstr "Utwórz teraz"
@@ -2022,6 +2050,10 @@ msgstr "Utwórz jeden automatycznie"
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "Create signing links"
 msgstr "Utwórz linki do podpisania"
+
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Create Task"
+msgstr ""
 
 #: apps/remix/app/components/general/menu-switcher.tsx
 #: apps/remix/app/components/general/menu-switcher.tsx
@@ -2096,6 +2128,10 @@ msgstr "Utworzone w"
 #: apps/remix/app/routes/_authenticated+/settings+/tokens.tsx
 msgid "Created on {0}"
 msgstr "Utworzono {0}"
+
+#: apps/remix/app/components/general/task/task-priority.tsx
+msgid "Critical"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "CSV Structure"
@@ -2259,6 +2295,10 @@ msgstr "Usunięto"
 msgid "Deleting account..."
 msgstr "Usuwanie konta..."
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Description"
+msgstr ""
+
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 msgid "Details"
 msgstr "Szczegóły"
@@ -2411,6 +2451,8 @@ msgstr "Dostęp do dokumentu"
 msgid "Document access auth updated"
 msgstr "Zaktualizowano autoryzację dostępu do dokumentu"
 
+#: apps/remix/app/components/general/task/task-status.tsx
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Document All"
 msgstr "Wszystkie dokumenty"
@@ -2425,6 +2467,8 @@ msgstr "Dokument zatwierdzony"
 msgid "Document Cancelled"
 msgstr "Dokument anulowany"
 
+#: apps/remix/app/components/general/task/task-status.tsx
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 #: packages/lib/utils/document-audit-logs.ts
 #: packages/lib/utils/document-audit-logs.ts
@@ -2491,6 +2535,7 @@ msgstr "Dokument usunięty!"
 msgid "Document Distribution Method"
 msgstr "Metoda dystrybucji dokumentu"
 
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Document draft"
 msgstr "Szkic dokumentu"
@@ -2499,6 +2544,7 @@ msgstr "Szkic dokumentu"
 msgid "Document Duplicated"
 msgstr "Dokument zduplikowany"
 
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Document error"
 msgstr ""
@@ -2565,6 +2611,8 @@ msgstr "Dokument nie jest już dostępny do podpisania"
 msgid "Document opened"
 msgstr "Dokument otwarty"
 
+#: apps/remix/app/components/general/task/task-status.tsx
+#: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Document pending"
 msgstr "Dokument w toku"
@@ -2779,6 +2827,10 @@ msgstr "Lista rozwijana"
 msgid "Dropdown options"
 msgstr "Opcje rozwijane"
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Due Date"
+msgstr ""
+
 #: apps/remix/app/components/general/teams/team-layout-billing-banner.tsx
 msgid "Due to an unpaid invoice, your team has been restricted. Please settle the payment to restore full access to your team."
 msgstr "Z powodu nieopłaconej faktury Twój zespół został ograniczony. Proszę uregulować płatność, aby przywrócić pełny dostęp do zespołu."
@@ -2815,6 +2867,10 @@ msgstr "Edytuj szablon"
 msgid "Edit webhook"
 msgstr "Edytuj webhook"
 
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Editar"
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Electronic Delivery of Documents"
 msgstr "Elektroniczna dostawa dokumentów"
@@ -2822,6 +2878,10 @@ msgstr "Elektroniczna dostawa dokumentów"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Electronic Signature Disclosure"
 msgstr "Ujawnienie podpisu elektronicznego"
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Eliminar"
+msgstr ""
 
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/certificate.tsx
@@ -3040,8 +3100,17 @@ msgstr "Wprowadź swój tekst tutaj"
 msgid "Error"
 msgstr "Błąd"
 
+#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Error al cargar las tareas"
+msgstr ""
+
 #: apps/remix/app/components/embed/authoring/configure-document-upload.tsx
 msgid "Error uploading file"
+msgstr ""
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Estado"
 msgstr ""
 
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
@@ -3078,6 +3147,10 @@ msgstr ""
 msgid "Failed to create folder"
 msgstr ""
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Failed to create task"
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 msgid "Failed to reseal document"
 msgstr "Nie udało się ponownie zaplombować dokumentu"
@@ -3106,6 +3179,10 @@ msgstr "Nie udało się zaktualizować webhooku"
 #: packages/email/templates/bulk-send-complete.tsx
 msgid "Failed: {failedCount}"
 msgstr "Niepowodzenia: {failedCount}"
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Fecha límite"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/text-field.tsx
 msgid "Field character limit"
@@ -3346,6 +3423,10 @@ msgstr "Ukryj"
 msgid "Hide additional information"
 msgstr "Ukryj dodatkowe informacje"
 
+#: apps/remix/app/components/general/task/task-priority.tsx
+msgid "High"
+msgstr ""
+
 #: packages/lib/constants/recipient-roles.ts
 msgid "I am a signer of this document"
 msgstr "Jestem sygnatariuszem tego dokumentu"
@@ -3390,6 +3471,10 @@ msgstr "Jeśli nie znajdziesz linku potwierdzającego w swojej skrzynce odbiorcz
 #: apps/remix/app/components/forms/2fa/enable-authenticator-app-dialog.tsx
 msgid "If your authenticator app does not support QR codes, you can use the following code instead:"
 msgstr "Jeśli Twoja aplikacja uwierzytelniająca nie obsługuje kodów QR, możesz użyć poniższego kodu:"
+
+#: apps/remix/app/components/general/task/task-status.tsx
+msgid "In Progress"
+msgstr ""
 
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "Inbox"
@@ -3642,6 +3727,10 @@ msgstr "Ładowanie..."
 msgid "Login"
 msgstr "Zaloguj się"
 
+#: apps/remix/app/components/general/task/task-priority.tsx
+msgid "Low"
+msgstr ""
+
 #: apps/remix/app/components/tables/user-settings-current-teams-table.tsx
 msgid "Manage"
 msgstr "Zarządzaj"
@@ -3748,6 +3837,10 @@ msgstr "Max"
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "Maximum file size: 4MB. Maximum 100 rows per upload. Blank values will use template defaults."
 msgstr "Maksymalny rozmiar pliku: 4MB. Maksymalnie 100 wierszy na przesyłkę. Puste wartości zostaną zastąpione domyślnymi z szablonu."
+
+#: apps/remix/app/components/general/task/task-priority.tsx
+msgid "Medium"
+msgstr ""
 
 #: packages/lib/constants/teams.ts
 msgid "Member"
@@ -3906,6 +3999,10 @@ msgstr ""
 msgid "New Password"
 msgstr "Nowe hasło"
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "New Task"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-transfer-dialog.tsx
 msgid "New team owner"
 msgstr "Nowy właściciel zespołu"
@@ -3934,6 +4031,14 @@ msgstr "Brak aktywnych szkiców"
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
 msgid "No further action is required from you at this time."
 msgstr "Nie są wymagane żadne dalsze działania z Twojej strony w tym momencie."
+
+#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+msgid "No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar."
+msgstr ""
+
+#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+msgid "No hay tareas"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.billing.tsx
 msgid "No payment required"
@@ -4229,6 +4334,7 @@ msgstr "Płatność zaległa"
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
+#: apps/remix/app/components/general/task/task-status.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 #: apps/remix/app/components/general/document/document-page-view-recipients.tsx
 #: packages/ui/components/document/document-read-only-fields.tsx
@@ -4399,6 +4505,7 @@ msgid "Please try again and make sure you enter the correct email address."
 msgstr "Spróbuj ponownie i upewnij się, że wprowadzasz poprawny adres email."
 
 #: apps/remix/app/components/dialogs/template-create-dialog.tsx
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 msgid "Please try again later."
 msgstr "Proszę spróbować ponownie później."
@@ -4435,6 +4542,14 @@ msgstr "Podgląd"
 #: apps/remix/app/components/general/direct-template/direct-template-page.tsx
 msgid "Preview and configure template."
 msgstr "Podgląd i konfiguracja szablonu."
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Prioridad"
+msgstr ""
+
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Priority"
+msgstr ""
 
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/general/template/template-type.tsx
@@ -5480,6 +5595,23 @@ msgstr "Wymagania systemowe"
 msgid "System Theme"
 msgstr "Motyw systemowy"
 
+#: apps/remix/app/routes/_authenticated+/tasks._index.tsx
+msgid "Tareas"
+msgstr ""
+
+#: apps/remix/app/components/general/task/task-status.tsx
+#: apps/remix/app/components/general/task/task-status.tsx
+msgid "Task cancelled"
+msgstr ""
+
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Task created successfully"
+msgstr ""
+
+#: apps/remix/app/components/general/task/task-status.tsx
+msgid "Task in progress"
+msgstr ""
+
 #: apps/remix/app/components/tables/user-settings-pending-teams-table.tsx
 #: apps/remix/app/components/tables/user-settings-current-teams-table.tsx
 msgid "Team"
@@ -5935,6 +6067,14 @@ msgstr "Link do podpisu został skopiowany do schowka."
 msgid "The site banner is a message that is shown at the top of the site. It can be used to display important information to your users."
 msgstr "Baner strony to wiadomość, która jest wyświetlana u góry strony. Może być używany do wyświetlania ważnych informacji użytkownikom."
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "The specified project does not exist or you don't have access."
+msgstr ""
+
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "The specified team does not exist or you don't have access."
+msgstr ""
+
 #: packages/email/templates/team-email-removed.tsx
 msgid "The team email <0>{teamEmail}</0> has been removed from the following team"
 msgstr "Email zespołowy <0>{teamEmail}</0> został usunięty z następującego zespołu"
@@ -6265,6 +6405,7 @@ msgstr "Strefa czasowa"
 #: apps/remix/app/components/tables/documents-chatspace-table.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-view.tsx
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: packages/ui/primitives/document-flow/add-settings.tsx
 msgid "Title"
 msgstr "Tytuł"
@@ -6272,6 +6413,10 @@ msgstr "Tytuł"
 #: packages/ui/primitives/document-flow/add-settings.types.ts
 msgid "Title cannot be empty"
 msgstr "Tytuł nie może być pusty"
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Título"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/team.invite.$token.tsx
 msgid "To accept this invitation you must create an account."
@@ -6762,6 +6907,10 @@ msgstr "Nie znaleziono użytkownika."
 msgid "User profiles are here!"
 msgstr "Profile użytkowników są tutaj!"
 
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "User session is invalid. Please log in again."
+msgstr ""
+
 #: apps/remix/app/components/general/menu-switcher.tsx
 msgid "User settings"
 msgstr "Ustawienia użytkownika"
@@ -6788,6 +6937,10 @@ msgstr "Walidacja"
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/number-field.tsx
 msgid "Value"
 msgstr "Wartość"
+
+#: apps/remix/app/components/general/task/tasks-list.tsx
+msgid "Ver detalles"
+msgstr ""
 
 #: apps/remix/app/components/general/verify-email-banner.tsx
 msgid "Verification Email Sent"
@@ -7746,6 +7899,10 @@ msgstr "Twoje kody odzyskiwania są wymienione poniżej. Proszę przechowywać j
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.billing.tsx
 msgid "Your subscription is currently active."
 msgstr "Twoja subskrypcja jest aktualnie aktywna."
+
+#: apps/remix/app/components/dialogs/task-create-dialog.tsx
+msgid "Your task has been created. You will be redirected to the task page."
+msgstr ""
 
 #: apps/remix/app/components/dialogs/team-create-dialog.tsx
 msgid "Your team has been created."
