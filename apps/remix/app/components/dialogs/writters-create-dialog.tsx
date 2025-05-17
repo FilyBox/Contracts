@@ -21,25 +21,25 @@ import {
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
-type ArtistCreateDialogProps = {
+type WrittersCreateDialogProps = {
   teamId?: number;
 };
 
-type Role = 'USER' | 'ADMIN'; // Enum según tu backend
+type Role = 'WRITER' | 'COMPOSER' | 'ARRANGER' | 'PRODUCER' | 'MIXER' | 'MASTERING_ENGINEER'; // Enum según tu backend
 
-export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps) => {
+export const WrittersCreateDialog = ({ teamId: _teamId }: WrittersCreateDialogProps) => {
   const { user } = useSession();
   const { toast } = useToast();
   const { _ } = useLingui();
 
-  const { mutateAsync: createArtist } = trpc.artist.createArtist.useMutation();
+  const { mutateAsync: createWritter } = trpc.writer.createWriter.useMutation();
 
-  const [showArtistCreateDialog, setShowArtistCreateDialog] = useState(false);
-  const [isCreatingArtist, setIsCreatingArtist] = useState(false);
-  const [artistData, setArtistData] = useState<{
+  const [showWrittersCreateDialog, setShowWrittersCreateDialog] = useState(false);
+  const [isCreatingWritter, setisCreatingWritter] = useState(false);
+  const [writterData, setwritterData] = useState<{
     name: string;
     role: Role[];
-    event: string[];
+    // event: string[];
     song: string[];
     url: string;
     disabled?: boolean;
@@ -47,7 +47,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
   }>({
     name: '',
     role: [],
-    event: [],
+    // event: [],
     song: [],
     url: '',
     disabled: false,
@@ -57,72 +57,72 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'teamId') {
-      setArtistData((prev) => ({ ...prev, teamId: value ? Number(value) : undefined }));
+      setwritterData((prev) => ({ ...prev, teamId: value ? Number(value) : undefined }));
     } else {
-      setArtistData((prev) => ({ ...prev, [name]: value }));
+      setwritterData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setArtistData((prev) => ({ ...prev, [name]: value ? [value as Role] : [] }));
+    setwritterData((prev) => ({ ...prev, [name]: value ? [value as Role] : [] }));
   };
 
-  const onCreateArtist = async () => {
-    if (isCreatingArtist || !user.id) return;
-    setIsCreatingArtist(true);
+  const oncreateWritter = async () => {
+    if (isCreatingWritter || !user.id) return;
+    setisCreatingWritter(true);
 
     try {
-      await createArtist({
-        name: artistData.name,
-        role: artistData.role,
-        event: artistData.event,
-        song: artistData.song,
-        url: artistData.url,
-        disabled: artistData.disabled,
-        teamId: artistData.teamId,
+      await createWritter({
+        name: writterData.name,
+        role: writterData.role,
+        // event: writterData.event,
+        song: writterData.song,
+        url: writterData.url,
+        disabled: writterData.disabled,
+        teamId: writterData.teamId,
       });
 
       toast({
-        title: _(msg`Artist created successfully`),
-        description: _(msg`Your artist has been created.`),
+        title: _(msg`writter created successfully`),
+        description: _(msg`Your writter has been created.`),
         duration: 5000,
       });
 
-      setShowArtistCreateDialog(false);
-      setIsCreatingArtist(false);
+      setShowWrittersCreateDialog(false);
+      setisCreatingWritter(false);
     } catch (error) {
       toast({
-        title: _(msg`Failed to create artist`),
+        title: _(msg`Failed to create writter`),
         description: _(msg`Please try again later.`),
         variant: 'destructive',
       });
-      setIsCreatingArtist(false);
+      setisCreatingWritter(false);
     }
   };
 
-  const canCreateArtist = Boolean(user.id) && !isCreatingArtist && artistData.name;
+  const cancreateWritter = Boolean(user.id) && !isCreatingWritter && writterData.name;
 
   return (
     <Dialog
-      open={showArtistCreateDialog}
-      onOpenChange={(value) => !isCreatingArtist && setShowArtistCreateDialog(value)}
+      open={showWrittersCreateDialog}
+      onOpenChange={(value) => !isCreatingWritter && setShowWrittersCreateDialog(value)}
     >
       <DialogTrigger asChild>
         <Button className="m-1 cursor-pointer" disabled={!user.emailVerified}>
           <FilePlus className="-ml-1 mr-2 h-4 w-4" />
-          <Trans>New Artist</Trans>
+          <Trans>New writter</Trans>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="w-full max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Create New Artist</Trans>
+            <Trans>Create New writter</Trans>
           </DialogTitle>
           <DialogDescription>
             <Trans>
-              Create a new artist with details like name, roles, events, songs, and url.
+              Create a new writter with details like name, roles, events, songs, and url.
             </Trans>
           </DialogDescription>
         </DialogHeader>
@@ -135,7 +135,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
             <Input
               id="name"
               name="name"
-              value={artistData.name}
+              value={writterData.name}
               onChange={handleInputChange}
               className="mt-1"
               required
@@ -149,7 +149,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
             <Input
               id="url"
               name="url"
-              value={artistData.url}
+              value={writterData.url}
               onChange={handleInputChange}
               className="mt-1"
             />
@@ -161,18 +161,27 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
             <select
               id="role"
               name="role"
-              value={artistData.role[0] || ''}
+              value={writterData.role[0] || ''}
               onChange={handleSelectChange}
               className="mt-1"
             >
-              <option value="">
-                <Trans>Select role</Trans>
+              <option value="WRITER">
+                <Trans>Writer</Trans>
               </option>
-              <option value="USER">
-                <Trans>user</Trans>
+              <option value="COMPOSER">
+                <Trans>Composer</Trans>
               </option>
-              <option value="ADMIN">
-                <Trans>admin</Trans>
+              <option value="ARRANGER">
+                <Trans>Arranger</Trans>
+              </option>
+              <option value="PRODUDER">
+                <Trans>Producer</Trans>
+              </option>
+              <option value="MIXER">
+                <Trans>Mixer</Trans>
+              </option>
+              <option value="MASTERING_ENGINEER">
+                <Trans>Mastering Engineer</Trans>
               </option>
             </select>
           </div>
@@ -185,14 +194,14 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
               id="teamId"
               name="teamId"
               type="number"
-              value={artistData.teamId ?? ''}
+              value={writterData.teamId ?? ''}
               onChange={handleInputChange}
               className="mt-1"
             />
           </div>
         </div>
 
-        {isCreatingArtist && (
+        {isCreatingWritter && (
           <div className="flex items-center justify-center rounded-lg py-4">
             <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
           </div>
@@ -200,12 +209,12 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary" disabled={isCreatingArtist}>
+            <Button type="button" variant="secondary" disabled={isCreatingWritter}>
               <Trans>Cancel</Trans>
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onCreateArtist} disabled={!canCreateArtist}>
-            <Trans>Create Artist</Trans>
+          <Button type="button" onClick={oncreateWritter} disabled={!cancreateWritter}>
+            <Trans>Create writter</Trans>
           </Button>
         </DialogFooter>
       </DialogContent>

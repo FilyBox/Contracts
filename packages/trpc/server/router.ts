@@ -16,12 +16,14 @@ import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
 import { router } from './trpc';
 import { webhookRouter } from './webhook-router/router';
+import { writerRouter } from './writers-router/router';
 
 export const appRouter = router({
   auth: authRouter,
   profile: profileRouter,
-  lpm: lpmRouter,
+  Lpm: lpmRouter,
   artist: artistRouter,
+  writer: writerRouter,
   event: eventRouter,
   document: documentRouter,
   field: fieldRouter,

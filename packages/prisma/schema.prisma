@@ -36,6 +36,7 @@ enum Role {
   USER
 }
 
+
 model User {
   id               Int              @id @default(autoincrement())
   name             String?
@@ -144,6 +145,8 @@ model Lpm {
   explicitLyricsTrack                 String   @map("Explicit Lyrics") @db.VarChar
   albumOnly                           String   @map("Album Only") @db.VarChar
   lyrics                              String?  @map("Lyrics") @db.VarChar
+  writersId                           Int?
+  writers                             Writers? @relation(fields: [writersId], references: [id], onDelete: Cascade)
   additionalContributorsPerforming    String?  @map("AdditionalContributorsPerforming") @db.VarChar
   additionalContributorsNonPerforming String?  @map("AdditionalContributorsNonPerforming") @db.VarChar
   producers                           String?  @map("Producers") @db.VarChar
@@ -195,6 +198,34 @@ enum SongType {
   PERFORMANCE
   SYNCHRONIZATION
 }
+
+model Writers{
+  id            Int            @id @default(autoincrement())
+  name          String?
+  createdAt     DateTime       @default(now())
+  teamId        Int?
+  // team          Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  updatedAt     DateTime       @default(now()) @updatedAt
+  songroles         songRoles[]         @default([WRITER])
+  avatarImageId String?
+  disabled      Boolean?       @default(false)
+  // event         Event[]
+  lpm          Lpm[]
+  url           String?        @unique
+
+  // ArtistProfile ArtistProfile?
+
+}
+
+enum songRoles {
+  WRITER
+  COMPOSER
+  ARRANGER
+  PRODUCER
+  MIXER
+  MASTERING_ENGINEER
+}
+
 
 model Artist {
   id            Int            @id @default(autoincrement())

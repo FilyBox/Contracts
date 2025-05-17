@@ -25,7 +25,7 @@ const navigationLinks = [
     label: msg`Tasks`,
   },
   {
-    href: '/lpm',
+    href: '/music',
     label: msg`Songs`,
   },
 ];

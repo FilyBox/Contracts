@@ -120,7 +120,7 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
       onOpenChange={(value) => !isCreatingEvent && setShowEventCreateDialog(value)}
     >
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" disabled={!user.emailVerified}>
+        <Button className="m-1 cursor-pointer" disabled={!user.emailVerified}>
           <FilePlus className="-ml-1 mr-2 h-4 w-4" />
           <Trans>New Event</Trans>
         </Button>
@@ -177,30 +177,6 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
               className="mt-1"
             />
           </div>
-          {/*
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-100">
-              <Trans>Role</Trans>
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={EventData.role[0] || ''}
-              onChange={handleSelectChange}
-              className="mt-1"
-            >
-              <option value="">
-                <Trans>Select role</Trans>
-              </option>
-              <option value="USER">
-                <Trans>user</Trans>
-              </option>
-              <option value="ADMIN">
-                <Trans>admin</Trans>
-              </option>
-            </select>
-          </div> */}
-
           <div>
             <label htmlFor="teamId" className="block text-sm font-medium text-gray-100">
               <Trans>Team Id</Trans>
