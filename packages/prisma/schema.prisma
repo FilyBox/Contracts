@@ -218,6 +218,30 @@ model lpm {
   trackPlayLink                       String?  @map("Track Play Link")
 }
 
+model Releases {
+  id             Int            @id @default(autoincrement())
+  date           String?
+  artist         String?
+  lanzamiento    String?
+  typeOfRelease  TypeOfRelease?
+  release        Release?
+  uploaded       String?
+  streamingLink  String?
+  assets         String?
+  canvas         Boolean?
+  cover          Boolean?
+  audioWAV       Boolean?
+  video          Boolean?
+  banners        Boolean?
+  pitch          Boolean?
+  EPKUpdates     Boolean?
+  WebSiteUpdates Boolean?
+  Biography      Boolean?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
 model TeamProfile {
   id      String  @id @default(cuid())
   enabled Boolean @default(false)
@@ -750,6 +774,17 @@ enum TaskPriority {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+enum Release {
+  Soft
+  Focus
+}
+
+enum TypeOfRelease {
+  Sencillo
+  Album
+  EP
 }
 
 // Modelo opcional para proyectos (si necesitas agrupar tareas)

@@ -890,8 +890,15 @@ msgstr "Después de firmar un documento electrónicamente, se le dará la oportu
 msgid "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 msgstr "Después de la presentación, se generará automáticamente un documento y se agregará a su página de documentos. También recibirá una notificación por correo electrónico."
 
+#: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/release-type.tsx
+msgid "Album"
+msgstr ""
+
 #: apps/remix/app/components/general/task/task-status.tsx
 #: apps/remix/app/components/general/task/task-priority.tsx
+#: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "All"
 msgstr "Todos"
@@ -900,6 +907,7 @@ msgstr "Todos"
 msgid "All documents"
 msgstr "Todos los documentos"
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "All documents have been processed. Any new documents that are sent or received will show here."
 msgstr "Todos los documentos han sido procesados. Cualquier nuevo documento que se envíe o reciba aparecerá aquí."
@@ -1284,12 +1292,20 @@ msgstr "¿Estás seguro de que deseas eliminar este equipo?"
 msgid "Are you sure?"
 msgstr "¿Estás seguro?"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Artist"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 msgid "Artist created successfully"
 msgstr ""
 
 #: apps/remix/app/components/general/task/tasks-list.tsx
 msgid "Asignados"
+msgstr ""
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Assets"
 msgstr ""
 
 #: packages/lib/constants/recipient-roles.ts
@@ -1336,6 +1352,10 @@ msgstr "Al menos un tipo de firma debe estar habilitado"
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
 msgid "Attempts sealing the document again, useful for after a code change has occurred to resolve an erroneous document."
 msgstr "Intenta sellar el documento de nuevo, útil después de que se haya producido un cambio de código para resolver un documento erróneo."
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Audio"
+msgstr ""
 
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
 msgid "Audit Log"
@@ -1390,6 +1410,10 @@ msgstr "Códigos de respaldo"
 msgid "Banner Updated"
 msgstr "Banner actualizado"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Banners"
+msgstr ""
+
 #: apps/remix/app/components/forms/signup.tsx
 msgid "Basic details"
 msgstr "Detalles básicos"
@@ -1406,6 +1430,10 @@ msgstr "Antes de comenzar, por favor confirma tu dirección de correo electróni
 #: apps/remix/app/components/general/teams/team-settings-nav-desktop.tsx
 msgid "Billing"
 msgstr "Facturación"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Biography"
+msgstr ""
 
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Black"
@@ -1573,6 +1601,10 @@ msgstr ""
 #: packages/ui/primitives/document-flow/add-signers.tsx
 msgid "Cannot remove signer"
 msgstr "No se puede eliminar el firmante"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Canvas"
+msgstr ""
 
 #: packages/lib/constants/recipient-roles.ts
 msgid "Cc"
@@ -1972,6 +2004,10 @@ msgstr "Copiar enlaces de firma"
 msgid "Copy token"
 msgstr "Copiar token"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Cover"
+msgstr ""
+
 #: apps/remix/app/routes/_profile+/_layout.tsx
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 msgid "Create"
@@ -2094,6 +2130,7 @@ msgstr "Crea tu cuenta y comienza a utilizar la firma de documentos de última g
 #: apps/remix/app/routes/_authenticated+/admin+/documents._index.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
+#: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/documents-chatspace-table.tsx
 #: apps/remix/app/components/tables/admin-leaderboard-table.tsx
@@ -2158,6 +2195,7 @@ msgid "Dark Mode"
 msgstr "Modo Oscuro"
 
 #: apps/remix/app/components/tables/settings-security-activity-table.tsx
+#: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-date-field.tsx
 #: packages/ui/primitives/template-flow/add-template-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
@@ -3038,6 +3076,15 @@ msgstr "Ingresa tu nombre"
 #: apps/remix/app/components/general/document-signing/document-signing-text-field.tsx
 msgid "Enter your text here"
 msgstr "Ingresa tu texto aquí"
+
+#: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/release-type.tsx
+msgid "EP"
+msgstr ""
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "EPK"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/admin+/users.$id.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/documents.$id.tsx
@@ -4023,6 +4070,7 @@ msgstr "Siguiente"
 msgid "Next field"
 msgstr "Siguiente campo"
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "No active drafts"
 msgstr "No hay borradores activos"
@@ -4120,6 +4168,8 @@ msgstr "Ninguno"
 msgid "Not supported"
 msgstr "No soportado"
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "Nothing to do"
@@ -4377,6 +4427,10 @@ msgstr "Seleccione un número"
 #: apps/remix/app/components/general/claim-account.tsx
 msgid "Pick a password"
 msgstr "Elige una contraseña"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Pitch"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/text-field.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/number-field.tsx
@@ -4766,6 +4820,20 @@ msgstr "Rechazo Confirmado"
 msgid "Rejection reason: {reason}"
 msgstr "Razón del rechazo: {reason}"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Release Status"
+msgstr ""
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Release Title"
+msgstr ""
+
+#: apps/remix/app/routes/_authenticated+/releases._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "Releases"
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/forgot-password.tsx
 msgid "Remembered your password? <0>Sign In</0>"
 msgstr "¿Recordaste tu contraseña? <0>Iniciar sesión</0>"
@@ -5045,6 +5113,11 @@ msgstr "Seleccionar opción predeterminada"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 msgid "Select passkey"
 msgstr "Seleccionar clave de acceso"
+
+#: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/release-type.tsx
+msgid "Sencillo"
+msgstr ""
 
 #: packages/ui/primitives/document-flow/send-document-action-dialog.tsx
 #: packages/ui/primitives/document-flow/send-document-action-dialog.tsx
@@ -5525,6 +5598,10 @@ msgstr "Estado"
 #: packages/ui/primitives/document-flow/document-flow-root.tsx
 msgid "Step <0>{step} of {maxStep}</0>"
 msgstr "Paso <0>{step} de {maxStep}</0>"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Streaming Link"
+msgstr ""
 
 #: apps/remix/app/components/embed/authoring/configure-document-advanced-settings.tsx
 #: packages/ui/primitives/template-flow/add-template-settings.tsx
@@ -6147,10 +6224,12 @@ msgstr "El webhook ha sido actualizado con éxito."
 msgid "The webhook was successfully created."
 msgstr "El webhook fue creado con éxito."
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "There are no active drafts at the current moment. You can upload a document to start drafting."
 msgstr "No hay borradores activos en este momento. Puedes subir un documento para comenzar a redactar."
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "There are no completed documents yet. Documents that you have created or received will appear here once completed."
 msgstr "Aún no hay documentos completados. Los documentos que hayas creado o recibido aparecerán aquí una vez completados."
@@ -6586,6 +6665,7 @@ msgid "Two-Factor Re-Authentication"
 msgstr "Re-autenticación de Doble Factor"
 
 #: apps/remix/app/components/tables/templates-table.tsx
+#: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/admin-document-recipient-item-table.tsx
 #: packages/lib/constants/document.ts
 msgid "Type"
@@ -6838,6 +6918,10 @@ msgstr "Cargar Documento Plantilla"
 msgid "Upload your brand logo (max 5MB, JPG, PNG, or WebP)"
 msgstr "Carga el logo de tu marca (máx 5MB, JPG, PNG o WebP)"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Uploaded"
+msgstr ""
+
 #: apps/remix/app/components/general/template/template-page-view-information.tsx
 #: apps/remix/app/components/general/document/document-page-view-information.tsx
 msgid "Uploaded by"
@@ -6976,6 +7060,10 @@ msgstr "Verifica tu dirección de correo electrónico del equipo"
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/audit-log.tsx
 msgid "Version History"
 msgstr "Historial de Versiones"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Video"
+msgstr ""
 
 #: apps/remix/app/components/tables/team-settings-billing-invoices-table.tsx
 #: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
@@ -7330,6 +7418,7 @@ msgstr "No enviaremos nada para notificar a los destinatarios."
 
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "We're all empty"
 msgstr "No hay nada aquí"
@@ -7368,6 +7457,10 @@ msgstr "URL del Webhook"
 #: apps/remix/app/routes/_authenticated+/settings+/webhooks._index.tsx
 msgid "Webhooks"
 msgstr "Webhooks"
+
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "WebSiteUpdates"
+msgstr ""
 
 #: apps/remix/app/components/general/billing-plans.tsx
 msgid "Weekly"
@@ -7633,6 +7726,7 @@ msgstr "Aún no tienes webhooks. Tus webhooks se mostrarán aquí una vez que lo
 msgid "You have not yet created any templates. To create a template please upload one."
 msgstr "Aún no has creado plantillas. Para crear una plantilla, por favor carga una."
 
+#: apps/remix/app/components/tables/releases-table-empty-state.tsx
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "You have not yet created or received any documents. To create a document please upload one."
 msgstr "Aún no has creado ni recibido documentos. Para crear un documento, por favor carga uno."
