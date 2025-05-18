@@ -153,6 +153,7 @@ model Lpm {
   continuousMix                       String?  @map("Continuous Mix") @db.VarChar
   continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song") @db.VarChar
   trackPlayLink                       String?  @map("Track Play Link") @db.VarChar
+
 }
 
 model Songs {
@@ -172,6 +173,8 @@ model Songs {
   status            SongStatus[]
   uniqueIdentifier  String?      @unique @default(cuid())
   royaltyPercentage String?
+  // artistId          Int?
+  // artist            Artist?      @relation(fields: [artistId], references: [id], onDelete: Cascade)
 }
 
 enum TypeSongAlbum {
@@ -241,6 +244,20 @@ model Artist {
   url           String?        @unique
   ArtistProfile ArtistProfile?
   songs         Songs[]
+  isrcSongs     IsrcSongs[]    // Added for many-to-many relation with IsrcSongs
+
+}
+
+model IsrcSongs{
+  id           Int            @id @default(autoincrement())
+  date       String?
+  isrc       String?
+  artist     String?
+  duration   String?
+  trackName  String?
+  title      String?
+  license   String?
+  memebers           Artist[]
 }
 
 model ArtistProfile {

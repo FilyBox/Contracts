@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
+import type { IsrcSongs } from '@documenso/prisma/client';
 import { type Lpm } from '@documenso/prisma/client';
 
 // interface ColumnActions {
@@ -8,58 +9,6 @@ import { type Lpm } from '@documenso/prisma/client';
 // }
 
 export const createColumns = (): ColumnDef<Lpm>[] => {
-  // const columns: ColumnDef<Lpm>[] = [
-  //   {
-  //     accessorKey: 'id',
-  //     header: 'ID',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'productId',
-  //     header: 'Product ID',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'upc',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'trackName',
-  //     header: 'Name',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'productType',
-  //     header: 'Product Type',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'releaseDate',
-  //     header: 'Release Date',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'trackDisplayArtist',
-  //     header: 'Artist',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'label',
-  //     header: 'Label',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'submissionStatus',
-  //     header: 'Status',
-  //     enableHiding: true,
-  //   },
-  //   {
-  //     accessorKey: 'lastModified',
-  //     header: 'Last Modified',
-  //     enableHiding: true,
-  //   },
-
-  // ];
   const columns: ColumnDef<Lpm>[] = [
     {
       accessorKey: 'id',
@@ -379,33 +328,52 @@ export const createColumns = (): ColumnDef<Lpm>[] => {
       enableHiding: true,
     },
   ];
-  // columns.push({
-  //   id: 'actions',
-  //   cell: ({ row, table }) => {
-  //     const record = row.original;
-  //     const { onEdit, onDelete } = table.options.meta as ColumnActions;
 
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="h-8 w-8 p-0">
-  //             <span className="sr-only">Open menu</span>
-  //             <MoreHorizontal className="h-4 w-4" />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end">
-  //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+  return columns;
+};
 
-  //           {onEdit && <DropdownMenuItem onClick={() => onEdit(record)}>Edit</DropdownMenuItem>}
-
-  //           {onDelete && (
-  //             <DropdownMenuItem onClick={() => onDelete(record.id)}>Delete</DropdownMenuItem>
-  //           )}
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     );
-  //   },
-  // });
+export const createColumnsIsrc = (): ColumnDef<IsrcSongs>[] => {
+  const columns: ColumnDef<IsrcSongs>[] = [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'artist',
+      header: 'Artist',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'trackName',
+      header: 'Track Name',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'isrc',
+      header: 'ISRC',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'duration',
+      header: 'Duration',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'license',
+      header: 'License',
+    },
+  ];
 
   return columns;
 };

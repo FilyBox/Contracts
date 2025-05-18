@@ -7,6 +7,7 @@ import { embeddingPresignRouter } from './embedding-router/_router';
 import { eventRouter } from './events-router/router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
+import { IsrcSongsRouter } from './isrcsong-router/router';
 import { lpmRouter } from './lpm-router/router';
 import { profileRouter } from './profile-router/router';
 import { recipientRouter } from './recipient-router/router';
@@ -25,6 +26,7 @@ export const appRouter = router({
   artist: artistRouter,
   writer: writerRouter,
   event: eventRouter,
+  IsrcSongs: IsrcSongsRouter,
   document: documentRouter,
   field: fieldRouter,
   folder: folderRouter,
