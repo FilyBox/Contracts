@@ -32,6 +32,10 @@ const navigationLinks = [
     href: '/releases',
     label: msg`Releases`,
   },
+  {
+    href: '/distribution',
+    label: msg`Distribution`,
+  },
 ];
 
 export type AppNavDesktopProps = HTMLAttributes<HTMLDivElement> & {
@@ -88,7 +92,7 @@ export const AppNavDesktopTeams = ({
 
       <Button
         variant="outline"
-        className="text-muted-foreground flex w-full max-w-96 items-center justify-between rounded-lg"
+        className="text-muted-foreground flex w-full max-w-44 items-center justify-between rounded-lg"
         onClick={() => setIsCommandMenuOpen(true)}
       >
         <div className="flex items-center">

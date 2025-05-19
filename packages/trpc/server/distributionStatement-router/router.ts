@@ -3,13 +3,13 @@ import type { Prisma } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 
-import { findRelease } from '@documenso/lib/server-only/document/find-releases';
+import { findDistribution } from '@documenso/lib/server-only/document/find-distribution';
 import { type GetStatsInput } from '@documenso/lib/server-only/document/get-priority';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
 // import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
 import { prisma } from '@documenso/prisma';
-import { ExtendedRelease, ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
+import { ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 
 import { authenticatedProcedure, router } from '../trpc';
 
@@ -20,7 +20,7 @@ export type GetTaskByIdOptions = {
   folderId?: string | null;
 };
 
-export const releaseRouter = router({
+export const distributionRouter = router({
   createRelease: authenticatedProcedure
     .input(
       z.object({
@@ -96,7 +96,7 @@ export const releaseRouter = router({
       return taskCreated;
     }),
 
-  findTaskById: authenticatedProcedure
+  findDistributionId: authenticatedProcedure
     .input(z.object({ taskId: z.string() }))
     .query(async ({ input }: { input: { taskId: string } }) => {
       const { taskId } = input;
@@ -113,7 +113,7 @@ export const releaseRouter = router({
       });
     }),
 
-  findRelease: authenticatedProcedure
+  findDistribution: authenticatedProcedure
     .input(
       z.object({
         // userId: z.number(),
@@ -121,23 +121,17 @@ export const releaseRouter = router({
         page: z.number().optional(),
         perPage: z.number().optional(),
         period: z.enum(['7d', '14d', '30d']).optional(),
-        type: z.nativeEnum(ExtendedReleaseType).optional(),
-        release: z.nativeEnum(ExtendedRelease).optional(),
         orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
         orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
-        orderByColumn: z
-          .enum(['id', 'lanzamiento', 'typeOfRelease', 'createdAt', 'updatedAt'])
-          .optional(),
+        orderByColumn: z.enum(['id']).optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
       const {
         query,
-        type,
         page,
         perPage,
-        release,
-        orderByColumn,
+        orderByColumn = 'id',
         orderByDirection,
         period,
         orderBy = 'createdAt',
@@ -145,16 +139,13 @@ export const releaseRouter = router({
       const { user, teamId } = ctx;
       const userId = user.id;
       // Construir el objeto where para los filtros
-      const where: Prisma.ReleasesWhereInput = {
+      const where: Prisma.DistributionStatementWhereInput = {
+        ...(userId && { userId }),
         ...(teamId && { teamId }),
         ...(query && {
-          OR: [{ lanzamiento: { contains: query, mode: 'insensitive' } }],
+          OR: [{ nombreDistribucion: { contains: query, mode: 'insensitive' } }],
         }),
       };
-
-      if (type && type !== ExtendedReleaseType.ALL) {
-        where.typeOfRelease = type;
-      }
 
       const getStatOptions: GetStatsInput = {
         user,
@@ -162,18 +153,18 @@ export const releaseRouter = router({
         search: query,
       };
 
-      if (teamId) {
-        const team = await getTeamById({ userId: user.id, teamId });
-        getStatOptions.team = {
-          teamId: team.id,
-          teamEmail: team.teamEmail?.email,
-          currentTeamMemberRole: team.currentTeamMember?.role,
-          currentUserEmail: user.email,
-          userId: user.id,
-        };
-      }
+      // if (teamId) {
+      //   const team = await getTeamById({ userId: user.id, teamId });
+      //   getStatOptions.team = {
+      //     teamId: team.id,
+      //     teamEmail: team.teamEmail?.email,
+      //     currentTeamMemberRole: team.currentTeamMember?.role,
+      //     currentUserEmail: user.email,
+      //     userId: user.id,
+      //   };
+      // }
 
-      let createdAt: Prisma.ReleasesWhereInput['createdAt'];
+      let createdAt: Prisma.DistributionStatementWhereInput['createdAt'];
 
       if (period) {
         const daysAgo = parseInt(period.replace(/d$/, ''), 10);
@@ -189,11 +180,13 @@ export const releaseRouter = router({
       console.log('where', where);
       // const [stats] = await Promise.all([getStats(getStatOptions)]);
       const [documents] = await Promise.all([
-        findRelease({
+        findDistribution({
           query,
           page,
           perPage,
           period,
+          userId,
+          teamId,
 
           orderBy: orderByColumn
             ? { column: orderByColumn, direction: orderByDirection }

@@ -1,25 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { useNavigate, useSearchParams } from 'react-router';
 
-import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { formReleasePath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
-import { ExtendedRelease, ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 import { trpc } from '@documenso/trpc/react';
-import {
-  type TFindReleaseInternalResponse,
-  ZFindReleaseInternalRequestSchema,
-} from '@documenso/trpc/server/releases-router/schema';
+import { ZFindDistributionInternalRequestSchema } from '@documenso/trpc/server/distributionStatement-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
+import { DistributionTable } from '~/components/tables/distribution-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
-import { ReleasesTable } from '~/components/tables/releases-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
 
@@ -29,19 +24,17 @@ export type TasksPageViewProps = {
 };
 
 export function meta() {
-  return appMetaTags('Tasks');
+  return appMetaTags('distribution');
 }
 
-const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
-  type: true,
-  release: true,
+const ZSearchParamsSchema = ZFindDistributionInternalRequestSchema.pick({
   period: true,
   page: true,
   perPage: true,
   query: true,
 });
 
-export default function TasksPage() {
+export default function DistributionPage() {
   const [searchParams] = useSearchParams();
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
@@ -50,27 +43,11 @@ export default function TasksPage() {
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const releasesRootPath = formReleasePath(team?.url);
-  const { user } = useSession();
-  const { data, isLoading, isLoadingError, refetch } = trpc.release.findRelease.useQuery({
+  const { data, isLoading, isLoadingError, refetch } = trpc.distribution.findDistribution.useQuery({
     query: findDocumentSearchParams.query,
-    type: findDocumentSearchParams.type,
-    release: findDocumentSearchParams.release,
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
-  });
-
-  const [type, setType] = useState<TFindReleaseInternalResponse['type']>({
-    [ExtendedReleaseType.Album]: 0,
-    [ExtendedReleaseType.EP]: 0,
-    [ExtendedReleaseType.Sencillo]: 0,
-    [ExtendedReleaseType.ALL]: 0,
-  });
-
-  const [release, setRelease] = useState<TFindReleaseInternalResponse['release']>({
-    [ExtendedRelease.Focus]: 0,
-    [ExtendedRelease.Soft]: 0,
-    [ExtendedRelease.ALL]: 0,
   });
 
   // useEffect(() => {
@@ -91,21 +68,21 @@ export default function TasksPage() {
   const isloadingTeamMembers = false;
   const isLoadingErrorTeamMembers = false;
 
-  const getTabHref = (value: keyof typeof ExtendedReleaseType) => {
-    const params = new URLSearchParams(searchParams);
+  // const getTabHref = (value: keyof typeof ExtendedReleaseType) => {
+  //   const params = new URLSearchParams(searchParams);
 
-    params.set('type', value);
+  //   params.set('type', value);
 
-    if (value === ExtendedReleaseType.ALL) {
-      params.delete('type');
-    }
+  //   if (value === ExtendedReleaseType.ALL) {
+  //     params.delete('type');
+  //   }
 
-    if (params.has('page')) {
-      params.delete('page');
-    }
+  //   if (params.has('page')) {
+  //     params.delete('page');
+  //   }
 
-    return `${formReleasePath(team?.url)}?${params.toString()}`;
-  };
+  //   return `${formReleasePath(team?.url)}?${params.toString()}`;
+  // };
 
   const handleTaskClick = (taskId: number) => {
     void navigate(`${releasesRootPath}/${taskId}`);
@@ -127,7 +104,7 @@ export default function TasksPage() {
           )}
 
           <h1 className="truncate text-2xl font-semibold md:text-3xl">
-            <Trans>Releases</Trans>
+            <Trans>Distribution Statement</Trans>
           </h1>
         </div>
 
@@ -170,8 +147,7 @@ export default function TasksPage() {
           {data && data.count === 0 && (!data?.data.length || data?.data.length === 0) ? (
             <GeneralTableEmptyState status={'ALL'} />
           ) : (
-            // <p>sin data</p>
-            <ReleasesTable data={data} isLoading={isLoading} isLoadingError={isLoadingError} />
+            <DistributionTable data={data} isLoading={isLoading} isLoadingError={isLoadingError} />
           )}
         </div>
       </div>
