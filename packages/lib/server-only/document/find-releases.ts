@@ -12,6 +12,8 @@ import { type FindResultResponse } from '../../types/search-params';
 export type PeriodSelectorValue = '' | '7d' | '14d' | '30d';
 
 export type FindReleaseOptions = {
+  userId: number;
+  teamId?: number;
   page?: number;
   perPage?: number;
   orderBy?: {
@@ -25,6 +27,8 @@ export type FindReleaseOptions = {
 };
 
 export const findRelease = async ({
+  userId,
+  teamId,
   release = ExtendedRelease.ALL,
   type = ExtendedReleaseType.ALL,
   page = 1,
@@ -32,9 +36,33 @@ export const findRelease = async ({
   orderBy,
   period,
 
-  query = '',
+  query,
 }: FindReleaseOptions) => {
-  const team = null;
+  let team = null;
+
+  if (teamId !== undefined) {
+    team = await prisma.team.findFirstOrThrow({
+      where: {
+        id: teamId,
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      include: {
+        teamEmail: true,
+        members: {
+          where: {
+            userId,
+          },
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
+  }
 
   const orderByColumn = orderBy?.column ?? 'createdAt';
   const orderByDirection = orderBy?.direction ?? 'desc';
@@ -46,6 +74,7 @@ export const findRelease = async ({
   let filters: Prisma.ReleasesWhereInput | null = findReleasesFilter(release);
   filters = findReleasesTypeFilter(type);
   if (filters === null) {
+    console.log('No filters found');
     return {
       data: [],
       count: 0,
@@ -55,7 +84,56 @@ export const findRelease = async ({
     };
   }
 
-  const whereAndClause: Prisma.ReleasesWhereInput['AND'] = [{ ...filters }, { ...searchFilter }];
+  let Filter: Prisma.ReleasesWhereInput = {
+    AND: {
+      OR: [
+        {
+          userId,
+        },
+      ],
+    },
+  };
+  console.log('team', team);
+
+  if (team) {
+    Filter = {
+      AND: {
+        OR: team.teamEmail
+          ? [
+              {
+                teamId: team.id,
+              },
+              {
+                user: {
+                  email: team.teamEmail.email,
+                },
+              },
+            ]
+          : [
+              {
+                teamId: team.id,
+              },
+            ],
+      },
+    };
+  } else {
+    Filter = {
+      AND: {
+        OR: [
+          {
+            userId,
+            teamId: null,
+          },
+        ],
+      },
+    };
+  }
+
+  const whereAndClause: Prisma.ReleasesWhereInput['AND'] = [
+    { ...filters },
+    { ...searchFilter },
+    { ...Filter },
+  ];
 
   const whereClause: Prisma.ReleasesWhereInput = {
     AND: whereAndClause,
@@ -63,14 +141,13 @@ export const findRelease = async ({
 
   if (period) {
     const daysAgo = parseInt(period.replace(/d$/, ''), 10);
-
     const startOfPeriod = DateTime.now().minus({ days: daysAgo }).startOf('day');
-
     whereClause.createdAt = {
       gte: startOfPeriod.toJSDate(),
     };
   }
 
+  console.log('whereClause', whereClause);
   const [data, count] = await Promise.all([
     prisma.releases.findMany({
       where: whereClause,
@@ -84,6 +161,8 @@ export const findRelease = async ({
       where: whereClause,
     }),
   ]);
+
+  console.log('data releases', data);
 
   return {
     data: data,

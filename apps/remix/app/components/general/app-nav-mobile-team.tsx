@@ -47,6 +47,10 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
       text: msg`Releases`,
     },
     {
+      href: '/distribution',
+      text: msg`Distribution`,
+    },
+    {
       href: '/settings/teams',
       text: msg`Teams`,
     },

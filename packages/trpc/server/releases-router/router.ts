@@ -1,5 +1,6 @@
 // import { TRPCError } from '@trpc/server';
 import type { Prisma } from '@prisma/client';
+import { Release, TypeOfRelease } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 
@@ -24,35 +25,32 @@ export const releaseRouter = router({
   createRelease: authenticatedProcedure
     .input(
       z.object({
-        title: z.string().min(1),
-        description: z.string().optional(),
-        type: z.nativeEnum(ExtendedReleaseType),
-        dueDate: z.date().optional(),
-        tags: z.array(z.string()).optional().default([]),
-        // userId: z.number(),
-        // teamId: z.number().optional(),
-        assignees: z
-          .array(
-            z.object({
-              email: z.string(),
-              name: z.string().nullable(),
-            }),
-          )
-          .optional()
-          .default([]),
-        projectId: z.number().optional(),
-        parentTaskId: z.number().optional(),
+        date: z.string().optional(),
+        artist: z.string().optional(),
+        lanzamiento: z.string().optional(),
+        typeOfRelease: z.nativeEnum(TypeOfRelease).optional(),
+        release: z.nativeEnum(Release).optional(),
+        uploaded: z.string().optional(),
+        streamingLink: z.string().optional(),
+        assets: z.string().optional(),
+        canvas: z.boolean().optional(),
+        cover: z.boolean().optional(),
+        audioWAV: z.boolean().optional(),
+        video: z.boolean().optional(),
+        banners: z.boolean().optional(),
+        pitch: z.boolean().optional(),
+        EPKUpdates: z.boolean().optional(),
+        WebSiteUpdates: z.boolean().optional(),
+        Biography: z.boolean().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const { user, teamId } = ctx;
-      // Desestructuración correcta que incluye projectId
-      const { projectId, parentTaskId, assignees, ...data } = input;
       const userId = user.id;
-      console.log('assignees', assignees);
+      const { ...inputData } = input;
       // Verificar permisos si es tarea de equipo
       if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para crear tareas en este equipo');
+        throw new Error('No tienes permisos para crear releases en este equipo');
       }
 
       if (teamId) {
@@ -61,39 +59,25 @@ export const releaseRouter = router({
           throw new Error('Team not found');
         }
 
-        const [users] = await Promise.all([
-          prisma.user.findMany({
-            where: { email: { in: assignees.map((assignee) => assignee.email) } },
-          }),
-        ]);
-        console.log('users in task', users);
-
-        const taskCreated = await prisma.task.create({
+        const releaseCreated = await prisma.releases.create({
           data: {
-            ...data,
-            status: 'PENDING',
+            ...inputData,
             userId,
             teamId: team.id,
-            ...(projectId && { projectId }),
-            ...(parentTaskId && { parentTaskId }),
           },
         });
 
-        // Create a TaskAssignee entry for each user
-
-        return taskCreated;
+        return releaseCreated;
       }
-      const taskCreated = await prisma.task.create({
+
+      const releaseCreated = await prisma.releases.create({
         data: {
-          ...data,
-          status: 'PENDING',
+          ...input,
           userId,
-          ...(projectId && { projectId }),
-          ...(parentTaskId && { parentTaskId }),
         },
       });
 
-      return taskCreated;
+      return releaseCreated;
     }),
 
   findTaskById: authenticatedProcedure
@@ -136,11 +120,11 @@ export const releaseRouter = router({
         type,
         page,
         perPage,
-        release,
+        // release,
         orderByColumn,
         orderByDirection,
         period,
-        orderBy = 'createdAt',
+        // orderBy = 'createdAt',
       } = input;
       const { user, teamId } = ctx;
       const userId = user.id;
@@ -193,6 +177,8 @@ export const releaseRouter = router({
           query,
           page,
           perPage,
+          userId,
+          teamId,
           period,
 
           orderBy: orderByColumn
@@ -200,6 +186,7 @@ export const releaseRouter = router({
             : undefined,
         }),
       ]);
+      console.log('releases', documents);
       // const releases = await prisma.releases.findMany({
       //   where,
 
@@ -211,52 +198,53 @@ export const releaseRouter = router({
       return documents;
     }),
 
-  updateTask: authenticatedProcedure
+  updateRelease: authenticatedProcedure
     .input(
       z.object({
-        taskId: z.number().min(1),
-        title: z.string().min(1),
-        description: z.string().optional(),
-        priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
-        dueDate: z.date().optional(),
-        tags: z.array(z.string()).optional().default([]),
-        userId: z.number(),
-        teamId: z.number().optional(),
-        projectId: z.number().optional(),
-        parentTaskId: z.number().optional(),
+        id: z.number().min(1),
+        date: z.string().optional(),
+        artist: z.string().optional(),
+        lanzamiento: z.string().optional(),
+        typeOfRelease: z.nativeEnum(TypeOfRelease).optional(),
+        release: z.nativeEnum(Release).optional(),
+        uploaded: z.string().optional(),
+        streamingLink: z.string().optional(),
+        assets: z.string().optional(),
+        canvas: z.boolean().optional(),
+        cover: z.boolean().optional(),
+        audioWAV: z.boolean().optional(),
+        video: z.boolean().optional(),
+        banners: z.boolean().optional(),
+        pitch: z.boolean().optional(),
+        EPKUpdates: z.boolean().optional(),
+        WebSiteUpdates: z.boolean().optional(),
+        Biography: z.boolean().optional(),
       }),
     )
-    .mutation(async ({ input, ctx }) => {
-      const { userId, teamId, projectId, parentTaskId, ...data } = input;
+    .mutation(async ({ input }) => {
+      const { ...data } = input;
 
       // Verificar permisos si es tarea de equipo
-      if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para actualizar tareas en este equipo');
-      }
+      // if (teamId && ctx.teamId !== teamId) {
+      //   throw new Error('No tienes permisos para actualizar tareas en este equipo');
+      // }
 
-      return await prisma.task.update({
-        where: { id: Number(input.taskId) },
+      return await prisma.releases.update({
+        where: { id: Number(input.id) },
         data: {
           ...data,
-          ...(teamId && { team: { connect: { id: teamId } } }),
-          ...(projectId && { project: { connect: { id: projectId } } }),
-          ...(parentTaskId && { parentTask: { connect: { id: parentTaskId } } }),
         },
       });
     }),
 
-  deleteTask: authenticatedProcedure
-    .input(z.object({ taskId: z.number().min(1) }))
+  deleteRelease: authenticatedProcedure
+    .input(z.object({ releaseId: z.number().min(1) }))
     .mutation(async ({ input }) => {
-      const { taskId } = input;
+      const { releaseId } = input;
       // Eliminar la tarea y sus subtareas
-      await prisma.task.deleteMany({
+      await prisma.releases.deleteMany({
         where: {
-          id: taskId,
-          OR: [
-            { parentTaskId: taskId }, // Subtareas
-            { id: taskId }, // Tarea principal
-          ],
+          id: releaseId,
         },
       });
       return { success: true };

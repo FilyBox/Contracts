@@ -49,22 +49,22 @@ enum StatusSongAlbum {
 }
 
 model User {
-  id               Int              @id @default(autoincrement())
-  name             String?
-  customerId       String?          @unique
-  email            String           @unique
-  emailVerified    DateTime?
-  password         String? // Todo: (RR7) Remove after RR7 migration.
-  source           String?
-  signature        String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now()) @updatedAt
-  lastSignedIn     DateTime         @default(now())
-  roles            Role[]           @default([USER])
-  identityProvider IdentityProvider @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
-  avatarImageId    String?
-  disabled         Boolean          @default(false)
-
+  id                    Int                     @id @default(autoincrement())
+  name                  String?
+  customerId            String?                 @unique
+  email                 String                  @unique
+  emailVerified         DateTime?
+  password              String? // Todo: (RR7) Remove after RR7 migration.
+  source                String?
+  signature             String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now()) @updatedAt
+  lastSignedIn          DateTime                @default(now())
+  roles                 Role[]                  @default([USER])
+  identityProvider      IdentityProvider        @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
+  avatarImageId         String?
+  disabled              Boolean                 @default(false)
+  releases              Releases[]
   distributionStatement DistributionStatement[]
   accounts              Account[]
   sessions              Session[]
@@ -279,7 +279,11 @@ model Releases {
   EPKUpdates     Boolean?
   WebSiteUpdates Boolean?
   Biography      Boolean?
+  userId         Int?
+  teamId         Int?
 
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team      Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -975,6 +979,7 @@ model Team {
   owner                 User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
   subscription          Subscription?
   distributionStatement DistributionStatement[]
+  releases              Releases[]
   documents             Document[]
   tasks                 Task[]
   templates             Template[]

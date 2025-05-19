@@ -2464,6 +2464,7 @@ msgstr "Wyświetl swoją nazwę i adres e-mail w dokumentach"
 msgid "Distribute Document"
 msgstr "Rozprowadź dokument"
 
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Distribution"
 msgstr ""
@@ -5139,13 +5140,13 @@ msgstr "Szukaj tytułu dokumentu"
 msgid "Search by name or email"
 msgstr "Szukaj nazwy lub adresu e-mail"
 
-#: apps/remix/app/components/general/document/document-search.tsx
-msgid "Search documents..."
-msgstr "Szukaj dokumentów..."
-
 #: packages/ui/components/common/language-switcher-dialog.tsx
 msgid "Search languages..."
 msgstr "Szukaj języków..."
+
+#: apps/remix/app/components/general/document/document-search.tsx
+msgid "Search..."
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/settings+/webhooks.$id.tsx
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx

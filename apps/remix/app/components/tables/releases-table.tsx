@@ -17,12 +17,24 @@ import { TableCell } from '@documenso/ui/primitives/table';
 
 import { useOptionalCurrentTeam } from '~/providers/team';
 
-export type DocumentsTableProps = {
+// export type DocumentsTableProps = {
+//   data?: TFindReleaseResponse;
+//   isLoading?: boolean;
+//   isLoadingError?: boolean;
+//   onMoveDocument?: (documentId: number) => void;
+//     onAdd: () => void;
+//   onEdit: (data: TData) => void;
+//   onDelete: (data: TData) => void;
+// };
+
+interface DataTableProps<TData, TValue> {
   data?: TFindReleaseResponse;
   isLoading?: boolean;
   isLoadingError?: boolean;
-  onMoveDocument?: (documentId: number) => void;
-};
+  onAdd: () => void;
+  onEdit?: (data: DocumentsTableRow) => void;
+  onDelete?: (data: DocumentsTableRow) => void;
+}
 
 type DocumentsTableRow = TFindReleaseResponse['data'][number];
 
@@ -30,8 +42,10 @@ export const ReleasesTable = ({
   data,
   isLoading,
   isLoadingError,
-  onMoveDocument,
-}: DocumentsTableProps) => {
+  onAdd,
+  onEdit,
+  onDelete,
+}: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
   const team = useOptionalCurrentTeam();
@@ -303,7 +317,7 @@ export const ReleasesTable = ({
       //     ),
       // },
     ] satisfies DataTableColumnDef<DocumentsTableRow>[];
-  }, [team, onMoveDocument]);
+  }, [team]);
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -325,6 +339,8 @@ export const ReleasesTable = ({
     <div className="relative">
       <DataTable
         columns={columns}
+        onDelete={onDelete}
+        onEdit={onEdit}
         data={results.data}
         perPage={results.perPage}
         currentPage={results.currentPage}
