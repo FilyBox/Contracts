@@ -9,7 +9,7 @@ export type GetEventByIdOptions = {
   name: string;
   description?: string;
   image?: string;
-  teamId?: number;
+  //teamId?: number;
   venue?: string;
   artists: string[];
   beginning: Date;
@@ -26,7 +26,7 @@ export const eventRouter = router({
         name: z.string().min(1).optional(),
         description: z.string().optional(),
         image: z.string().optional(),
-        teamId: z.number().optional(),
+        //teamId: z.number().optional(), // Ya está correctamente como opcional
         venue: z.string().optional(),
         artists: z.array(z.string()).optional(),
         beginning: z.date().optional(),
@@ -44,7 +44,7 @@ export const eventRouter = router({
             name: input.name,
             description: input.description,
             image: input.image,
-            teamId: input.teamId,
+            //teamId: input.teamId ?? undefined, // Clave: usa `?? undefined` para omitirlo si es null/undefined
             venue: input.venue,
             artists: input.artists
               ? {
@@ -58,6 +58,54 @@ export const eventRouter = router({
       } catch (error) {
         console.error('Error creating event:', error);
         throw new Error('Error creating event');
+      }
+    }),
+
+  findEvent: authenticatedProcedure.query(async () => {
+    const events = await prisma.event.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
+    return events;
+  }),
+
+  updateEventById: authenticatedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        image: z.string().optional(),
+        // teamId: z.number().optional(),
+        venue: z.string().optional(),
+        artists: z.array(z.string()).optional(),
+        beginning: z.date().optional(),
+        end: z.date().optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { id, ...data } = input;
+
+      if (!id) {
+        throw new Error('El ID del evento es obligatorio');
+      }
+
+      try {
+        return await prisma.event.update({
+          where: { id },
+          data: {
+            ...data,
+            artists: data.artists
+              ? {
+                  connect: data.artists.map((artistId) => ({ id: Number(artistId) })),
+                }
+              : undefined,
+          },
+        });
+      } catch (error) {
+        console.error('Error updating event:', error);
+        throw new Error('Error updating event');
       }
     }),
 });

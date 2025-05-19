@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Lpm" ALTER COLUMN "userId" DROP NOT NULL;

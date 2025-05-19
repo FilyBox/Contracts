@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Artist" ALTER COLUMN "teamId" DROP NOT NULL,
-ALTER COLUMN "disabled" DROP NOT NULL;

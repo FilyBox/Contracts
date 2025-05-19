@@ -275,7 +275,7 @@ model Event {
   name        String    @db.VarChar(300)
   description String?   @db.VarChar(200)
   image       String?   @db.Text
-  teamId      Int?
+  // teamId      Int?
   venue       String?   @db.VarChar(300)
   artists     Artist[]
   beginning   DateTime  @default(now())
@@ -284,7 +284,7 @@ model Event {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  team         Team?         @relation(fields: [teamId], references: [id])
+  // team         Team?         @relation(fields: [teamId], references: [id])
   ticketTypes  TicketType[]
   ticketBuyers TicketBuyer[]
 }
@@ -1087,7 +1087,7 @@ model Team {
   profile              TeamProfile?
   owner                User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
   subscription         Subscription?
-  events               Event[]
+  // events               Event[]
   documents            Document[]
   tasks                Task[]
   templates            Template[]

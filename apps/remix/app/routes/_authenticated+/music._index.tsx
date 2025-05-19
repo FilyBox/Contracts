@@ -1,12 +1,26 @@
 import { useEffect, useState } from 'react';
+import { useRef } from 'react';
+
+import { MoreVertical } from 'lucide-react';
 
 import { type Lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
+import { Button } from '@documenso/ui/primitives/button';
 import { createColumns } from '@documenso/ui/primitives/column-custom';
 import { DataTableCustom } from '@documenso/ui/primitives/data-table-custom';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@documenso/ui/primitives/dropdown-menu';
 import MyForm from '@documenso/ui/primitives/form-custom';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+
+import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
+import { EventCreateDialog } from '~/components/dialogs/event-create-dialog';
+import { WrittersCreateDialog } from '~/components/dialogs/writters-create-dialog';
 
 // import { type LpmData } from '@documenso/ui/primitives/types';
 
@@ -16,6 +30,8 @@ export default function TablePage() {
   const updateLpmMutation = trpc.Lpm.updateLpmById.useMutation();
   const deleteLpmMutation = trpc.Lpm.deleteLpmById.useMutation();
   const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // type LpmData = (typeof data.music)[number];
   const [dataIntial, setData] = useState<Lpm[]>([]);
@@ -29,6 +45,10 @@ export default function TablePage() {
       setData(data.music);
     }
   }, [data]);
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleCreate = async (newRecord: Omit<Lpm, 'id'>) => {
     setIsSubmitting(true);
@@ -234,37 +254,40 @@ export default function TablePage() {
   };
   return (
     <div className="mx-auto">
+      {/* Menú desplegable fuera del Dialog para que sea siempre visible */}
+      <div className="mb-4 flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="gap-2" align="end">
+            <DropdownMenuItem className="m-1" asChild>
+              <ArtistCreateDialog />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <EventCreateDialog />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <WrittersCreateDialog />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Dialog para el formulario */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-2xl">
-          <div>
-            <MyForm
-              isSubmitting={isSubmitting}
-              onSubmit={editingUser ? handleUpdate : handleCreate}
-              initialData={editingUser}
-            />
-          </div>
+          <MyForm
+            isSubmitting={isSubmitting}
+            onSubmit={editingUser ? handleUpdate : handleCreate}
+            initialData={editingUser}
+          />
         </DialogContent>
-        {/* <div className="flex gap-4 sm:flex-row sm:justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="gap-2" align="end">
-              <DropdownMenuItem className="m-1" asChild>
-                <ArtistCreateDialog />
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <EventCreateDialog />
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <WrittersCreateDialog />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
       </Dialog>
+
+      {/* Tabla de datos */}
       <DataTableCustom
         columns={columns}
         data={dataIntial}

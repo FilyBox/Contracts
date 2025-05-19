@@ -13,6 +13,8 @@ import { trpc } from '@documenso/trpc/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 
+import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
+import { EventCreateDialog } from '~/components/dialogs/event-create-dialog';
 import { TaskCreateDialog } from '~/components/dialogs/task-create-dialog';
 import { TasksTable } from '~/components/lists/tasks-list';
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -69,6 +71,8 @@ export default function TasksPage() {
 
         <div className="flex gap-4 sm:flex-row sm:justify-end">
           <TaskCreateDialog taskRootPath={taskRootPath} />
+          <EventCreateDialog />
+          <ArtistCreateDialog />
         </div>
       </div>
 

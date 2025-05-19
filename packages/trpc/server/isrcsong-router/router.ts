@@ -43,6 +43,29 @@ export const IsrcSongsRouter = router({
       return isrcSong;
     }),
 
+  createManyIsrcSongs: authenticatedProcedure
+    .input(
+      z.object({
+        isrcSongs: z.array(
+          z.object({
+            trackName: z.string().optional(),
+            artist: z.string().optional(),
+            duration: z.string().optional(),
+            title: z.string().optional(),
+            license: z.string().optional(),
+            date: z.string().optional(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { isrcSongs } = input;
+      const createdIsrcSongs = await prisma.isrcSongs.createMany({
+        data: isrcSongs,
+      });
+      return createdIsrcSongs;
+    }),
+
   findIsrcSongs: authenticatedProcedure.query(async ({ input }) => {
     const isrcSongs = await prisma.isrcSongs.findMany({
       orderBy: {

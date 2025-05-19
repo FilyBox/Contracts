@@ -47,7 +47,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.279.0",
     "luxon": "^3.4.0",
-    "papaparse": "^5.4.1",
+    "papaparse": "^5.5.2",
     "plausible-tracker": "^0.3.9",
     "posthog-js": "^1.224.0",
     "posthog-node": "^4.8.1",
