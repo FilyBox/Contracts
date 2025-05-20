@@ -232,7 +232,7 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                                     )}
                                   >
                                     {field.value ? (
-                                      format(new Date(field.value), 'dd/MM/yyyy')
+                                      format(new Date(field.value + 'T00:00:00'), 'dd/MM/yyyy')
                                     ) : (
                                       <span>Pick a date</span>
                                     )}
@@ -570,7 +570,7 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                 className="flex-1"
                 onClick={() => {
                   // Trigger validation before submitting
-                  form.trigger().then((isValid) => {
+                  void form.trigger().then((isValid) => {
                     if (isValid) {
                       const values = form.getValues();
                       void handleSubmit(values);

@@ -69,7 +69,7 @@ export default function TasksPage() {
     ) {
       // Ensure the type exactly matches one of the valid enum values
       // This handles any case sensitivity issues
-      searchParamsObject.type = searchParamsObject.type;
+      // searchParamsObject.type = searchParamsObject.type;
     }
 
     const result = ZSearchParamsSchema.safeParse(searchParamsObject);
@@ -106,6 +106,7 @@ export default function TasksPage() {
   const createMutation = trpc.release.createRelease.useMutation();
   const updateMutation = trpc.release.updateRelease.useMutation();
   const deleteMutation = trpc.release.deleteRelease.useMutation();
+  const convertDatesMutation = trpc.release.convertDates.useMutation();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dataIntial, setData] = useState<TFindReleaseResponse>();
@@ -182,6 +183,26 @@ export default function TasksPage() {
       });
     }
     setIsDialogOpen(false);
+  };
+
+  const handleConvertDates = async () => {
+    try {
+      const result = await convertDatesMutation.mutateAsync();
+      toast({
+        title: 'Date Format Conversion',
+        description: `Successfully converted ${result.successCount} dates. Failed: ${result.failCount}`,
+      });
+
+      // Refresh the data
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to convert dates',
+      });
+      console.error('Error converting dates:', error);
+    }
   };
 
   const handleUpdate = async (updated: Releases) => {
@@ -381,6 +402,15 @@ export default function TasksPage() {
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <Button onClick={openCreateDialog}>Create Release</Button>
           </div>
+          {/* <div className="flex w-auto flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <Button
+              onClick={handleConvertDates}
+              variant="outline"
+              disabled={convertDatesMutation.isLoading}
+            >
+              {convertDatesMutation.isLoading ? 'Converting...' : 'Convert Date Formats'}
+            </Button>
+          </div> */}
         </div>
 
         <div className="mt w-full">

@@ -1,41 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
+import { useSearchParams } from 'react-router';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { formMusicPath } from '@documenso/lib/utils/teams';
 import { type lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
+import { ZFindLpmInternalRequestSchema } from '@documenso/trpc/server/lpm-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { createColumns } from '@documenso/ui/primitives/column-custom';
-import { DataTableCustom } from '@documenso/ui/primitives/data-table-custom';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@documenso/ui/primitives/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@documenso/ui/primitives/dropdown-menu';
+import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import MyForm from '@documenso/ui/primitives/form-custom';
-import { Input } from '@documenso/ui/primitives/input';
-import { ScrollArea } from '@documenso/ui/primitives/scroll-area';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
+import { LpmTable } from '~/components/tables/lpm-custom-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
 
 // import { type LpmData } from '@documenso/ui/primitives/types';
 
+const ZSearchParamsSchema = ZFindLpmInternalRequestSchema.pick({
+  period: true,
+  page: true,
+  perPage: true,
+  query: true,
+});
+
 export default function TablePage() {
-  const { data, isLoading, isLoadingError, refetch } = trpc.lpm.findLpm.useQuery();
+  const [searchParams] = useSearchParams();
+  const findDocumentSearchParams = useMemo(
+    () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+    [searchParams],
+  );
+  const { data, isLoading, isLoadingError, refetch } = trpc.lpm.findLpm.useQuery({
+    query: findDocumentSearchParams.query,
+    period: findDocumentSearchParams.period,
+    page: findDocumentSearchParams.page,
+    perPage: findDocumentSearchParams.perPage,
+  });
+
   const createLpmMutation = trpc.lpm.createLpm.useMutation();
   const updateLpmMutation = trpc.lpm.updateLpmById.useMutation();
   const deleteLpmMutation = trpc.lpm.deleteLpmById.useMutation();
@@ -56,8 +62,8 @@ export default function TablePage() {
 
   useEffect(() => {
     if (data) {
-      console.log('Data:', data.music);
-      setData(data.music);
+      console.log('Data:', data.data);
+      setData(data.data);
     }
   }, [data]);
 
@@ -311,13 +317,23 @@ export default function TablePage() {
                   className="max-w-sm"
                 /> */}
 
-      {data && (!data?.music.length || data?.music.length === 0) ? (
+      {data && (!data?.data.length || data?.data.length === 0) ? (
         <GeneralTableEmptyState status={'ALL'} />
       ) : (
         // <p>sin data</p>
-        <DataTableCustom
-          columns={columns}
-          data={dataIntial}
+        // <LpmTable
+        //   columns={columns}
+        //   data={dataIntial}
+        //   datafull={data || { data: [], count: 0, currentPage: 1, perPage: 10, totalPages: 0 }}
+        //   onAdd={openCreateDialog}
+        //   onEdit={handleEdit}
+        //   onDelete={handleDelete}
+        // />
+
+        <LpmTable
+          data={data}
+          isLoading={isLoading}
+          isLoadingError={isLoadingError}
           onAdd={openCreateDialog}
           onEdit={handleEdit}
           onDelete={handleDelete}

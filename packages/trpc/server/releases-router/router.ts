@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { findRelease } from '@documenso/lib/server-only/document/find-releases';
 import { type GetStatsInput } from '@documenso/lib/server-only/document/get-priority';
 import { getReleaseType } from '@documenso/lib/server-only/document/get-release-type';
-import { getStats } from '@documenso/lib/server-only/document/get-stats';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
 // import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
@@ -98,6 +97,116 @@ export const releaseRouter = router({
         },
       });
     }),
+
+  // Agrega la siguiente mutación al router existente
+
+  convertDates: authenticatedProcedure.mutation(async ({ ctx }) => {
+    // Spanish month mappings - incluye versiones con mayúsculas y minúsculas
+    const spanishMonths: Record<string, number> = {
+      enero: 0,
+      Enero: 0,
+      febrero: 1,
+      Febrero: 1,
+      marzo: 2,
+      Marzo: 2,
+      abril: 3,
+      Abril: 3,
+      mayo: 4,
+      Mayo: 4,
+      junio: 5,
+      Junio: 5,
+      julio: 6,
+      Julio: 6,
+      agosto: 7,
+      Agosto: 7,
+      septiembre: 8,
+      Septiembre: 8,
+      octubre: 9,
+      Octubre: 9,
+      noviembre: 10,
+      Noviembre: 10,
+      diciembre: 11,
+      Diciembre: 11,
+    };
+
+    // Function to parse Spanish dates like "24 de abril" or "24 de Abril"
+    function parseSpanishDate(dateString: string): Date | null {
+      if (!dateString) return null;
+
+      try {
+        // No need to normalize to lowercase since we have both cases in the mapping
+        const normalizedInput = dateString.trim();
+
+        // Match patterns like "24 de abril", "24 abril", "24 de Abril", etc.
+        const regex = /(\d+)(?:\s+de)?\s+([a-zA-Zé]+)(?:\s+de\s+(\d{4}))?/;
+        const match = normalizedInput.match(regex);
+
+        if (!match) return null;
+
+        const day = parseInt(match[1], 10);
+        const monthName = match[2];
+        // If year is provided use it, otherwise use current year
+        const year = match[3] ? parseInt(match[3], 10) : new Date().getFullYear();
+
+        if (!Object.prototype.hasOwnProperty.call(spanishMonths, monthName)) return null;
+        const month = spanishMonths[monthName];
+        const date = new Date(year, month, day);
+
+        return date;
+      } catch (error) {
+        console.error(`Failed to parse date: ${dateString}`, error);
+        return null;
+      }
+    }
+
+    // Format date to ISO string or in a custom format
+    function formatDate(date: Date | null): string {
+      if (!date) return '';
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    // Get all releases with text dates
+    const releases = await prisma.releases.findMany({
+      where: {
+        date: {
+          not: null,
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+      },
+    });
+
+    let successCount = 0;
+    let failCount = 0;
+
+    // Process each release
+    for (const release of releases) {
+      const parsedDate = parseSpanishDate(release.date || '');
+
+      if (parsedDate) {
+        const formattedDate = formatDate(parsedDate);
+
+        // Update the record
+        await prisma.releases.update({
+          where: { id: release.id },
+          data: { date: formattedDate },
+        });
+
+        successCount++;
+      } else {
+        failCount++;
+      }
+    }
+
+    return {
+      success: true,
+      processed: releases.length,
+      successCount,
+      failCount,
+    };
+  }),
 
   findRelease: authenticatedProcedure
     .input(

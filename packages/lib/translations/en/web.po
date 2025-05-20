@@ -1289,6 +1289,7 @@ msgid "Are you sure?"
 msgstr "Are you sure?"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Artist"
 msgstr "Artist"
 
@@ -1301,6 +1302,7 @@ msgid "Asignados"
 msgstr "Asignados"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Assets"
 msgstr "Assets"
 
@@ -1350,6 +1352,7 @@ msgid "Attempts sealing the document again, useful for after a code change has o
 msgstr "Attempts sealing the document again, useful for after a code change has occurred to resolve an erroneous document."
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Audio"
 msgstr "Audio"
 
@@ -1407,6 +1410,7 @@ msgid "Banner Updated"
 msgstr "Banner Updated"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Banners"
 msgstr "Banners"
 
@@ -1428,6 +1432,7 @@ msgid "Billing"
 msgstr "Billing"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Biography"
 msgstr "Biography"
 
@@ -1599,6 +1604,7 @@ msgid "Cannot remove signer"
 msgstr "Cannot remove signer"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Canvas"
 msgstr "Canvas"
 
@@ -2017,6 +2023,7 @@ msgid "Costo Distribución"
 msgstr "Costo Distribución"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Cover"
 msgstr "Cover"
 
@@ -2143,6 +2150,7 @@ msgstr "Create your account and start using state-of-the-art document signing. O
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/documents-chatspace-table.tsx
 #: apps/remix/app/components/tables/admin-leaderboard-table.tsx
@@ -2212,6 +2220,7 @@ msgstr "Dark Mode"
 
 #: apps/remix/app/components/tables/settings-security-activity-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-date-field.tsx
 #: packages/ui/primitives/template-flow/add-template-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
@@ -3109,6 +3118,7 @@ msgid "EP"
 msgstr "EP"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "EPK"
 msgstr "EPK"
 
@@ -4503,6 +4513,7 @@ msgid "Pick a password"
 msgstr "Pick a password"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Pitch"
 msgstr "Pitch"
 
@@ -4911,10 +4922,12 @@ msgid "Rejection reason: {reason}"
 msgstr "Rejection reason: {reason}"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Status"
 msgstr "Release Status"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Title"
 msgstr "Release Title"
 
@@ -5694,6 +5707,7 @@ msgid "Step <0>{step} of {maxStep}</0>"
 msgstr "Step <0>{step} of {maxStep}</0>"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Streaming Link"
 msgstr "Streaming Link"
 
@@ -6782,6 +6796,7 @@ msgstr "Two-Factor Re-Authentication"
 
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/tables/admin-document-recipient-item-table.tsx
 #: packages/lib/constants/document.ts
 msgid "Type"
@@ -7043,6 +7058,7 @@ msgid "Upload your brand logo (max 5MB, JPG, PNG, or WebP)"
 msgstr "Upload your brand logo (max 5MB, JPG, PNG, or WebP)"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Uploaded"
 msgstr "Uploaded"
 
@@ -7194,6 +7210,7 @@ msgid "Version History"
 msgstr "Version History"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Video"
 msgstr "Video"
 
@@ -7592,6 +7609,7 @@ msgid "Webhooks"
 msgstr "Webhooks"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "WebSiteUpdates"
 msgstr "WebSiteUpdates"
 

@@ -79,23 +79,23 @@ model User {
   twoFactorEnabled      Boolean                 @default(false)
   twoFactorBackupCodes  String?
   url                   String?                 @unique
-
-  profile            UserProfile?
-  verificationTokens VerificationToken[]
-  apiTokens          ApiToken[]
-  templates          Template[]
-  taskAssignees      TaskAssignee[]
-  taskComments       TaskComment[]
-  taskAttachments    TaskAttachment[]
-  taskSubtasks       Task[]
-  securityAuditLogs  UserSecurityAuditLog[]
-  webhooks           Webhook[]
-  siteSettings       SiteSettings[]
-  passkeys           Passkey[]
-  Chat               Chat[]
-  avatarImage        AvatarImage?           @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-  ChatDocuments      ChatDocument[]
-  Suggestion         Suggestion[]
+  lpm                   lpm[]
+  profile               UserProfile?
+  verificationTokens    VerificationToken[]
+  apiTokens             ApiToken[]
+  templates             Template[]
+  taskAssignees         TaskAssignee[]
+  taskComments          TaskComment[]
+  taskAttachments       TaskAttachment[]
+  taskSubtasks          Task[]
+  securityAuditLogs     UserSecurityAuditLog[]
+  webhooks              Webhook[]
+  siteSettings          SiteSettings[]
+  passkeys              Passkey[]
+  Chat                  Chat[]
+  avatarImage           AvatarImage?            @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  ChatDocuments         ChatDocument[]
+  Suggestion            Suggestion[]
 
   @@index([email])
 }
@@ -217,6 +217,12 @@ model lpm {
   continuousMix                       String?  @map("Continuous Mix")
   continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song")
   trackPlayLink                       String?  @map("Track Play Link")
+
+  userId Int?
+  teamId Int?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
 }
 
 model DistributionStatement {
@@ -989,6 +995,7 @@ model Team {
   webhooks              Webhook[]
   Chat                  Chat[]
   contractTemplates     ContractTemplate[]
+  lpm                   lpm[]
 }
 
 model TeamPending {

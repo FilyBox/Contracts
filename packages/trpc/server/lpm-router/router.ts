@@ -2,6 +2,7 @@
 import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
+import { findLpm } from '@documenso/lib/server-only/document/find-lpm';
 import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure, router } from '../trpc';
@@ -140,13 +141,20 @@ export const lpmRouter = router({
         trackPlayLink: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const { user, teamId } = ctx;
+      const userId = user.id;
       // Remove undefined properties to satisfy Prisma's strict typing
       const cleanedInput = Object.fromEntries(
         Object.entries(input).filter(([_, v]) => v !== undefined),
       );
+
       return await prisma.lpm.create({
-        data: cleanedInput as unknown as Prisma.lpmCreateInput,
+        data: {
+          ...cleanedInput,
+          userId,
+          ...(teamId ? { teamId } : {}), // Add teamId if it exists
+        } as unknown as Prisma.lpmCreateInput,
       });
     }),
   findLpmById: authenticatedProcedure
@@ -160,21 +168,62 @@ export const lpmRouter = router({
         // },
       });
     }),
-  findLpm: authenticatedProcedure.query(async ({ input }) => {
-    const music = await prisma.lpm.findMany({
-      orderBy: {
-        id: 'asc',
-      },
-      // select: {
-      //   id: true,
-      //   productId: true,
-      //   productType: true,
-      //   productTitle: true,
-      //   // Include other fields you need
-      // },
-    });
-    return { music };
-  }),
+  findLpm: authenticatedProcedure
+    .input(
+      z.object({
+        // userId: z.number(),
+        query: z.string().optional(),
+        page: z.number().optional(),
+        perPage: z.number().optional(),
+        period: z.enum(['7d', '14d', '30d']).optional(),
+        orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
+        orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
+        orderByColumn: z
+          .enum(['id', 'lanzamiento', 'typeOfRelease', 'createdAt', 'updatedAt'])
+          .optional(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const {
+        query,
+        page,
+        perPage,
+        // release,
+        orderByColumn,
+        orderByDirection,
+        period,
+        // orderBy = 'createdAt',
+      } = input;
+
+      const { user, teamId } = ctx;
+      const userId = user.id;
+      const music = await prisma.lpm.findMany({
+        orderBy: {
+          id: 'asc',
+        },
+        // select: {
+        //   id: true,
+        //   productId: true,
+        //   productType: true,
+        //   productTitle: true,
+        //   // Include other fields you need
+        // },
+      });
+      const [documents] = await Promise.all([
+        findLpm({
+          query,
+          page,
+          perPage,
+          userId,
+          teamId,
+          period,
+          orderBy: orderByColumn
+            ? { column: orderByColumn, direction: orderByDirection }
+            : undefined,
+        }),
+      ]);
+      return documents;
+    }),
   updateLpmById: authenticatedProcedure
     .input(
       z.object({
