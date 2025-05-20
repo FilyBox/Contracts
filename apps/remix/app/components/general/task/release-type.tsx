@@ -7,6 +7,7 @@ import { Flag } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react/dist/lucide-react';
 
 import type { ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
+import type { ExtendedTaskPriority } from '@documenso/prisma/types/extended-task-priority';
 import { cn } from '@documenso/ui/lib/utils';
 
 type FriendlyStatus = {
@@ -42,24 +43,17 @@ export const FRIENDLY_STATUS_MAP: Record<ExtendedReleaseType, FriendlyStatus> = 
   },
 };
 
-export type ReleaseTypeProps = HTMLAttributes<HTMLSpanElement> & {
+export type TaskProps = HTMLAttributes<HTMLSpanElement> & {
   type: ExtendedReleaseType;
   inheritColor?: boolean;
 };
 
-export const ReleaseType = ({ className, type, inheritColor, ...props }: ReleaseTypeProps) => {
+export const ReleaseType = ({ className, type, inheritColor, ...props }: TaskProps) => {
   const { _ } = useLingui();
-  console.log('type', type);
-  if (!type) {
-    return null;
-  }
-  if (!FRIENDLY_STATUS_MAP[type]) {
-    return null;
-  }
+  let typeLabel = type;
+
   const { label, icon: Icon, color } = FRIENDLY_STATUS_MAP[type];
-  console.log('label', label);
-  console.log('Icon', Icon);
-  console.log('color', color);
+
   return (
     <span className={cn('flex items-center', className)} {...props}>
       {Icon && (

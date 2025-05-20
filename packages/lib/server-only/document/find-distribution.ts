@@ -76,7 +76,6 @@ export const findDistribution = async ({
       ],
     },
   };
-  console.log('team', team);
 
   if (team) {
     Filter = {
@@ -115,8 +114,6 @@ export const findDistribution = async ({
     { ...Filter },
     { ...searchFilter },
   ];
-
-  console.log('whereAndClause', whereAndClause);
 
   const whereClause: Prisma.DistributionStatementWhereInput = {
     AND: whereAndClause,

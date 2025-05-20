@@ -177,7 +177,6 @@ export const distributionRouter = router({
       }
 
       where.createdAt = createdAt;
-      console.log('where', where);
       // const [stats] = await Promise.all([getStats(getStatOptions)]);
       const [documents] = await Promise.all([
         findDistribution({

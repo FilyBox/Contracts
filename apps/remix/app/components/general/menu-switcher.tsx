@@ -253,6 +253,14 @@ export const MenuSwitcher = ({ user, teams: initialTeamsData }: MenuSwitcherProp
           </DropdownMenuItem>
         )}
 
+        {isUserAdmin && (
+          <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
+            <Link to="/distribution">
+              <Trans>Distribution Statement</Trans>
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem className="text-muted-foreground px-4 py-2" asChild>
           <Link to="/chatspace">
             <Trans>Chat documents</Trans>

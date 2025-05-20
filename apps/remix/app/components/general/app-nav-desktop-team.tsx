@@ -7,6 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { Search } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router';
 
+import { isAdmin } from '@documenso/lib/utils/is-admin';
 import { getRootHref } from '@documenso/lib/utils/params';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';

@@ -2,17 +2,22 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Release, TypeOfRelease } from '@prisma/client';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { type Releases } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { cn } from '../lib/utils';
 import { Button } from './button';
+import { Calendar } from './calendar';
 import { Card, CardContent } from './card';
 import { Checkbox } from './checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
 import { Input } from './input';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { ScrollArea } from './scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { Separator } from './separator';
@@ -21,33 +26,89 @@ const TypeOfReleaseValues = {
   ALBUM: 'Album',
   EP: 'EP',
   SINGLE: 'Sencillo',
-  ...(typeof TypeOfRelease === 'object' ? TypeOfRelease : {}),
+  // ...(typeof TypeOfRelease === 'object' ? TypeOfRelease : {}),
 };
 
 const ReleaseValues = {
   FOCUS: 'Focus',
   SOFT: 'Soft',
-  ...(typeof Release === 'object' ? Release : {}),
+  // ...(typeof Release === 'object' ? Release : {}),
 };
 
 const formSchema = z.object({
-  date: z.string().optional(),
-  artist: z.string().optional(),
-  lanzamiento: z.string().optional(),
+  date: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? '' : val)),
+  artist: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? '' : val)),
+  lanzamiento: z.string().min(1, { message: 'Release title cannot be empty' }),
   typeOfRelease: z.nativeEnum(TypeOfRelease).optional(),
   release: z.nativeEnum(Release).optional(),
-  uploaded: z.string().optional(),
-  streamingLink: z.string().optional(),
-  assets: z.string().optional(),
-  canvas: z.boolean().optional(),
-  cover: z.boolean().optional(),
-  audioWAV: z.boolean().optional(),
-  video: z.boolean().optional(),
-  banners: z.boolean().optional(),
-  pitch: z.boolean().optional(),
-  EPKUpdates: z.boolean().optional(),
-  WebSiteUpdates: z.boolean().optional(),
-  Biography: z.boolean().optional(),
+  uploaded: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? '' : val)),
+  streamingLink: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? '' : val)),
+  assets: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? '' : val)),
+  canvas: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  cover: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  audioWAV: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  video: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  banners: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  pitch: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  EPKUpdates: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  WebSiteUpdates: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
+  Biography: z
+    .boolean()
+    .optional()
+    .nullable()
+    .transform((val) => (val === null ? false : val)),
 });
 
 interface MyFormProps {
@@ -88,7 +149,11 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
         if (key !== 'id') {
           // Skip the id field
           // @ts-expect-error - We know these fields exist in our form schema
+
           form.setValue(key, initialData[key]);
+          if (key === 'typeOfRelease' || key === 'release') {
+            form.setValue(key, undefined);
+          }
         }
       });
     }
@@ -136,7 +201,7 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                   {/* Basic Information */}
                   <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12 md:col-span-6">
-                      <FormField
+                      {/* <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
@@ -145,6 +210,49 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                             <FormControl>
                               <Input type="date" {...field} />
                             </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      /> */}
+
+                      <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'w-[240px] pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy')
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date) =>
+                                    field.onChange(date ? date.toISOString() : '')
+                                  }
+                                  disabled={(date) => date < new Date('1900-01-01')}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -173,9 +281,9 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                         name="lanzamiento"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Release Title</FormLabel>
+                            <FormLabel>Lanzamiento</FormLabel>
                             <FormControl>
-                              <Input placeholder="Release title" {...field} />
+                              <Input placeholder="Lanzamiento" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -461,8 +569,18 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                 size="lg"
                 className="flex-1"
                 onClick={() => {
-                  const values = form.getValues();
-                  void handleSubmit(values); // Using void operator to explicitly mark as intentionally unhandled
+                  // Trigger validation before submitting
+                  form.trigger().then((isValid) => {
+                    if (isValid) {
+                      const values = form.getValues();
+                      void handleSubmit(values);
+                    } else {
+                      toast({
+                        variant: 'destructive',
+                        description: 'Complete all required fields',
+                      });
+                    }
+                  });
                 }}
               >
                 Completar

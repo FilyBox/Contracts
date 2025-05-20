@@ -51,6 +51,7 @@ export default function TasksPage() {
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
     [searchParams],
   );
+  console.log('findDocumentSearchParams', findDocumentSearchParams);
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const taskRootPath = formTasksPath(team?.url);
@@ -120,7 +121,7 @@ export default function TasksPage() {
   return (
     <div className="mx-auto max-w-screen-xl gap-y-8 px-4 md:px-8">
       {/* <CardsChat /> */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 items-center">
           <Button
             variant="ghost"
@@ -140,10 +141,10 @@ export default function TasksPage() {
             taskRootPath={taskRootPath}
           />
         </div>
-      </div>
+      </div> */}
 
-      <div className="mt-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
-        <div className="flex flex-row items-center">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
+        <div className="flex w-full flex-row items-center">
           {team && (
             <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
               {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
@@ -153,9 +154,17 @@ export default function TasksPage() {
             </Avatar>
           )}
 
-          <h1 className="truncate text-2xl font-semibold md:text-3xl">
+          <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
             <Trans>Tareas</Trans>
           </h1>
+
+          <div className="flex w-full gap-4 sm:flex-row sm:justify-end">
+            <TaskCreateDialog
+              teamMembers={teamMembers}
+              isLoading={isloadingTeamMembers}
+              taskRootPath={taskRootPath}
+            />
+          </div>
         </div>
 
         <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">

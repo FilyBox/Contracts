@@ -6,6 +6,8 @@ import { z } from 'zod';
 
 import { findRelease } from '@documenso/lib/server-only/document/find-releases';
 import { type GetStatsInput } from '@documenso/lib/server-only/document/get-priority';
+import { getReleaseType } from '@documenso/lib/server-only/document/get-release-type';
+import { getStats } from '@documenso/lib/server-only/document/get-stats';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
 // import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
@@ -139,23 +141,22 @@ export const releaseRouter = router({
       if (type && type !== ExtendedReleaseType.ALL) {
         where.typeOfRelease = type;
       }
-
       const getStatOptions: GetStatsInput = {
         user,
         period,
         search: query,
       };
 
-      if (teamId) {
-        const team = await getTeamById({ userId: user.id, teamId });
-        getStatOptions.team = {
-          teamId: team.id,
-          teamEmail: team.teamEmail?.email,
-          currentTeamMemberRole: team.currentTeamMember?.role,
-          currentUserEmail: user.email,
-          userId: user.id,
-        };
-      }
+      // if (teamId) {
+      //   const team = await getTeamById({ userId: user.id, teamId });
+      //   getStatOptions.team = {
+      //     teamId: team.id,
+      //     teamEmail: team.teamEmail?.email,
+      //     currentTeamMemberRole: team.currentTeamMember?.role,
+      //     currentUserEmail: user.email,
+      //     userId: user.id,
+      //   };
+      // }
 
       let createdAt: Prisma.ReleasesWhereInput['createdAt'];
 
@@ -170,8 +171,9 @@ export const releaseRouter = router({
       }
 
       where.createdAt = createdAt;
-      console.log('where', where);
-      // const [stats] = await Promise.all([getStats(getStatOptions)]);
+      getReleaseType;
+      const [stats] = await Promise.all([getReleaseType(getStatOptions)]);
+
       const [documents] = await Promise.all([
         findRelease({
           query,
@@ -180,13 +182,12 @@ export const releaseRouter = router({
           userId,
           teamId,
           period,
-
+          where,
           orderBy: orderByColumn
             ? { column: orderByColumn, direction: orderByDirection }
             : undefined,
         }),
       ]);
-      console.log('releases', documents);
       // const releases = await prisma.releases.findMany({
       //   where,
 
@@ -195,7 +196,7 @@ export const releaseRouter = router({
       //   },
       // });
 
-      return documents;
+      return { releases: documents, types: stats };
     }),
 
   updateRelease: authenticatedProcedure

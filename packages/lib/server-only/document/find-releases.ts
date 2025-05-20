@@ -21,6 +21,7 @@ export type FindReleaseOptions = {
     direction: 'asc' | 'desc';
   };
   type?: ExtendedReleaseType;
+  where?: Prisma.ReleasesWhereInput;
   release?: ExtendedRelease;
   period?: PeriodSelectorValue;
   query?: string;
@@ -33,6 +34,7 @@ export const findRelease = async ({
   type = ExtendedReleaseType.ALL,
   page = 1,
   perPage = 10,
+  where,
   orderBy,
   period,
 
@@ -74,7 +76,6 @@ export const findRelease = async ({
   let filters: Prisma.ReleasesWhereInput | null = findReleasesFilter(release);
   filters = findReleasesTypeFilter(type);
   if (filters === null) {
-    console.log('No filters found');
     return {
       data: [],
       count: 0,
@@ -93,7 +94,6 @@ export const findRelease = async ({
       ],
     },
   };
-  console.log('team', team);
 
   if (team) {
     Filter = {
@@ -133,6 +133,7 @@ export const findRelease = async ({
     { ...filters },
     { ...searchFilter },
     { ...Filter },
+    { ...where },
   ];
 
   const whereClause: Prisma.ReleasesWhereInput = {
@@ -147,7 +148,6 @@ export const findRelease = async ({
     };
   }
 
-  console.log('whereClause', whereClause);
   const [data, count] = await Promise.all([
     prisma.releases.findMany({
       where: whereClause,
@@ -161,8 +161,6 @@ export const findRelease = async ({
       where: whereClause,
     }),
   ]);
-
-  console.log('data releases', data);
 
   return {
     data: data,

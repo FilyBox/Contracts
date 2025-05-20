@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { useNavigate, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
@@ -26,10 +27,12 @@ import {
   DialogTitle,
 } from '@documenso/ui/primitives/dialog';
 import FormReleases from '@documenso/ui/primitives/form-releases';
+import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
+import { ReleaseType } from '~/components/general/task/release-type';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { ReleasesTable } from '~/components/tables/releases-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -41,7 +44,7 @@ export type TasksPageViewProps = {
 };
 
 export function meta() {
-  return appMetaTags('Tasks');
+  return appMetaTags('Releases');
 }
 
 const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
@@ -55,10 +58,39 @@ const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
 
 export default function TasksPage() {
   const [searchParams] = useSearchParams();
-  const findDocumentSearchParams = useMemo(
-    () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
-    [searchParams],
-  );
+
+  const findDocumentSearchParams = useMemo(() => {
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+
+    // Add special handling for the 'type' parameter
+    if (
+      searchParamsObject.type &&
+      ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
+    ) {
+      // Ensure the type exactly matches one of the valid enum values
+      // This handles any case sensitivity issues
+      searchParamsObject.type = searchParamsObject.type;
+    }
+
+    const result = ZSearchParamsSchema.safeParse(searchParamsObject);
+
+    if (!result.success) {
+      // Return a default object with manually extracted values from URL
+      return {
+        type: ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
+          ? (searchParamsObject.type as ExtendedReleaseType)
+          : undefined,
+        release: searchParamsObject.release as ExtendedRelease,
+        period: searchParamsObject.period as '7d' | '14d' | '30d',
+        page: searchParamsObject.page ? Number(searchParamsObject.page) : undefined,
+        perPage: searchParamsObject.perPage ? Number(searchParamsObject.perPage) : undefined,
+        query: searchParamsObject.query,
+      };
+    }
+
+    return result.data;
+  }, [searchParams]);
+
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const releasesRootPath = formReleasePath(team?.url);
@@ -80,14 +112,33 @@ export default function TasksPage() {
   const [editingUser, setEditingUser] = useState<Releases | null>(null);
   const { toast } = useToast();
 
+  const [type, setType] = useState<TFindReleaseInternalResponse['type']>({
+    [ExtendedReleaseType.Album]: 0,
+    [ExtendedReleaseType.EP]: 0,
+    [ExtendedReleaseType.Sencillo]: 0,
+    [ExtendedReleaseType.ALL]: 0,
+  });
+
   useEffect(() => {
-    if (data) {
-      console.log('Data:', data);
-      setData(data);
+    if (data?.releases) {
+      setData(data.releases);
+      // setData({
+      //   ...data.releases,
+      //   data: data.releases.data.map((record) => ({
+      //     ...record,
+      //     date: record.date ? new Date(record.date) : undefined,
+      //   })),
+      // });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (data?.types) {
+      setType(data.types);
+    }
+  }, [data?.types]);
+
   const handleCreate = async (newRecord: Omit<Releases, 'id'>) => {
-    console.log('New Record:', newRecord);
     try {
       const { id } = await createMutation.mutateAsync({
         date: newRecord.date || undefined,
@@ -111,7 +162,14 @@ export default function TasksPage() {
       console.log('Created Record ID:', id);
       await refetch();
       setIsDialogOpen(false);
+      toast({
+        description: 'Data added successfully',
+      });
     } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error adding data',
+      });
       console.error('Error creating record:', error);
     }
     console.log('New Record:', newRecord);
@@ -161,7 +219,14 @@ export default function TasksPage() {
       }
       setIsDialogOpen(false);
       setEditingUser(null);
+      toast({
+        description: 'Data updated successfully',
+      });
     } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error updating data',
+      });
       console.error('Error updating record:', error);
     }
   };
@@ -204,13 +269,6 @@ export default function TasksPage() {
     setIsDialogOpen(true);
   };
 
-  const [type, setType] = useState<TFindReleaseInternalResponse['type']>({
-    [ExtendedReleaseType.Album]: 0,
-    [ExtendedReleaseType.EP]: 0,
-    [ExtendedReleaseType.Sencillo]: 0,
-    [ExtendedReleaseType.ALL]: 0,
-  });
-
   const [release, setRelease] = useState<TFindReleaseInternalResponse['release']>({
     [ExtendedRelease.Focus]: 0,
     [ExtendedRelease.Soft]: 0,
@@ -226,14 +284,6 @@ export default function TasksPage() {
   useEffect(() => {
     void refetch();
   }, [team?.url]);
-
-  type TeamMember = {
-    name: string | null;
-    email: string;
-  };
-  const teamMembers = [] as TeamMember[];
-  const isloadingTeamMembers = false;
-  const isLoadingErrorTeamMembers = false;
 
   const getTabHref = (value: keyof typeof ExtendedReleaseType) => {
     const params = new URLSearchParams(searchParams);
@@ -294,31 +344,33 @@ export default function TasksPage() {
         </div>
 
         <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
-          {/* <Tabs value={findDocumentSearchParams.type || 'ALL'} className="overflow-x-auto">
+          <Tabs value={findDocumentSearchParams.type || 'ALL'} className="overflow-x-auto">
             <TabsList>
-              {[
-                ExtendedReleaseType.Sencillo,
-                ExtendedReleaseType.Album,
-                ExtendedReleaseType.EP,
-                ExtendedReleaseType.ALL,
-              ].map((value) => (
-                <TabsTrigger
-                  key={value}
-                  className="hover:text-foreground min-w-[60px]"
-                  value={value}
-                  asChild
-                >
-                  <Link to={getTabHref(value)} preventScrollReset>
-                    <ReleaseType type={value} />
+              {['Sencillo', 'Album', 'EP', 'ALL'].map((value) => {
+                return (
+                  <TabsTrigger
+                    key={value}
+                    className="hover:text-foreground min-w-[60px]"
+                    value={value}
+                    asChild
+                  >
+                    <Link
+                      to={getTabHref(value as keyof typeof ExtendedReleaseType)}
+                      preventScrollReset
+                    >
+                      <ReleaseType type={value as ExtendedReleaseType} />
 
-                    {value !== ExtendedReleaseType.ALL && (
-                      <span className="ml-1 inline-block opacity-50">{type[value]}</span>
-                    )}
-                  </Link>
-                </TabsTrigger>
-              ))}
+                      {value !== 'ALL' && (
+                        <span className="ml-1 inline-block opacity-50">
+                          {type[value as ExtendedReleaseType]}
+                        </span>
+                      )}
+                    </Link>
+                  </TabsTrigger>
+                );
+              })}
             </TabsList>
-          </Tabs> */}
+          </Tabs>
 
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <PeriodSelector />
@@ -332,7 +384,9 @@ export default function TasksPage() {
         </div>
 
         <div className="mt w-full">
-          {data && data.count === 0 && (!data?.data.length || data?.data.length === 0) ? (
+          {data &&
+          data.releases.count === 0 &&
+          (!data?.releases.data.length || data?.releases.data.length === 0) ? (
             <GeneralTableEmptyState status={'ALL'} />
           ) : (
             // <p>sin data</p>

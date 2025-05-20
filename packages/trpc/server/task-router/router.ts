@@ -204,7 +204,6 @@ export const taskRouter = router({
       }
 
       where.createdAt = createdAt;
-      console.log('where', where);
       const [stats] = await Promise.all([getStats(getStatOptions)]);
       // Obtener todas las tareas que coincidan con los filtros
       const tasks = await prisma.task.findMany({
