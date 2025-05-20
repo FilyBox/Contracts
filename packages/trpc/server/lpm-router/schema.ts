@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ZLpmSchema } from '@documenso/lib/types/Lpm';
+import { ZLpmSchema } from '@documenso/lib/types/lpm';
 import { ZFindResultResponse, ZFindSearchParamsSchema } from '@documenso/lib/types/search-params';
 
 // import { ExtendedLpm, ExtendedLpmType } from '@documenso/prisma/types/extended-Lpm';
