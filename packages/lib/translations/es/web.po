@@ -2474,6 +2474,7 @@ msgid "Distribution Method"
 msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/distribution._index.tsx
+#: apps/remix/app/components/general/menu-switcher.tsx
 msgid "Distribution Statement"
 msgstr ""
 
@@ -4035,6 +4036,7 @@ msgstr "Mover al equipo"
 msgid "Moving..."
 msgstr "Moviendo..."
 
+#: apps/remix/app/routes/_authenticated+/music._index.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx

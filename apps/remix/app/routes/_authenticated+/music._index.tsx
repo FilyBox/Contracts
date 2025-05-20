@@ -1,9 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { Trans } from '@lingui/react/macro';
+
+import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
+import { formMusicPath } from '@documenso/lib/utils/teams';
 import { type lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
+import { Button } from '@documenso/ui/primitives/button';
 import { createColumns } from '@documenso/ui/primitives/column-custom';
-import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTableCustom } from '@documenso/ui/primitives/data-table-custom';
 import {
   Dialog,
@@ -12,8 +17,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@documenso/ui/primitives/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@documenso/ui/primitives/dropdown-menu';
 import MyForm from '@documenso/ui/primitives/form-custom';
+import { Input } from '@documenso/ui/primitives/input';
+import { ScrollArea } from '@documenso/ui/primitives/scroll-area';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+
+import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
+import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
+import { useOptionalCurrentTeam } from '~/providers/team';
 
 // import { type LpmData } from '@documenso/ui/primitives/types';
 
@@ -23,6 +40,8 @@ export default function TablePage() {
   const updateLpmMutation = trpc.lpm.updateLpmById.useMutation();
   const deleteLpmMutation = trpc.lpm.deleteLpmById.useMutation();
   const { toast } = useToast();
+  const team = useOptionalCurrentTeam();
+  const musicRootPath = formMusicPath(team?.url);
 
   // type LpmData = (typeof data.music)[number];
   const [dataIntial, setData] = useState<lpm[]>([]);
@@ -30,6 +49,11 @@ export default function TablePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const columns = createColumns();
+
+  useEffect(() => {
+    void refetch();
+  }, [team?.url]);
+
   useEffect(() => {
     if (data) {
       console.log('Data:', data.music);
@@ -119,8 +143,8 @@ export default function TablePage() {
       setIsSubmitting(false);
     }
     console.log('New Record:', newRecord);
-    const record = { ...newRecord, id: Number(dataIntial.length + 1) };
-    setData([...dataIntial, record]);
+    // const record = { ...newRecord, id: Number(dataIntial.length + 1) };
+    // setData([...dataIntial, record]);
     setIsDialogOpen(false);
   };
 
@@ -240,7 +264,27 @@ export default function TablePage() {
     setIsDialogOpen(true);
   };
   return (
-    <div className="mx-auto">
+    <div className="mx-auto flex max-w-screen-xl flex-col gap-y-8 px-4 md:px-8">
+      <div className="flex flex-row items-center">
+        {team && (
+          <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
+            {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
+            <AvatarFallback className="text-muted-foreground text-xs">
+              {team.name.slice(0, 1)}
+            </AvatarFallback>
+          </Avatar>
+        )}
+
+        <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
+          <Trans>Music</Trans>
+        </h1>
+
+        <div className="flex w-full items-center justify-end gap-4">
+          <Button onClick={openCreateDialog}>Add Item</Button>
+
+          <ArtistCreateDialog />
+        </div>
+      </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-2xl">
           {/* <DialogHeader>
@@ -259,13 +303,26 @@ export default function TablePage() {
           </div>
         </DialogContent>
       </Dialog>
-      <DataTableCustom
-        columns={columns}
-        data={dataIntial}
-        onAdd={openCreateDialog}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+
+      {/* <Input
+                  placeholder="Filter..."
+                  value={(table.getColumn('trackName')?.getFilterValue() as string) ?? ''}
+                  onChange={(event) => table.getColumn('trackName')?.setFilterValue(event.target.value)}
+                  className="max-w-sm"
+                /> */}
+
+      {data && (!data?.music.length || data?.music.length === 0) ? (
+        <GeneralTableEmptyState status={'ALL'} />
+      ) : (
+        // <p>sin data</p>
+        <DataTableCustom
+          columns={columns}
+          data={dataIntial}
+          onAdd={openCreateDialog}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

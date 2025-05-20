@@ -69,7 +69,7 @@ export function DataTableCustom<TData, TValue>({
   });
 
   return (
-    <div className="mx-10 rounded-md border">
+    <div className="rounded-md border">
       <div className="border-b p-4">
         <div className="mb-4 flex items-center gap-4">
           <Input
@@ -78,9 +78,9 @@ export function DataTableCustom<TData, TValue>({
             onChange={(event) => table.getColumn('trackName')?.setFilterValue(event.target.value)}
             className="max-w-sm"
           />
-          <Button onClick={onAdd}>Add Item</Button>
+          {/* <Button onClick={onAdd}>Add Item</Button>
 
-          <ArtistCreateDialog />
+          <ArtistCreateDialog /> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

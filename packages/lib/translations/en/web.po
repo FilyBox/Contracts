@@ -2469,6 +2469,7 @@ msgid "Distribution Method"
 msgstr "Distribution Method"
 
 #: apps/remix/app/routes/_authenticated+/distribution._index.tsx
+#: apps/remix/app/components/general/menu-switcher.tsx
 msgid "Distribution Statement"
 msgstr "Distribution Statement"
 
@@ -4030,6 +4031,7 @@ msgstr "Move to Team"
 msgid "Moving..."
 msgstr "Moving..."
 
+#: apps/remix/app/routes/_authenticated+/music._index.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
