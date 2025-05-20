@@ -49,35 +49,36 @@ enum StatusSongAlbum {
 }
 
 model User {
-  id               Int              @id @default(autoincrement())
-  name             String?
-  customerId       String?          @unique
-  email            String           @unique
-  emailVerified    DateTime?
-  password         String? // Todo: (RR7) Remove after RR7 migration.
-  source           String?
-  signature        String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now()) @updatedAt
-  lastSignedIn     DateTime         @default(now())
-  roles            Role[]           @default([USER])
-  identityProvider IdentityProvider @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
-  avatarImageId    String?
-  disabled         Boolean          @default(false)
-
-  accounts             Account[]
-  sessions             Session[]
-  documents            Document[]
-  folders              Folder[]
-  subscriptions        Subscription[]
-  passwordResetTokens  PasswordResetToken[]
-  ownedTeams           Team[]
-  ownedPendingTeams    TeamPending[]
-  teamMembers          TeamMember[]
-  twoFactorSecret      String?
-  twoFactorEnabled     Boolean              @default(false)
-  twoFactorBackupCodes String?
-  url                  String?              @unique
+  id                    Int                     @id @default(autoincrement())
+  name                  String?
+  customerId            String?                 @unique
+  email                 String                  @unique
+  emailVerified         DateTime?
+  password              String? // Todo: (RR7) Remove after RR7 migration.
+  source                String?
+  signature             String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now()) @updatedAt
+  lastSignedIn          DateTime                @default(now())
+  roles                 Role[]                  @default([USER])
+  identityProvider      IdentityProvider        @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
+  avatarImageId         String?
+  disabled              Boolean                 @default(false)
+  releases              Releases[]
+  distributionStatement DistributionStatement[]
+  accounts              Account[]
+  sessions              Session[]
+  documents             Document[]
+  folders               Folder[]
+  subscriptions         Subscription[]
+  passwordResetTokens   PasswordResetToken[]
+  ownedTeams            Team[]
+  ownedPendingTeams     TeamPending[]
+  teamMembers           TeamMember[]
+  twoFactorSecret       String?
+  twoFactorEnabled      Boolean                 @default(false)
+  twoFactorBackupCodes  String?
+  url                   String?                 @unique
 
   profile            UserProfile?
   verificationTokens VerificationToken[]
@@ -216,6 +217,75 @@ model lpm {
   continuousMix                       String?  @map("Continuous Mix")
   continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song")
   trackPlayLink                       String?  @map("Track Play Link")
+}
+
+model DistributionStatement {
+  id                  Int      @id @default(autoincrement())
+  marketingOwner      String?  @map("Marketing Owner")
+  nombreDistribucion  String?  @map("Nombre Distribucion")
+  proyecto            String?  @map("Projecto")
+  numeroDeCatalogo    String?  @map("Numero de Catalogo")
+  upc                 String?  @map("UPC")
+  localProductNumber  String?  @map("Local Product Number")
+  isrc                String?  @map("ISRC")
+  tituloCatalogo      String?  @map("Titulo catalogo")
+  mesReportado        Int?     @map("Mes Reportado")
+  territorio          String?  @map("Territorio")
+  codigoDelTerritorio String?  @map("Codigo del Territorio")
+  nombreDelTerritorio String?  @map("Nombre del Territorio")
+  tipoDePrecio        String?  @map("Tipo de Precio")
+  tipoDeIngreso       String?  @map("Tipo de Ingreso")
+  venta               Int?     @map("Venta")
+  rtl                 Float?   @map("RTL")
+  ppd                 Float?   @map("PPD")
+  rbp                 Float?   @map("RBP")
+  tipoDeCambio        Float?   @map("Tipo de Cambio:")
+  valorRecibido       Float?   @map("Valor Recibido")
+  regaliasArtisticas  Int?     @map("Regalias Artisticas")
+  costoDistribucion   Float?   @map("Costo Distribucion")
+  copyright           Int?     @map("Copyright")
+  cuotaAdministracion Int?     @map("Cuota Administracion")
+  costoCarga          Int?     @map("Costo Carga")
+  otrosCostos         Int?     @map("Otros Costos")
+  ingresosRecibidos   Float?   @map("Ingresos Recibidos")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
+  userId              Int?
+  teamId              Int?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([teamId])
+}
+
+model Releases {
+  id             Int            @id @default(autoincrement())
+  date           String?
+  artist         String?
+  lanzamiento    String?
+  typeOfRelease  TypeOfRelease?
+  release        Release?
+  uploaded       String?
+  streamingLink  String?
+  assets         String?
+  canvas         Boolean?
+  cover          Boolean?
+  audioWAV       Boolean?
+  video          Boolean?
+  banners        Boolean?
+  pitch          Boolean?
+  EPKUpdates     Boolean?
+  WebSiteUpdates Boolean?
+  Biography      Boolean?
+  userId         Int?
+  teamId         Int?
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team      Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model TeamProfile {
@@ -752,6 +822,17 @@ enum TaskPriority {
   CRITICAL
 }
 
+enum Release {
+  Soft
+  Focus
+}
+
+enum TypeOfRelease {
+  Sencillo
+  Album
+  EP
+}
+
 // Modelo opcional para proyectos (si necesitas agrupar tareas)
 model Project {
   id          Int           @id @default(autoincrement())
@@ -877,36 +958,37 @@ model TeamGlobalSettings {
 }
 
 model Team {
-  id                   Int                       @id @default(autoincrement())
-  name                 String
-  url                  String                    @unique
-  createdAt            DateTime                  @default(now())
-  avatarImageId        String?
-  customerId           String?                   @unique
-  ownerUserId          Int
-  Event                Event[]
-  members              TeamMember[]
-  invites              TeamMemberInvite[]
-  teamEmail            TeamEmail?
-  emailVerification    TeamEmailVerification?
-  transferVerification TeamTransferVerification?
-  teamGlobalSettings   TeamGlobalSettings?
-  avatarImage          AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-  songs                Songs[]
-  artists              Artist[]
-  profile              TeamProfile?
-  owner                User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
-  subscription         Subscription?
-
-  documents         Document[]
-  tasks             Task[]
-  templates         Template[]
-  projects          Project[]
-  folders           Folder[]
-  apiTokens         ApiToken[]
-  webhooks          Webhook[]
-  Chat              Chat[]
-  contractTemplates ContractTemplate[]
+  id                    Int                       @id @default(autoincrement())
+  name                  String
+  url                   String                    @unique
+  createdAt             DateTime                  @default(now())
+  avatarImageId         String?
+  customerId            String?                   @unique
+  ownerUserId           Int
+  Event                 Event[]
+  members               TeamMember[]
+  invites               TeamMemberInvite[]
+  teamEmail             TeamEmail?
+  emailVerification     TeamEmailVerification?
+  transferVerification  TeamTransferVerification?
+  teamGlobalSettings    TeamGlobalSettings?
+  avatarImage           AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  songs                 Songs[]
+  artists               Artist[]
+  profile               TeamProfile?
+  owner                 User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  subscription          Subscription?
+  distributionStatement DistributionStatement[]
+  releases              Releases[]
+  documents             Document[]
+  tasks                 Task[]
+  templates             Template[]
+  projects              Project[]
+  folders               Folder[]
+  apiTokens             ApiToken[]
+  webhooks              Webhook[]
+  Chat                  Chat[]
+  contractTemplates     ContractTemplate[]
 }
 
 model TeamPending {

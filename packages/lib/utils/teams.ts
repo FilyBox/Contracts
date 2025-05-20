@@ -25,6 +25,10 @@ export const formTasksPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/tasks` : '/tasks';
 };
 
+export const formReleasePath = (teamUrl?: string) => {
+  return teamUrl ? `/t/${teamUrl}/releases` : '/releases';
+};
+
 /**
  * Determines whether a team member can execute a given action.
  *
