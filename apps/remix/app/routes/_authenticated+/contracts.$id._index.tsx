@@ -160,9 +160,12 @@ export default function DocumentPage() {
           </CardContent>
         </Card>
 
-        <div className="right-8 top-20 col-span-12 inline-block max-h-screen overflow-y-auto md:max-w-[32rem] lg:fixed lg:col-span-6 xl:col-span-5">
-          <div className="space-y-6">
-            <section className="border-border bg-widget flex flex-col rounded-xl border pb-4 pt-6">
+        <Card
+          className="col-span-12 rounded-xl before:rounded-xl lg:fixed lg:right-8 lg:top-20 lg:col-span-6 lg:max-w-[32rem] xl:col-span-7"
+          gradient
+        >
+          <CardContent className="p-2">
+            <section className="border-border bg-widget flex w-full flex-col rounded-xl border pb-4 pt-6">
               <div className="px-6 py-4">
                 <h3 className="mb-4 border-b border-gray-200 pb-3 text-2xl font-semibold">
                   {contract?.fileName}
@@ -231,8 +234,80 @@ export default function DocumentPage() {
                 </div>
               </div>
             </section>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        {/* <div className="right-8 top-20 col-span-12 flex max-h-screen w-full overflow-y-auto md:max-w-[32rem] lg:fixed lg:col-span-6 xl:col-span-5">
+          <section className="border-border bg-widget flex w-full flex-col rounded-xl border pb-4 pt-6">
+            <div className="px-6 py-4">
+              <h3 className="mb-4 border-b border-gray-200 pb-3 text-2xl font-semibold">
+                {contract?.fileName}
+              </h3>
+
+              <div className="grid grid-cols-1 gap-4">
+                {contract?.title && (
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Title</span>
+                    <span className="text-base">{contract.title}</span>
+                  </div>
+                )}
+
+                {contract?.artists && (
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Artists</span>
+                    <span className="text-base">{contract.artists}</span>
+                  </div>
+                )}
+
+                {contract?.status && (
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Status</span>
+                    <span className="text-base">{contract.status}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  {contract?.startDate && (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500">Start Date</span>
+                      <span className="text-base">{contract.startDate}</span>
+                    </div>
+                  )}
+
+                  {contract?.endDate && (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500">End Date</span>
+                      <span className="text-base">{contract.endDate}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {contract?.isPossibleToExpand !== undefined && (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500">Can Extend</span>
+                      <span className="text-base">{contract.isPossibleToExpand}</span>
+                    </div>
+                  )}
+
+                  {contract?.possibleExtensionTime && (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500">Extension Time</span>
+                      <span className="text-base">{contract.possibleExtensionTime}</span>
+                    </div>
+                  )}
+                </div>
+
+                {contract?.summary && (
+                  <div className="mt-2 flex flex-col">
+                    <span className="text-sm font-medium text-gray-500">Summary</span>
+                    <p className="mt-1 text-base">{contract.summary}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        </div> */}
       </div>
     </div>
   );

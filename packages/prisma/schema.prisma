@@ -240,27 +240,50 @@ enum ExpansionPossibility {
   NO_ESPECIFICADO
 }
 
+enum RetentionAndCollectionPeriod {
+  SI
+  NO
+  NO_ESPECIFICADO
+}
+
+enum ContractType {
+  ARRENDAMIENTOS
+  ALQUILERES
+  VEHICULOS
+  SERVICIOS
+  ARTISTAS
+}
+
 model Contract {
   id       Int     @id @default(autoincrement())
   title    String  @db.Text
   fileName String? @db.Text
 
-  artists               String               @db.Text
-  startDate             String
-  endDate               String
-  isPossibleToExpand    ExpansionPossibility @default(NO_ESPECIFICADO)
-  possibleExtensionTime String?
-  status                ContractStatus       @default(NO_ESPECIFICADO)
-  documentId            Int                  @unique
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
-  summary               String?              @db.Text
-  userId                Int?
-  teamId                Int?
+  artists                     String?                       @db.Text
+  startDate                   String?
+  endDate                     String?
+  isPossibleToExpand          ExpansionPossibility          @default(NO_ESPECIFICADO)
+  possibleExtensionTime       String?
+  status                      ContractStatus?               @default(NO_ESPECIFICADO)
+  collectionPeriod            RetentionAndCollectionPeriod?
+  retentionPeriod             RetentionAndCollectionPeriod?
+  retentionPeriodDescription  String?
+  retentionPeriodDuration     String?
+  collectionPeriodDescription String?
+  collectionPeriodDuration    String?
+  contractType                ContractType?
+  documentId                  Int                           @unique
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  summary                     String?                       @db.Text
+  userId                      Int?
+  teamId                      Int?
+  folder                      Folder?                       @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId                    String?
+  user                        User?                         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team                        Team?                         @relation(fields: [teamId], references: [id], onDelete: SetNull)
 
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
-
+  @@index([folderId])
   @@map("Contracts")
 }
 
@@ -594,6 +617,7 @@ model Folder {
   parent     Folder?            @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   documents  Document[]
   templates  Template[]
+  contracts  Contract[]
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @default(now()) @updatedAt
   subfolders Folder[]           @relation("FolderToFolder")

@@ -87,6 +87,16 @@ export const ContractsTable = ({
         enableHiding: true,
       },
       {
+        accessorKey: 'possibleExtensionTime',
+        header: 'Extension Time',
+        enableHiding: true,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        enableHiding: true,
+      },
+      {
         accessorKey: 'status',
         header: 'Status',
         enableHiding: true,

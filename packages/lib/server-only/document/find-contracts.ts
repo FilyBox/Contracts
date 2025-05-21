@@ -1,4 +1,4 @@
-import type { Contract, Prisma, Releases } from '@prisma/client';
+import type { Contract, Prisma } from '@prisma/client';
 import { DateTime } from 'luxon';
 
 import { prisma } from '@documenso/prisma';
@@ -89,54 +89,54 @@ export const findContracts = async ({
   //   };
   // }
 
-  // let Filter: Prisma.ContractWhereInput = {
-  //   AND: {
-  //     OR: [
-  //       {
-  //         userId,
-  //       },
-  //     ],
-  //   },
-  // };
+  let Filter: Prisma.ContractWhereInput = {
+    AND: {
+      OR: [
+        {
+          userId,
+        },
+      ],
+    },
+  };
 
-  // if (team) {
-  //   Filter = {
-  //     AND: {
-  //       OR: team.teamEmail
-  //         ? [
-  //             {
-  //               teamId: team.id,
-  //             },
-  //             {
-  //               user: {
-  //                 email: team.teamEmail.email,
-  //               },
-  //             },
-  //           ]
-  //         : [
-  //             {
-  //               teamId: team.id,
-  //             },
-  //           ],
-  //     },
-  //   };
-  // } else {
-  //   Filter = {
-  //     AND: {
-  //       OR: [
-  //         {
-  //           userId,
-  //           teamId: null,
-  //         },
-  //       ],
-  //     },
-  //   };
-  // }
+  if (team) {
+    Filter = {
+      AND: {
+        OR: team.teamEmail
+          ? [
+              {
+                teamId: team.id,
+              },
+              {
+                user: {
+                  email: team.teamEmail.email,
+                },
+              },
+            ]
+          : [
+              {
+                teamId: team.id,
+              },
+            ],
+      },
+    };
+  } else {
+    Filter = {
+      AND: {
+        OR: [
+          {
+            userId,
+            teamId: null,
+          },
+        ],
+      },
+    };
+  }
 
   const whereAndClause: Prisma.ContractWhereInput['AND'] = [
     // { ...filters },
     { ...searchFilter },
-    // { ...Filter },
+    { ...Filter },
     { ...where },
   ];
 

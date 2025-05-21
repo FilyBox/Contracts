@@ -180,11 +180,6 @@ export const ChatTableActionDropdown = ({
 
         <DropdownMenuItem onClick={onHandleRetry} disabled={!canManageDocument || isComplete}>
           <RefreshCcw className="mr-2 h-4 w-4" />
-          <Trans>View</Trans>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={onHandleRetry} disabled={!canManageDocument || isComplete}>
-          <RefreshCcw className="mr-2 h-4 w-4" />
           <Trans>Retry</Trans>
         </DropdownMenuItem>
 

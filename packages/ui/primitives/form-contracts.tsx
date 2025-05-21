@@ -270,7 +270,7 @@ export default function ContractForm({
                         name="endDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Fecha de Inicio</FormLabel>
+                            <FormLabel>Fecha de finalización</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
