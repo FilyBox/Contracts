@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   MoveRight,
   Pencil,
+  RefreshCcw,
   Trash2,
 } from 'lucide-react';
 import { Link } from 'react-router';
@@ -38,11 +39,13 @@ import { useOptionalCurrentTeam } from '~/providers/team';
 export type DocumentsTableActionDropdownProps = {
   row: TDocumentRow;
   onMoveDocument?: () => void;
+  onHandleRetry?: () => void;
 };
 
 export const ChatTableActionDropdown = ({
   row,
   onMoveDocument,
+  onHandleRetry,
 }: DocumentsTableActionDropdownProps) => {
   const { user } = useSession();
   const team = useOptionalCurrentTeam();
@@ -174,6 +177,11 @@ export const ChatTableActionDropdown = ({
           <Download className="mr-2 h-4 w-4" />
           <Trans>Download</Trans>
         </DropdownMenuItem> */}
+
+        <DropdownMenuItem onClick={onHandleRetry} disabled={!canManageDocument || isComplete}>
+          <RefreshCcw className="mr-2 h-4 w-4" />
+          <Trans>Retry</Trans>
+        </DropdownMenuItem>
 
         <DropdownMenuItem onClick={onDownloadOriginalClick}>
           <Download className="mr-2 h-4 w-4" />

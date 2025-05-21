@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 
 import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/react-table';
@@ -10,8 +12,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { ArrowDownUp, ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react';
-
-import { ArtistCreateDialog } from '@documenso/remix/app/components/dialogs/artist-create-dialog';
 
 import { Button } from './button';
 import {
@@ -69,7 +69,7 @@ export function DataTableCustom<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="mx-10 rounded-md border">
       <div className="border-b p-4">
         <div className="mb-4 flex items-center gap-4">
           <Input
@@ -78,9 +78,7 @@ export function DataTableCustom<TData, TValue>({
             onChange={(event) => table.getColumn('trackName')?.setFilterValue(event.target.value)}
             className="max-w-sm"
           />
-          {/* <Button onClick={onAdd}>Add Item</Button>
-
-          <ArtistCreateDialog /> */}
+          <Button onClick={onAdd}>Add Item</Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -165,24 +163,6 @@ export function DataTableCustom<TData, TValue>({
                           typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
                           ) : cell.column.id === 'productPlayLink' && cell.getValue() ? (
-                            <a
-                              href={cell.getValue() as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              Link
-                            </a>
-                          ) : cell.column.id === 'trackPlayLink' && cell.getValue() ? (
-                            <a
-                              href={cell.getValue() as string}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              Link
-                            </a>
-                          ) : cell.column.id === 'vevoChannel' && cell.getValue() ? (
                             <a
                               href={cell.getValue() as string}
                               target="_blank"

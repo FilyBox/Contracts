@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import type {
@@ -8,8 +8,15 @@ import type {
   Updater,
   VisibilityState,
 } from '@tanstack/react-table';
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import type { ColumnFiltersState } from '@tanstack/react-table';
 
+import { Button } from './button';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -17,6 +24,13 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from './context-menu';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from './dropdown-menu';
+import { ScrollArea } from './scroll-area';
 import { Skeleton } from './skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
@@ -89,14 +103,23 @@ export function DataTable<TData, TValue>({
       onPaginationChange?.(updater.pageIndex + 1, updater.pageSize);
     }
   };
-
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  // Agregar estado local para la visibilidad de columnas
+  const [localColumnVisibility, setLocalColumnVisibility] = useState<VisibilityState>(
+    columnVisibility || {},
+  );
   const table = useReactTable({
     data,
     columns,
+    onColumnFiltersChange: setColumnFilters,
+    getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
+    onColumnVisibilityChange: setLocalColumnVisibility,
+
     state: {
       pagination: manualPagination ? pagination : undefined,
-      columnVisibility,
+      columnVisibility: localColumnVisibility,
+      columnFilters,
     },
     manualPagination,
     pageCount: totalPages,
@@ -106,6 +129,37 @@ export function DataTable<TData, TValue>({
   return (
     <>
       <div className="rounded-md border">
+        <div className="border-b p-4">
+          <div className="mb-4 flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Columns</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <ScrollArea className="h-[300px] w-[200px]">
+                  {table
+                    .getAllColumns()
+                    .filter((column) => column.getCanHide())
+                    .map((column) => (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) => {
+                          column.toggleVisibility(!!value);
+                        }}
+                        onSelect={(e) => {
+                          e.preventDefault();
+                        }}
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

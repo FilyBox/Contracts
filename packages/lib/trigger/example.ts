@@ -1,3 +1,4 @@
+import { GoogleGenAI, Type } from '@google/genai';
 import { TeamMemberRole } from '@prisma/client';
 import { task } from '@trigger.dev/sdk/v3';
 import fs from 'fs/promises';
@@ -46,6 +47,9 @@ interface TemplateField {
 
 export const extractBodyContractTask = task({
   id: 'extract-body-contract',
+  queue: {
+    concurrencyLimit: 1,
+  },
   // Set an optional maxDuration to prevent tasks from running indefinitely
   // Stop executing after 300 secs (5 mins) of compute
   run: async (payload: {
@@ -124,10 +128,17 @@ export const extractBodyContractTask = task({
             }
           : { userId, teamId: null }),
       };
-
-      const documentBody = await prisma.documentBodyExtracted.create({
-        data: { body: 'En proceso', status: 'PENDING', documentId: documentId },
+      const documentBodyExists = await prisma.documentBodyExtracted.findFirst({
+        where: { documentId: documentId },
       });
+      let documentBody;
+      if (documentBodyExists) {
+        documentBody = documentBodyExists;
+      } else {
+        documentBody = await prisma.documentBodyExtracted.create({
+          data: { body: 'En proceso', status: 'PENDING', documentId: documentId },
+        });
+      }
 
       console.log('documentBody', documentBody);
       console.log('documentWhereClause', documentWhereClause);
@@ -166,6 +177,7 @@ export const extractBodyContractTask = task({
 
       if (extractedText === 'Error al procesar el PDF.') {
         console.log(`⚠️ No se pudo extraer el texto del PDF: ${fileName}`);
+
         await prisma.document.update({
           where: { id: documentId },
           data: { status: 'ERROR' },
@@ -174,9 +186,26 @@ export const extractBodyContractTask = task({
       }
 
       console.log(`✅ texto extraido con éxito`);
-      console.log('extractedText', extractedText);
 
       if (extractedText) {
+        console.log('ai beggining');
+        const prompt = `
+Extrae la información clave de este contrato en base a los siguientes requerimientos:
+el titulo es: ${fileName}
+1. **Título del contrato**: Nombre del contrato.
+2. **Artistas**: Nombres de todos los artistas involucrados.
+3. **Fecha de inicio del contrato**: Fecha de inicio del contrato formato dd/mm/aaaa.
+4. **Fecha de finalización del contrato**: Fecha de finalización del contrato formato dd/mm/aaaa.
+5. **¿Es posible expandirlo?**: Indica si el contrato puede extenderse.
+6. **Tiempo de extensión posible**: Especifica el tiempo de extensión (2, 3, 5 años o la cantidad de tiempo especificada), fecha estimada 
+7. **Estatus del contrato**: Si ya está vencido o es vigente . Basado en la fecha actual: ${new Date().toISOString()}.
+8. **Resumen general** del contrato.
+
+este es el contrato: ${extractedText}
+        `;
+
+        console.log('prompt', prompt);
+
         await prisma.documentBodyExtracted.update({
           where: { id: documentBody.id },
           data: { status: 'COMPLETE', body: extractedText },
@@ -185,8 +214,106 @@ export const extractBodyContractTask = task({
           where: { id: documentId },
           data: { status: 'COMPLETED' },
         });
+
+        const ai = new GoogleGenAI({ apiKey: 'AIzaSyABLg4odoWpJX7VpZVSNWLfhsJ07hH5KAE' });
+        const responses = await ai.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  tituloContrato: { type: Type.STRING },
+                  artistas: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        nombre: { type: Type.STRING },
+                      },
+                    },
+                  },
+                  fechaInicio: { type: Type.STRING },
+                  fechaFin: { type: Type.STRING },
+                  esPosibleExpandirlo: { type: Type.STRING, enum: ['SI', 'NO', 'NO_ESPECIFICADO'] },
+                  tiempoExtensionPosible: { type: Type.STRING },
+                  estatusContrato: {
+                    type: Type.STRING,
+                    enum: ['VIGENTE', 'FINALIZADO', 'NO_ESPECIFICADO'],
+                  },
+                  resumenGeneral: { type: Type.STRING },
+                },
+                propertyOrdering: [
+                  'tituloContrato',
+                  'artistas',
+                  'fechaInicio',
+                  'fechaFin',
+                  'esPosibleExpandirlo',
+                  'tiempoExtensionPosible',
+                  'estatusContrato',
+
+                  'resumenGeneral',
+                ],
+              },
+            },
+          },
+        });
+
+        console.log('response', responses.text);
+
+        const parsedResponse = responses.text ? JSON.parse(responses.text)[0] : null; // Parse JSON and get the first item if text exists
+        console.log('parsedResponse', parsedResponse);
+        let contractsTable;
+
+        const existingContract = await prisma.contract.findFirst({
+          where: { documentId: documentId },
+        });
+        if (existingContract) {
+          console.log('Ya existe el contrato, actualizando');
+          contractsTable = await prisma.contract.update({
+            where: { id: existingContract.id },
+            data: {
+              documentId: documentId,
+              fileName: fileName,
+              artists: parsedResponse.artistas
+                .map((artist: { nombre: string }) => artist.nombre)
+                .join(', '),
+              endDate: parsedResponse.fechaFin,
+              startDate: parsedResponse.fechaInicio,
+              status: parsedResponse.estatusContrato,
+              title: parsedResponse.tituloContrato,
+              isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
+              possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+              summary: parsedResponse.resumenGeneral,
+            },
+          });
+        } else {
+          console.log('No existe el contrato, creando uno nuevo');
+          contractsTable = await prisma.contract.create({
+            data: {
+              documentId: documentId,
+              fileName: fileName,
+              artists: parsedResponse.artistas
+                .map((artist: { nombre: string }) => artist.nombre)
+                .join(', '),
+              endDate: parsedResponse.fechaFin,
+              startDate: parsedResponse.fechaInicio,
+              status: parsedResponse.estatusContrato,
+              title: parsedResponse.tituloContrato,
+              isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
+              possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+              summary: parsedResponse.resumenGeneral,
+            },
+          });
+          console.log('contractsTable', contractsTable);
+        }
       }
     } catch (error) {
+      console.log('Error procesando el PDF:', error);
+      console.error('Error procesando el PDF:', error);
       await prisma.document.update({
         where: { id: documentId },
         data: { status: 'ERROR' },

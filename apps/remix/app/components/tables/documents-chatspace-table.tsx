@@ -31,6 +31,7 @@ export type DocumentsTableProps = {
   isLoading?: boolean;
   isLoadingError?: boolean;
   onMoveDocument?: (documentId: number) => void;
+  onHandleRetry?: (documenDataId: string, documentId: number) => void;
 };
 
 type DocumentsTableRow = TFindDocumentsResponse['data'][number];
@@ -40,6 +41,7 @@ export const DocumentsChatSpaceTable = ({
   isLoading,
   isLoadingError,
   onMoveDocument,
+  onHandleRetry,
 }: DocumentsTableProps) => {
   const { _, i18n } = useLingui();
 
@@ -90,6 +92,11 @@ export const DocumentsChatSpaceTable = ({
               <ChatTableActionDropdown
                 row={row.original}
                 onMoveDocument={onMoveDocument ? () => onMoveDocument(row.original.id) : undefined}
+                onHandleRetry={
+                  onHandleRetry
+                    ? () => onHandleRetry(row.original.documentDataId, row.original.id)
+                    : undefined
+                }
               />
             </div>
           ),

@@ -27,7 +27,7 @@ export const GeneralTableEmptyState = ({ status }: DocumentsTableEmptyStateProps
     }))
     .with(ExtendedDocumentStatus.ALL, () => ({
       title: msg`We're all empty`,
-      message: msg`You have not yet added new data`,
+      message: msg`You don't have any data yet`,
       icon: Bird,
     }))
     .otherwise(() => ({

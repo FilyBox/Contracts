@@ -1289,6 +1289,7 @@ msgid "Are you sure?"
 msgstr "Are you sure?"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Artist"
 msgstr "Artist"
 
@@ -1301,6 +1302,7 @@ msgid "Asignados"
 msgstr "Asignados"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Assets"
 msgstr "Assets"
 
@@ -1350,6 +1352,7 @@ msgid "Attempts sealing the document again, useful for after a code change has o
 msgstr "Attempts sealing the document again, useful for after a code change has occurred to resolve an erroneous document."
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Audio"
 msgstr "Audio"
 
@@ -1407,6 +1410,7 @@ msgid "Banner Updated"
 msgstr "Banner Updated"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Banners"
 msgstr "Banners"
 
@@ -1428,6 +1432,7 @@ msgid "Billing"
 msgstr "Billing"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Biography"
 msgstr "Biography"
 
@@ -1599,6 +1604,7 @@ msgid "Cannot remove signer"
 msgstr "Cannot remove signer"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Canvas"
 msgstr "Canvas"
 
@@ -1937,6 +1943,12 @@ msgstr "Continue by viewing the document."
 msgid "Continue to login"
 msgstr "Continue to login"
 
+#: apps/remix/app/routes/_authenticated+/contracts._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "Contracts"
+msgstr "Contracts"
+
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Controls the default language of an uploaded document. This will be used as the language in email communications with the recipients."
 msgstr "Controls the default language of an uploaded document. This will be used as the language in email communications with the recipients."
@@ -2017,6 +2029,7 @@ msgid "Costo Distribución"
 msgstr "Costo Distribución"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Cover"
 msgstr "Cover"
 
@@ -2143,6 +2156,7 @@ msgstr "Create your account and start using state-of-the-art document signing. O
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/documents-chatspace-table.tsx
 #: apps/remix/app/components/tables/admin-leaderboard-table.tsx
@@ -2212,6 +2226,7 @@ msgstr "Dark Mode"
 
 #: apps/remix/app/components/tables/settings-security-activity-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-date-field.tsx
 #: packages/ui/primitives/template-flow/add-template-fields.tsx
 #: packages/ui/primitives/document-flow/types.ts
@@ -3109,6 +3124,7 @@ msgid "EP"
 msgstr "EP"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "EPK"
 msgstr "EPK"
 
@@ -3663,7 +3679,13 @@ msgstr "Invoice"
 msgid "IP Address"
 msgstr "IP Address"
 
+#: apps/remix/app/routes/_authenticated+/isrc._index.tsx
+msgid "Isrc"
+msgstr "Isrc"
+
 #: apps/remix/app/components/tables/distribution-table.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "ISRC"
 msgstr "ISRC"
 
@@ -4503,6 +4525,7 @@ msgid "Pick a password"
 msgstr "Pick a password"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Pitch"
 msgstr "Pitch"
 
@@ -4911,10 +4934,12 @@ msgid "Rejection reason: {reason}"
 msgstr "Rejection reason: {reason}"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Status"
 msgstr "Release Status"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Title"
 msgstr "Release Title"
 
@@ -5044,6 +5069,7 @@ msgstr "Rest assured, your document is strictly confidential and will never be s
 msgid "Retention of Documents"
 msgstr "Retention of Documents"
 
+#: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
@@ -5694,6 +5720,7 @@ msgid "Step <0>{step} of {maxStep}</0>"
 msgstr "Step <0>{step} of {maxStep}</0>"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Streaming Link"
 msgstr "Streaming Link"
 
@@ -6782,6 +6809,7 @@ msgstr "Two-Factor Re-Authentication"
 
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 #: apps/remix/app/components/tables/admin-document-recipient-item-table.tsx
 #: packages/lib/constants/document.ts
 msgid "Type"
@@ -7043,6 +7071,7 @@ msgid "Upload your brand logo (max 5MB, JPG, PNG, or WebP)"
 msgstr "Upload your brand logo (max 5MB, JPG, PNG, or WebP)"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Uploaded"
 msgstr "Uploaded"
 
@@ -7194,6 +7223,7 @@ msgid "Version History"
 msgstr "Version History"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Video"
 msgstr "Video"
 
@@ -7592,6 +7622,7 @@ msgid "Webhooks"
 msgstr "Webhooks"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+#: apps/remix/app/components/tables/lpm-table.tsx
 msgid "WebSiteUpdates"
 msgstr "WebSiteUpdates"
 
@@ -7794,6 +7825,10 @@ msgstr "You do not currently have a customer record, this should not happen. Ple
 msgid "You do not have permission to create a token for this team"
 msgstr "You do not have permission to create a token for this team"
 
+#: apps/remix/app/components/tables/general-table-empty-state.tsx
+msgid "You don't have any data yet"
+msgstr "You don't have any data yet"
+
 #: packages/email/template-components/template-document-cancel.tsx
 msgid "You don't need to sign it anymore."
 msgstr "You don't need to sign it anymore."
@@ -7853,10 +7888,6 @@ msgstr "You have initiated the document {0} that requires you to {recipientActio
 #: apps/remix/app/routes/_authenticated+/settings+/webhooks._index.tsx
 msgid "You have no webhooks yet. Your webhooks will be shown here once you create them."
 msgstr "You have no webhooks yet. Your webhooks will be shown here once you create them."
-
-#: apps/remix/app/components/tables/general-table-empty-state.tsx
-msgid "You have not yet added new data"
-msgstr "You have not yet added new data"
 
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx

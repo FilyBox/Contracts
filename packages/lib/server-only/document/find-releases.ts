@@ -70,7 +70,11 @@ export const findRelease = async ({
   const orderByDirection = orderBy?.direction ?? 'desc';
 
   const searchFilter: Prisma.ReleasesWhereInput = {
-    OR: [{ lanzamiento: { contains: query, mode: 'insensitive' } }],
+    OR: [
+      { lanzamiento: { contains: query, mode: 'insensitive' } },
+      { artist: { contains: query, mode: 'insensitive' } },
+      { assets: { contains: query, mode: 'insensitive' } },
+    ],
   };
 
   let filters: Prisma.ReleasesWhereInput | null = findReleasesFilter(release);
