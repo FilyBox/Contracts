@@ -162,6 +162,16 @@ export const contractsRouter = router({
       return documents;
     }),
 
+  findContractsByDocumentId: authenticatedProcedure
+    .input(z.object({ documentId: z.number() }))
+    .query(async ({ input }) => {
+      const { documentId } = input;
+      const contract = await prisma.contract.findUnique({
+        where: { documentId },
+      });
+      return contract;
+    }),
+
   updateContractsById: authenticatedProcedure
     .input(
       z.object({

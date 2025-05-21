@@ -43,6 +43,8 @@ export interface DataTableProps<TData, TValue> {
   columnVisibility?: VisibilityState;
   data: TData[];
   onEdit?: (data: TData) => void;
+  onNavegate?: (data: TData) => void;
+
   onDelete?: (data: TData) => void;
   perPage?: number;
   currentPage?: number;
@@ -69,6 +71,7 @@ export function DataTable<TData, TValue>({
   error,
   onEdit,
   onDelete,
+  onNavegate,
   perPage,
   currentPage,
   totalPages,
@@ -244,7 +247,18 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         Edit
-                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                      </ContextMenuItem>
+                    )}
+
+                    {onNavegate && (
+                      <ContextMenuItem
+                        onClick={() => {
+                          console.log('Row clicked:', row.original);
+                          onNavegate(row.original);
+                        }}
+                        inset
+                      >
+                        View
                       </ContextMenuItem>
                     )}
 
@@ -257,7 +271,6 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         Delete
-                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
                       </ContextMenuItem>
                     )}
                   </ContextMenuContent>

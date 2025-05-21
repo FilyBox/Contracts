@@ -111,7 +111,6 @@ msgstr "{0, plural, one {1 destinatario} other {# destinatari}}"
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 msgid "{0, plural, one {Waiting on 1 recipient} other {Waiting on # recipients}}"
 msgstr "{0, plural, one {In attesa di 1 destinatario} other {In attesa di # destinatari}}"
 
@@ -175,7 +174,6 @@ msgstr "{0} per conto di \"{1}\" ti ha invitato a {recipientActionVerb} il docum
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 msgid "{0} Recipient(s)"
 msgstr "{0} Destinatario(i)"
 
@@ -1639,6 +1637,9 @@ msgid "Charts"
 msgstr "Grafici"
 
 #: apps/remix/app/components/tables/chatspace-table-action-button.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 #: apps/remix/app/components/general/template/template-page-view-documents-table.tsx
 msgid "Chat"
 msgstr ""
@@ -1949,6 +1950,7 @@ msgid "Continue to login"
 msgstr "Continua per accedere"
 
 #: apps/remix/app/routes/_authenticated+/contracts._index.tsx
+#: apps/remix/app/routes/_authenticated+/contracts.$id._index.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Contracts"
@@ -2599,7 +2601,6 @@ msgstr "Creazione del documento"
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 #: apps/remix/app/components/dialogs/admin-document-delete-dialog.tsx
 #: packages/lib/utils/document-audit-logs.ts
@@ -2644,7 +2645,6 @@ msgstr ""
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 #: apps/remix/app/components/general/document/document-history-sheet.tsx
 msgid "Document history"
 msgstr "Cronologia del documento"
@@ -5599,7 +5599,6 @@ msgstr "Alcuni firmatari non hanno un campo firma assegnato. Assegna almeno 1 ca
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 #: apps/remix/app/components/tables/user-settings-pending-teams-table-actions.tsx
 #: apps/remix/app/components/tables/team-settings-member-invites-table.tsx
@@ -6436,14 +6435,12 @@ msgstr "Questo documento è stato annullato dal proprietario."
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 msgid "This document has been rejected by a recipient"
 msgstr "Questo documento è stato rifiutato da un destinatario"
 
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 msgid "This document has been signed by all recipients"
 msgstr "Questo documento è stato firmato da tutti i destinatari"
 
@@ -6454,7 +6451,6 @@ msgstr ""
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace.$id._index.tsx
 msgid "This document is currently a draft and has not been sent"
 msgstr "Questo documento è attualmente una bozza e non è stato inviato"
 
@@ -7238,6 +7234,7 @@ msgstr ""
 #: apps/remix/app/components/tables/documents-table-action-button.tsx
 #: apps/remix/app/components/tables/chatspace-table-action-button.tsx
 #: apps/remix/app/components/tables/chatspace-table-action-button.tsx
+#: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/general/document/document-page-view-button.tsx
 #: apps/remix/app/components/forms/2fa/view-recovery-codes-dialog.tsx

@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
   onAdd: () => void;
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
+  onNavegate?: (data: DocumentsTableRow) => void;
 }
 
 type DocumentsTableRow = TFindContractsResponse['data'][number];
@@ -39,6 +40,7 @@ export const ContractsTable = ({
   isLoadingError,
   onAdd,
   onEdit,
+  onNavegate,
   onDelete,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
@@ -124,6 +126,7 @@ export const ContractsTable = ({
         columns={columns}
         onDelete={onDelete}
         onEdit={onEdit}
+        onNavegate={onNavegate}
         data={results.data}
         perPage={results.perPage}
         currentPage={results.currentPage}

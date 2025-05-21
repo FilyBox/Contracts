@@ -59,6 +59,10 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
       text: msg`Contracts`,
     },
     {
+      href: '/chatspace',
+      text: msg`Chat`,
+    },
+    {
       href: '/settings/teams',
       text: msg`Teams`,
     },

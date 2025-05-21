@@ -24,6 +24,10 @@ const navigationLinks = [
     href: '/music',
     label: msg`Music`,
   },
+  {
+    href: '/chatspace',
+    label: msg`Chat`,
+  },
 ];
 
 export type AppNavDesktopProps = HTMLAttributes<HTMLDivElement> & {

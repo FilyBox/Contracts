@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
+import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { type Contract, type IsrcSongs } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
 import { ZFindIsrcSongsInternalRequestSchema } from '@documenso/trpc/server/isrcsong-router/schema';
@@ -46,6 +47,8 @@ const ZSearchParamsSchema = ZFindIsrcSongsInternalRequestSchema.pick({
 export default function ContractsPage() {
   const [searchParams] = useSearchParams();
   const team = useOptionalCurrentTeam();
+
+  const documentRootPath = formatContractsPath(team?.url);
 
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
@@ -196,7 +199,13 @@ export default function ContractsPage() {
       setIsSubmitting(false);
     }
   };
-
+  const hanleOnNavegate = (row: Contract) => {
+    console.log('row', row);
+    const { documentId } = row;
+    const documentPath = `${documentRootPath}/${documentId}`;
+    console.log('documentRootPath', documentPath);
+    window.location.href = documentPath;
+  };
   const handleUpdate = async (updatedContracts: Contract) => {
     console.log('Updated User:', updatedContracts);
     console.log('id', updatedContracts.id);
@@ -307,6 +316,7 @@ export default function ContractsPage() {
           isLoadingError={isLoadingError}
           onAdd={openCreateDialog}
           onEdit={handleEdit}
+          onNavegate={hanleOnNavegate}
           onDelete={handleDelete}
         />
       )}

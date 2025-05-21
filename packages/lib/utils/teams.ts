@@ -17,6 +17,10 @@ export const formatChatPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/chatspace` : '/chatspace';
 };
 
+export const formatContractsPath = (teamUrl?: string) => {
+  return teamUrl ? `/t/${teamUrl}/contracts` : '/contracts';
+};
+
 export const formatTemplatesPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/templates` : '/templates';
 };
