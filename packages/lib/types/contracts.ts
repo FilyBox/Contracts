@@ -26,6 +26,14 @@ export const ZContractsSchema = ContractSchema.pick({
   teamId: true,
   userId: true,
   title: true,
+  collectionPeriod: true,
+  collectionPeriodDescription: true,
+  collectionPeriodDuration: true,
+  contractType: true,
+  folderId: true,
+  retentionPeriod: true,
+  retentionPeriodDescription: true,
+  retentionPeriodDuration: true,
 });
 
 export type TContracts = z.infer<typeof ZContractsSchema>;
