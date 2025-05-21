@@ -53,6 +53,7 @@ export const IsrcSongsRouter = router({
             duration: z.string().optional(),
             title: z.string().optional(),
             license: z.string().optional(),
+            isrc: z.string().optional(),
             date: z.string().optional(),
           }),
         ),
@@ -60,8 +61,17 @@ export const IsrcSongsRouter = router({
     )
     .mutation(async ({ input }) => {
       const { isrcSongs } = input;
+      console.log('Creating many ISRC songs:', isrcSongs);
       const createdIsrcSongs = await prisma.isrcSongs.createMany({
-        data: isrcSongs,
+        data: isrcSongs.map((song) => ({
+          trackName: song.trackName,
+          artist: song.artist,
+          duration: song.duration,
+          title: song.title,
+          license: song.license,
+          isrc: song.isrc,
+          date: song.date,
+        })),
       });
       return createdIsrcSongs;
     }),
@@ -84,6 +94,7 @@ export const IsrcSongsRouter = router({
         duration: z.string().optional(),
         title: z.string().optional(),
         license: z.string().optional(),
+        isrc: z.string().optional(),
         date: z.string().optional(),
       }),
     )

@@ -88,31 +88,14 @@ export const artistRouter = router({
       }
     }),
 
-  findArtists: authenticatedProcedure
-    .input(
-      z.object({
-        teamId: z.number(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { teamId } = input;
-      try {
-        return await prisma.artist.findMany({
-          where: {
-            teamId: teamId,
-          },
-          include: {
-            team: true,
-            event: true,
-            songs: true,
-            ArtistProfile: true,
-          },
-        });
-      } catch (error) {
-        console.error('Error al buscar artistas:', error);
-        throw error;
-      }
-    }),
+  findArtists: authenticatedProcedure.query(async () => {
+    const artists = await prisma.artist.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
+    return artists;
+  }),
 
   updateArtist: authenticatedProcedure
     .input(

@@ -56,6 +56,19 @@ export const getAbsolutePresignPostUrl = async (key: string) => {
   return { key, url };
 };
 
+/**
+ * Generates a pre-signed URL for retrieving an object, either via CloudFront or directly from S3.
+ *
+ * If the environment variable `NEXT_PRIVATE_UPLOAD_DISTRIBUTION_DOMAIN` is set, this function will
+ * generate a signed CloudFront URL using the provided key, key pair ID, and private key from environment variables.
+ * The signed URL will be valid for one hour.
+ *
+ * If the CloudFront distribution domain is not set, the function falls back to generating a signed S3 URL
+ * using the AWS SDK's S3 client and presigner utilities. The signed S3 URL will also be valid for one hour.
+ *
+ * @param key - The object key for which to generate the pre-signed URL.
+ * @returns An object containing the original key and the generated pre-signed URL.
+ */
 export const getPresignGetUrl = async (key: string) => {
   if (env('NEXT_PRIVATE_UPLOAD_DISTRIBUTION_DOMAIN')) {
     const distributionUrl = new URL(key, `${env('NEXT_PRIVATE_UPLOAD_DISTRIBUTION_DOMAIN')}`);

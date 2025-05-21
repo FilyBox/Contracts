@@ -34,14 +34,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  total: number;
+  skip: number;
+  take: number;
   onAdd: () => void;
   onEdit: (data: TData) => void;
   onDelete: (data: TData) => void;
+  onPaginationChange: (skip: number, take: number) => void;
 }
 
 export function DataTableCustom<TData, TValue>({
   columns,
   data,
+  total,
+  skip,
+  take,
   onAdd,
   onEdit,
   onDelete,
@@ -53,6 +60,8 @@ export function DataTableCustom<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil(total / take), // Calculamos el total de páginas
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),

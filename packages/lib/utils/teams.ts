@@ -25,6 +25,10 @@ export const formTasksPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/tasks` : '/tasks';
 };
 
+export const formEventsPath = (teamUrl?: string) => {
+  return teamUrl ? `/t/${teamUrl}/event` : '/event';
+};
+
 export const formLpmPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/lpm` : '/lpm';
 };

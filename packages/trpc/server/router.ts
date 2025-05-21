@@ -15,6 +15,7 @@ import { shareLinkRouter } from './share-link-router/router';
 import { taskRouter } from './task-router/router';
 import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
+import { ticketTypeRouter } from './ticket-type-router/router';
 import { router } from './trpc';
 import { webhookRouter } from './webhook-router/router';
 import { writerRouter } from './writers-router/router';
@@ -31,6 +32,7 @@ export const appRouter = router({
   field: fieldRouter,
   folder: folderRouter,
   recipient: recipientRouter,
+  ticketType: ticketTypeRouter,
   task: taskRouter,
   admin: adminRouter,
   shareLink: shareLinkRouter,

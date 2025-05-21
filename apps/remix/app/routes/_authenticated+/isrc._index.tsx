@@ -11,8 +11,6 @@ import MyForm from '@documenso/ui/primitives/form-custom-isrc';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
-// import { type IsrcSongsData } from '@documenso/ui/primitives/types';
-
 type CsvColumnMapping = {
   csvColumn: string;
   field: keyof Omit<IsrcSongs, 'id'> | '';
@@ -62,7 +60,7 @@ export default function TablePage() {
         title: item['Titulo (Álbum/Single/LP/EP)'] || '', // Mapear "Titulo..." a title
         license: item.Licencia || '', // Mapear "Licencia" a license
         date: item['Fecha (año)'] || '', // Mapear "Fecha (año)" a date
-        isrc: item.ISRC || '', // Mapear "ISRC" a isrc (si este campo existe en tu modelo)
+        isrc: item['ISRC'] || '', // Mapear "ISRC" a isrc (si este campo existe en tu modelo)
       }));
 
       // Filtrar cualquier objeto que esté completamente vacío (por si hay filas vacías en el CSV)
@@ -95,45 +93,7 @@ export default function TablePage() {
     }
   };
 
-  // const handleCsvUpload = async () => {
-  //   if (!csvFile) return;
-
-  //   setIsSubmitting(true);
-  //   try {
-  //     const csvData = await parseCsvFile(csvFile);
-
-  //     // Validar y transformar los datos del CSV
-  //     const validatedData = csvData.map((item) => ({
-  //       trackName: item.trackName || '',
-  //       artist: item.artist || '',
-  //       duration: item.duration || '',
-  //       title: item.title || '',
-  //       license: item.license || '',
-  //       date: item.date || '',
-  //     }));
-
-  //     // Usar la mutación para crear múltiples registros
-  //     const result = await createManyIsrcSongsMutation.mutateAsync({
-  //       isrcSongs: validatedData,
-  //     });
-
-  //     toast({
-  //       description: `Se han creado ${result.count} registros exitosamente`,
-  //     });
-
-  //     // Refrescar los datos
-  //     await refetch();
-  //     setCsvFile(null);
-  //   } catch (error) {
-  //     console.error('Error al procesar el CSV:', error);
-  //     toast({
-  //       variant: 'destructive',
-  //       description: 'Error al procesar el archivo CSV',
-  //     });
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+  const artist = trpc.artist.findArtists;
 
   const handleCreate = async (newRecord: Omit<IsrcSongs, 'id'>) => {
     setIsSubmitting(true);

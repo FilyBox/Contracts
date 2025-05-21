@@ -9,7 +9,6 @@ export type GetEventByIdOptions = {
   name: string;
   description?: string;
   image?: string;
-  //teamId?: number;
   venue?: string;
   artists: string[];
   beginning: Date;
@@ -26,7 +25,6 @@ export const eventRouter = router({
         name: z.string().min(1).optional(),
         description: z.string().optional(),
         image: z.string().optional(),
-        //teamId: z.number().optional(), // Ya está correctamente como opcional
         venue: z.string().optional(),
         artists: z.array(z.string()).optional(),
         beginning: z.date().optional(),
@@ -44,7 +42,6 @@ export const eventRouter = router({
             name: input.name,
             description: input.description,
             image: input.image,
-            //teamId: input.teamId ?? undefined, // Clave: usa `?? undefined` para omitirlo si es null/undefined
             venue: input.venue,
             artists: input.artists
               ? {
@@ -106,6 +103,25 @@ export const eventRouter = router({
       } catch (error) {
         console.error('Error updating event:', error);
         throw new Error('Error updating event');
+      }
+    }),
+
+  deleteEventById: authenticatedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const { id } = input;
+
+      if (!id) {
+        throw new Error('El ID del evento es obligatorio');
+      }
+
+      try {
+        return await prisma.event.delete({
+          where: { id },
+        });
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        throw new Error('Error deleting event');
       }
     }),
 });

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRef } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
@@ -6,6 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { FilePlus, Loader } from 'lucide-react';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
+import { putFile } from '@documenso/lib/universal/upload/put-file';
 import { trpc } from '@documenso/trpc/react';
 import { Button } from '@documenso/ui/primitives/button';
 import {
@@ -19,18 +21,38 @@ import {
   DialogTrigger,
 } from '@documenso/ui/primitives/dialog';
 import { Input } from '@documenso/ui/primitives/input';
+import { Textarea } from '@documenso/ui/primitives/textarea';
 import { useToast } from '@documenso/ui/primitives/use-toast';
+
+import { ImageUploader } from '~/components/general/dropzone';
 
 type EventCreateDialogProps = {
   teamId?: number;
 };
 
-type Role = 'USER' | 'ADMIN'; // Enum según tu backend
+const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const result = await putFile(file);
+    await fetch('/api/guardar-imagen', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ s3Key: result.data }),
+    });
+  } catch (error) {
+    console.error('Error al subir la imagen:', error);
+  }
+};
 
 export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) => {
   const { user } = useSession();
+  const maxLength = 250;
   const { toast } = useToast();
   const { _ } = useLingui();
+  const [image, setImage] = useState<File | null>(null);
+  const imageUploaderRef = useRef<{ resetPreview: () => void }>(null);
 
   const { mutateAsync: createEvent } = trpc.event.createEvent.useMutation();
 
@@ -40,9 +62,9 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     name: string;
     description: string | undefined;
     image: string | undefined;
-    teamId?: number;
     venue: string | undefined;
     artists: string[] | undefined;
+    isrc: string | undefined;
     beginning: Date;
     end: Date;
     createdAt: Date;
@@ -52,15 +74,17 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     name: '',
     description: undefined,
     image: undefined,
-    teamId: _teamId,
     venue: undefined,
     artists: undefined,
     beginning: new Date(),
+    isrc: undefined,
     end: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,
   });
+
+  const { data: artistsList = [] } = trpc.artist.findArtists.useQuery();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,14 +92,16 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
       setEventData((prev) => ({ ...prev, teamId: value ? Number(value) : undefined }));
     } else if (name === 'beginning') {
       setEventData((prev) => ({ ...prev, beginning: value ? new Date(value) : new Date() }));
+    } else if (name === 'end') {
+      setEventData((prev) => ({ ...prev, end: value ? new Date(value) : new Date() }));
     } else {
       setEventData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setEventData((prev) => ({ ...prev, [name]: value ? [value as Role] : [] }));
+    setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
   const onCreateEvent = async () => {
@@ -87,7 +113,6 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
         name: EventData.name,
         description: EventData.description,
         image: EventData.image,
-        teamId: EventData.teamId,
         venue: EventData.venue,
         artists: EventData.artists,
         beginning: EventData.beginning,
@@ -126,7 +151,7 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="w-full max-w-xl">
+      <DialogContent className="max-h-[90vh] w-full max-w-xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             <Trans>Create New Event</Trans>
@@ -149,23 +174,21 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
               className="mt-1"
               required
             />
-          </div>
-
-          <div>
-            <label htmlFor="url" className="block text-sm font-medium text-gray-100">
+            <label htmlFor="description" className="mt-4 block text-sm font-medium text-gray-100">
               <Trans>Description</Trans>
             </label>
-            <Input
+            <Textarea
               id="description"
               name="description"
               value={EventData.description}
-              onChange={handleInputChange}
+              maxLength={maxLength}
+              onChange={handleTextareaChange}
               className="mt-1"
             />
           </div>
 
           <div>
-            <label htmlFor="beginning" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="beginning" className="block text-sm font-medium text-gray-100">
               <Trans>Beginning</Trans>
             </label>
             <Input
@@ -177,17 +200,47 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
               className="mt-1"
             />
           </div>
+
           <div>
-            <label htmlFor="teamId" className="block text-sm font-medium text-gray-100">
-              <Trans>Team Id</Trans>
+            <label htmlFor="end" className="block text-sm font-medium text-gray-100">
+              <Trans>End</Trans>
             </label>
             <Input
-              id="teamId"
-              name="teamId"
-              type="number"
-              value={EventData.teamId ?? ''}
+              id="end"
+              name="end"
+              type="date"
+              value={EventData.beginning ? EventData.beginning.toISOString().slice(0, 10) : ''}
               onChange={handleInputChange}
               className="mt-1"
+            />
+          </div>
+
+          <div className="flex w-full items-center justify-center">
+            <ImageUploader
+              onUpload={async (file: File) => {
+                try {
+                  // Limita el nombre base a 50 caracteres
+                  const parts = file.name.split('.');
+                  const ext = parts.length > 1 ? '.' + parts.pop() : '';
+                  let base = parts.join('.');
+                  if (base.length > 50) base = base.slice(0, 50);
+                  const safeName = base + ext;
+
+                  // Crea un nuevo File con el nombre truncado
+                  const truncatedFile = new File([file], safeName, { type: file.type });
+
+                  const result = await putFile(truncatedFile);
+                  setEventData((prev) => ({
+                    ...prev,
+                    image: result.data,
+                  }));
+                  setImage(truncatedFile);
+                } catch (error) {
+                  console.error('Error al subir la imagen:', error);
+                }
+              }}
+              image={image}
+              isPending={isCreatingEvent}
             />
           </div>
 
@@ -203,6 +256,31 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
               onChange={handleInputChange}
               className="mt-1"
             />
+          </div>
+
+          <div>
+            <label htmlFor="artists" className="block text-sm font-medium text-gray-100">
+              <Trans>Artists</Trans>
+            </label>
+            <select
+              id="artists"
+              name="artists"
+              multiple
+              value={EventData.artists}
+              onChange={(e) => {
+                const selectedOptions = Array.from(e.target.selectedOptions).map(
+                  (opt) => opt.value,
+                );
+                setEventData((prev) => ({ ...prev, artists: selectedOptions }));
+              }}
+              className="mt-1 block w-full rounded border-gray-300"
+            >
+              {artistsList.map((artist) => (
+                <option key={artist.id} value={artist.id}>
+                  {artist.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
