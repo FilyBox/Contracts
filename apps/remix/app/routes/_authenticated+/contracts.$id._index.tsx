@@ -1,7 +1,7 @@
 import { useLingui } from '@lingui/react';
-import { Plural, Trans } from '@lingui/react/macro';
+import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, TeamMemberRole } from '@prisma/client';
-import { ChevronLeft, Clock9, Users2 } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { Link, redirect } from 'react-router';
 import { match } from 'ts-pattern';
 
@@ -14,12 +14,10 @@ import { getRecipientsForDocument } from '@documenso/lib/server-only/recipient/g
 import { type TGetTeamByUrlResponse, getTeamByUrl } from '@documenso/lib/server-only/team/get-team';
 import { DocumentVisibility } from '@documenso/lib/types/document-visibility';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
-import { trpc } from '@documenso/trpc/react';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
 import { PDFViewer } from '@documenso/ui/primitives/pdf-viewer';
 
 import { DocumentRecipientLinkCopyDialog } from '~/components/general/document/document-recipient-link-copy-dialog';
-import { ContractsTable } from '~/components/tables/contracts-table';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
 import type { Route } from './+types/documents.$id._index';
@@ -46,7 +44,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }).catch(() => null);
 
   if (!contract) {
-    throw redirect(documentRootPath);
+    ('no contract found');
   }
 
   if (!documentId || Number.isNaN(documentId)) {
@@ -124,7 +122,7 @@ export default function DocumentPage() {
   const { user } = useSession();
 
   const { document, documentRootPath, fields, contract } = loaderData;
-
+  console.log('contract', contract);
   const { recipients, documentData, documentMeta } = document;
 
   // This was a feature flag. Leave to false since it's not ready.
@@ -162,7 +160,7 @@ export default function DocumentPage() {
           </CardContent>
         </Card>
 
-        <div className="right-20 top-20 col-span-12 inline-block max-h-screen overflow-y-auto md:fixed md:max-w-[32rem] lg:col-span-6 xl:col-span-5">
+        <div className="right-8 top-20 col-span-12 inline-block max-h-screen overflow-y-auto md:max-w-[32rem] lg:fixed lg:col-span-6 xl:col-span-5">
           <div className="space-y-6">
             <section className="border-border bg-widget flex flex-col rounded-xl border pb-4 pt-6">
               <div className="px-6 py-4">
@@ -212,9 +210,7 @@ export default function DocumentPage() {
                     {contract?.isPossibleToExpand !== undefined && (
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-500">Can Extend</span>
-                        <span className="text-base">
-                          {contract.isPossibleToExpand ? 'Yes' : 'No'}
-                        </span>
+                        <span className="text-base">{contract.isPossibleToExpand}</span>
                       </div>
                     )}
 

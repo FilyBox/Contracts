@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ContractStatus, ExpansionPossibility } from '@prisma/client';
-import { format } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
+// Add import for parse and isValid
 import { CalendarIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -44,6 +45,38 @@ interface ContractFormProps {
   initialData: Contract | null;
   isSubmitting?: boolean;
 }
+
+const parseDate = (dateString: string | null | undefined) => {
+  if (!dateString) return undefined;
+
+  try {
+    // First try parsing as DD/MM/YYYY format
+    let date;
+    if (dateString.includes('/')) {
+      date = parse(dateString, 'dd/MM/yyyy', new Date());
+    } else {
+      // Fallback to ISO format if it's already in YYYY-MM-DD
+      date = new Date(dateString + 'T00:00:00');
+    }
+
+    return isValid(date) ? date : undefined;
+  } catch (error) {
+    console.error('Date parsing error:', error);
+    return undefined;
+  }
+};
+
+// Helper to format date for form display
+const formatDateForDisplay = (dateString: string | null | undefined) => {
+  if (!dateString) return '';
+  const date = parseDate(dateString);
+  return date ? format(date, 'dd/MM/yyyy') : '';
+};
+
+// Helper to format date for API
+const formatDateForApi = (date: Date | null | undefined) => {
+  return date ? format(date, 'yyyy-MM-dd') : '';
+};
 
 export default function ContractForm({
   onSubmit,
@@ -205,12 +238,7 @@ export default function ContractForm({
                                     )}
                                   >
                                     {field.value ? (
-                                      format(
-                                        field.value && field.value.trim() !== ''
-                                          ? new Date(field.value + 'T00:00:00')
-                                          : new Date(),
-                                        'dd/MM/yyyy',
-                                      )
+                                      formatDateForDisplay(field.value)
                                     ) : (
                                       <span>Seleccione una fecha</span>
                                     )}
@@ -221,17 +249,9 @@ export default function ContractForm({
                               <PopoverContent className="z-9999 w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={(() => {
-                                    try {
-                                      return field.value && field.value.trim() !== ''
-                                        ? new Date(field.value + 'T00:00:00')
-                                        : undefined;
-                                    } catch (error) {
-                                      return undefined;
-                                    }
-                                  })()}
+                                  selected={parseDate(field.value)}
                                   onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    field.onChange(date ? formatDateForApi(date) : '')
                                   }
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus
@@ -250,7 +270,7 @@ export default function ContractForm({
                         name="endDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Fecha de Finalización</FormLabel>
+                            <FormLabel>Fecha de Inicio</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
@@ -262,12 +282,7 @@ export default function ContractForm({
                                     )}
                                   >
                                     {field.value ? (
-                                      format(
-                                        field.value && field.value.trim() !== ''
-                                          ? new Date(field.value + 'T00:00:00')
-                                          : new Date(),
-                                        'dd/MM/yyyy',
-                                      )
+                                      formatDateForDisplay(field.value)
                                     ) : (
                                       <span>Seleccione una fecha</span>
                                     )}
@@ -278,17 +293,9 @@ export default function ContractForm({
                               <PopoverContent className="z-9999 w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={(() => {
-                                    try {
-                                      return field.value && field.value.trim() !== ''
-                                        ? new Date(field.value + 'T00:00:00')
-                                        : undefined;
-                                    } catch (error) {
-                                      return undefined;
-                                    }
-                                  })()}
+                                  selected={parseDate(field.value)}
                                   onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    field.onChange(date ? formatDateForApi(date) : '')
                                   }
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus

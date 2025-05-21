@@ -101,6 +101,11 @@ export const ContractsTable = ({
         header: 'Created At',
         enableHiding: true,
       },
+      {
+        accessorKey: 'summary',
+        header: 'Summary',
+        enableHiding: true,
+      },
     ];
   }, [team]);
 
