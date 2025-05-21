@@ -1,6 +1,7 @@
 import { DocumentDataType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { DateTime } from 'luxon';
+import { z } from 'zod';
 
 import { getServerLimits } from '@documenso/ee/server-only/limits/server';
 import { NEXT_PUBLIC_WEBAPP_URL } from '@documenso/lib/constants/app';
@@ -27,8 +28,15 @@ import { resendDocument } from '@documenso/lib/server-only/document/resend-docum
 import { searchDocumentsWithKeyword } from '@documenso/lib/server-only/document/search-documents-with-keyword';
 import { sendDocument } from '@documenso/lib/server-only/document/send-document';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
-import { getPresignPostUrl } from '@documenso/lib/universal/upload/server-actions';
+import { getExtractBodyContractTask } from '@documenso/lib/trigger';
+import { getFile } from '@documenso/lib/universal/upload/get-file';
+import { getURL } from '@documenso/lib/universal/upload/get-url';
+import {
+  getPresignGetUrl,
+  getPresignPostUrl,
+} from '@documenso/lib/universal/upload/server-actions';
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
+import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure, procedure, router } from '../trpc';
 import {
@@ -619,6 +627,34 @@ export const documentRouter = router({
       });
 
       return documents;
+    }),
+
+  retryChatDocument: authenticatedProcedure
+    .input(z.object({ documenDataId: z.string(), documentId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { documenDataId, documentId } = input;
+      const { teamId, user } = ctx;
+      const userId = user.id;
+      console.log('documenDataId', documenDataId);
+      const documentData = await prisma.documentData.findUnique({
+        where: {
+          id: documenDataId,
+        },
+      });
+      console.log('documentData', documentData);
+      if (documentData) {
+        const { url } = await getPresignGetUrl(documentData.data || '');
+        const id = await getExtractBodyContractTask(userId, documentId, url);
+
+        await prisma.document.update({
+          where: { id: documentId },
+          data: { status: 'PENDING' },
+        });
+        // const url = await getURL({ type: documentData.type, data: documentData.data });
+        console.log('url', url);
+      }
+
+      return documentData;
     }),
 
   /**

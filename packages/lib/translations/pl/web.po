@@ -1948,6 +1948,12 @@ msgstr "Kontynuuj, wyświetlając dokument."
 msgid "Continue to login"
 msgstr "Kontynuuj do logowania"
 
+#: apps/remix/app/routes/_authenticated+/contracts._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "Contracts"
+msgstr ""
+
 #: apps/remix/app/components/forms/team-document-preferences-form.tsx
 msgid "Controls the default language of an uploaded document. This will be used as the language in email communications with the recipients."
 msgstr "Kontroluje domyślny język przesłanego dokumentu. Będzie używany jako język w komunikacji e-mailowej z odbiorcami."
@@ -3678,7 +3684,13 @@ msgstr "Faktura"
 msgid "IP Address"
 msgstr "Adres IP"
 
+#: apps/remix/app/routes/_authenticated+/isrc._index.tsx
+msgid "Isrc"
+msgstr ""
+
 #: apps/remix/app/components/tables/distribution-table.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "ISRC"
 msgstr ""
 
@@ -5062,6 +5074,7 @@ msgstr "Możesz być spokojny, Twój dokument jest ściśle poufny i nigdy nie z
 msgid "Retention of Documents"
 msgstr "Przechowywanie dokumentów"
 
+#: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
 #: packages/ui/primitives/document-flow/add-subject.tsx
@@ -7815,6 +7828,10 @@ msgstr "Obecnie nie masz rekordu klienta, nie powinno tak się dziać. Proszę s
 msgid "You do not have permission to create a token for this team"
 msgstr "Nie masz uprawnień do utworzenia tokenu dla tego zespołu"
 
+#: apps/remix/app/components/tables/general-table-empty-state.tsx
+msgid "You don't have any data yet"
+msgstr ""
+
 #: packages/email/template-components/template-document-cancel.tsx
 msgid "You don't need to sign it anymore."
 msgstr "Nie musisz go już podpisywać."
@@ -7874,10 +7891,6 @@ msgstr "Rozpocząłeś dokument {0}, który wymaga, abyś go {recipientActionVer
 #: apps/remix/app/routes/_authenticated+/settings+/webhooks._index.tsx
 msgid "You have no webhooks yet. Your webhooks will be shown here once you create them."
 msgstr "Nie masz jeszcze żadnych webhooków. Twoje webhooki będą tutaj widoczne, gdy je utworzysz."
-
-#: apps/remix/app/components/tables/general-table-empty-state.tsx
-msgid "You have not yet added new data"
-msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/templates._index.tsx
 #: apps/remix/app/routes/_authenticated+/templates.f.$folderId._index.tsx

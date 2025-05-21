@@ -37,6 +37,14 @@ const navigationLinks = [
     href: '/distribution',
     label: msg`Distribution`,
   },
+  {
+    href: '/isrc',
+    label: msg`ISRC`,
+  },
+  {
+    href: '/contracts',
+    label: msg`Contracts`,
+  },
 ];
 
 export type AppNavDesktopProps = HTMLAttributes<HTMLDivElement> & {

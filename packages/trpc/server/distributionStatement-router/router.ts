@@ -21,7 +21,7 @@ export type GetTaskByIdOptions = {
 };
 
 export const distributionRouter = router({
-  createRelease: authenticatedProcedure
+  createDistribution: authenticatedProcedure
     .input(
       z.object({
         title: z.string().min(1),

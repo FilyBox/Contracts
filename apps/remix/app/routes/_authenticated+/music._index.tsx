@@ -16,9 +16,11 @@ import MyForm from '@documenso/ui/primitives/form-custom';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
+import { DocumentSearch } from '~/components/general/document/document-search';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { LpmTable } from '~/components/tables/lpm-custom-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
+import { appMetaTags } from '~/utils/meta';
 
 // import { type LpmData } from '@documenso/ui/primitives/types';
 
@@ -28,6 +30,10 @@ const ZSearchParamsSchema = ZFindLpmInternalRequestSchema.pick({
   perPage: true,
   query: true,
 });
+
+export function meta() {
+  return appMetaTags('Music');
+}
 
 export default function TablePage() {
   const [searchParams] = useSearchParams();
@@ -287,7 +293,9 @@ export default function TablePage() {
 
         <div className="flex w-full items-center justify-end gap-4">
           <Button onClick={openCreateDialog}>Add Item</Button>
-
+          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <DocumentSearch initialValue={findDocumentSearchParams.query} />
+          </div>
           <ArtistCreateDialog />
         </div>
       </div>

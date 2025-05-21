@@ -40,7 +40,6 @@ const extractTextFromScannedPDF = async (fileUrl: string): Promise<string> => {
     }
 
     const json = await response.json();
-    console.log('✅ Respuesta de la API:', json);
 
     return json.extracted_text || 'No se extrajo texto.'; // 🔹 Asegura que siempre retorne un string
   } catch (error) {

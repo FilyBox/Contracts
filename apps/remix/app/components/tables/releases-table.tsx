@@ -2,6 +2,8 @@ import { useMemo, useTransition } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 import { Loader } from 'lucide-react';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -64,7 +66,10 @@ export const ReleasesTable = ({
       {
         header: _(msg`Date`),
         accessorKey: 'date',
-        cell: ({ row }) => row.original.date || '-',
+        cell: ({ row }) =>
+          row.original.date ? format(row.original.date, 'd MMM yyyy', { locale: es }) + '' : '-',
+
+        // format(new Date(row.original.date + 'T00:00:00'), 'dd/MM/yyyy') : '-',
       },
       {
         header: _(msg`Artist`),

@@ -197,18 +197,7 @@ export const lpmRouter = router({
 
       const { user, teamId } = ctx;
       const userId = user.id;
-      const music = await prisma.lpm.findMany({
-        orderBy: {
-          id: 'asc',
-        },
-        // select: {
-        //   id: true,
-        //   productId: true,
-        //   productType: true,
-        //   productTitle: true,
-        //   // Include other fields you need
-        // },
-      });
+
       const [documents] = await Promise.all([
         findLpm({
           query,

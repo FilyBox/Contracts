@@ -31,11 +31,14 @@ export const getExtractBodyContractTask = async (
   urlDocument: string,
   teamId?: number,
 ) => {
-  const { id } = await extractBodyContractTask.trigger({
-    userId: userId,
-    documentId: documentId,
-    teamId: teamId,
-    urlDocument: urlDocument,
-  });
+  const { id } = await extractBodyContractTask.trigger(
+    {
+      userId: userId,
+      documentId: documentId,
+      teamId: teamId,
+      urlDocument: urlDocument,
+    },
+    { ttl: '24h' },
+  );
   return id;
 };

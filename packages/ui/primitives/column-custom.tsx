@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { type lpm } from '@documenso/prisma/client';
+import type { IsrcSongs } from '@documenso/prisma/client';
 
 // interface ColumnActions {
 //   onEdit?: (data: lpm) => void;
@@ -406,6 +407,52 @@ export const createColumns = (): ColumnDef<lpm>[] => {
   //     );
   //   },
   // });
+
+  return columns;
+};
+
+export const createColumnsIsrc = (): ColumnDef<IsrcSongs>[] => {
+  const columns: ColumnDef<IsrcSongs>[] = [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'artist',
+      header: 'Artist',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'trackName',
+      header: 'Track Name',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'isrc',
+      header: 'ISRC',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'duration',
+      header: 'Duration',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'license',
+      header: 'License',
+    },
+  ];
 
   return columns;
 };

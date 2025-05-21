@@ -70,6 +70,7 @@ model User {
   sessions              Session[]
   documents             Document[]
   folders               Folder[]
+  contracts             Contract[]
   subscriptions         Subscription[]
   passwordResetTokens   PasswordResetToken[]
   ownedTeams            Team[]
@@ -80,6 +81,7 @@ model User {
   twoFactorBackupCodes  String?
   url                   String?                 @unique
   lpm                   lpm[]
+  iscrSongs             IsrcSongs[]
   profile               UserProfile?
   verificationTokens    VerificationToken[]
   apiTokens             ApiToken[]
@@ -113,16 +115,17 @@ model Artist {
   id            Int            @id @default(autoincrement())
   name          String?
   createdAt     DateTime       @default(now())
+  teamId        Int?
+  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   updatedAt     DateTime       @default(now()) @updatedAt
   roles         Role[]         @default([USER])
   avatarImageId String?
-  teamId        Int?
-  disabled      Boolean        @default(false)
+  disabled      Boolean?       @default(false)
   event         Event[]
   url           String?        @unique
   ArtistProfile ArtistProfile?
   songs         Songs[]
-  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  isrcSongs     IsrcSongs[] // Added for many-to-many relation with IsrcSongs
 }
 
 model ArtistProfile {
@@ -225,6 +228,42 @@ model lpm {
   team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
 }
 
+enum ContractStatus {
+  VIGENTE
+  FINALIZADO
+  NO_ESPECIFICADO
+}
+
+enum ExpansionPossibility {
+  SI
+  NO
+  NO_ESPECIFICADO
+}
+
+model Contract {
+  id       Int     @id @default(autoincrement())
+  title    String  @db.Text
+  fileName String? @db.Text
+
+  artists               String               @db.Text
+  startDate             String
+  endDate               String
+  isPossibleToExpand    ExpansionPossibility @default(NO_ESPECIFICADO)
+  possibleExtensionTime String?
+  status                ContractStatus       @default(NO_ESPECIFICADO)
+  documentId            Int                  @unique
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  summary               String?              @db.Text
+  userId                Int?
+  teamId                Int?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  @@map("Contracts")
+}
+
 model DistributionStatement {
   id                  Int      @id @default(autoincrement())
   marketingOwner      String?  @map("Marketing Owner")
@@ -292,6 +331,23 @@ model Releases {
   team      Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model IsrcSongs {
+  id        Int     @id @default(autoincrement())
+  date      String?
+  isrc      String?
+  artist    String?
+  duration  String?
+  trackName String?
+  title     String?
+  license   String?
+  userId    Int?
+  teamId    Int?
+
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team     Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  memebers Artist[]
 }
 
 model TeamProfile {
@@ -980,12 +1036,14 @@ model Team {
   teamGlobalSettings    TeamGlobalSettings?
   avatarImage           AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
   songs                 Songs[]
+  isrcSongs             IsrcSongs[]
   artists               Artist[]
   profile               TeamProfile?
   owner                 User                      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
   subscription          Subscription?
   distributionStatement DistributionStatement[]
   releases              Releases[]
+  contract              Contract[]
   documents             Document[]
   tasks                 Task[]
   templates             Template[]

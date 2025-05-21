@@ -248,6 +248,8 @@ export const findDocumentsUseToChat = async ({
         [orderByColumn]: orderByDirection,
       },
       include: {
+        documentData: true,
+
         user: {
           select: {
             id: true,

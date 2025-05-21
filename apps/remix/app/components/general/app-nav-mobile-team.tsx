@@ -51,6 +51,14 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
       text: msg`Distribution`,
     },
     {
+      href: '/isrc',
+      text: msg`ISRC`,
+    },
+    {
+      href: '/contracts',
+      text: msg`Contracts`,
+    },
+    {
       href: '/settings/teams',
       text: msg`Teams`,
     },
@@ -64,7 +72,7 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
     <Sheet open={isMenuOpen} onOpenChange={onMenuOpenChange}>
       <SheetContent className="flex w-full max-w-[350px] flex-col">
         <Link to="/" onClick={handleMenuItemClick}>
-          <img src={LogoImage} alt="logo" className="dark:invert" width={170} height={25} />
+          <img src={LogoImage} alt="logo" className="" width={50} height={25} />
         </Link>
 
         <div className="mt-8 flex w-full flex-col items-start gap-y-4">

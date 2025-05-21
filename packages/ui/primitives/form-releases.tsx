@@ -232,7 +232,13 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                                     )}
                                   >
                                     {field.value ? (
-                                      format(new Date(field.value + 'T00:00:00'), 'dd/MM/yyyy')
+                                      format(
+                                        // Only try to format if field.value is a non-empty string
+                                        field.value && field.value.trim() !== ''
+                                          ? new Date(field.value + 'T00:00:00')
+                                          : new Date(),
+                                        'dd/MM/yyyy',
+                                      )
                                     ) : (
                                       <span>Pick a date</span>
                                     )}
@@ -243,9 +249,17 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                               <PopoverContent className="z-9999 w-auto p-0" align="start">
                                 <Calendar
                                   mode="single"
-                                  selected={field.value ? new Date(field.value) : undefined}
+                                  selected={(() => {
+                                    try {
+                                      return field.value && field.value.trim() !== ''
+                                        ? new Date(field.value + 'T00:00:00')
+                                        : undefined;
+                                    } catch (error) {
+                                      return undefined;
+                                    }
+                                  })()}
                                   onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString() : '')
+                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
                                   }
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus

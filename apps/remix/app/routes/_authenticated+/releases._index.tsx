@@ -7,6 +7,7 @@ import { Link } from 'react-router';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
+import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formReleasePath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { type Releases } from '@documenso/prisma/client';
@@ -348,7 +349,7 @@ export default function TasksPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-8 pt-1">
         <div className="flex flex-row items-center">
           {team && (
             <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">

@@ -20,6 +20,7 @@ import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
+import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { ChatMoveToFolderDialog } from '~/components/dialogs/chat-move-to-folder-dialog';
 import { CreateFolderDialogChat } from '~/components/dialogs/folder-create-dialog-chat';
@@ -56,7 +57,7 @@ const ZSearchParamsSchema = ZFindDocumentsInternalRequestSchema.pick({
 export default function DocumentsPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
+  const { toast } = useToast();
   const [isMovingDocument, setIsMovingDocument] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<number | null>(null);
   const [isMovingFolder, setIsMovingFolder] = useState(false);
@@ -90,6 +91,7 @@ export default function DocumentsPage() {
       ...findDocumentSearchParams,
     });
 
+  const retryDocument = trpc.document.retryChatDocument.useMutation();
   const {
     data: foldersData,
     isLoading: isFoldersLoading,
@@ -133,6 +135,25 @@ export default function DocumentsPage() {
       void navigate(`${formatChatPath(team?.url)}/f/${folderId}`);
     } else {
       void navigate(documentsPath);
+    }
+  };
+
+  const handleRetry = async (documenDataId: string, documentId: number) => {
+    try {
+      const result = await retryDocument.mutateAsync({
+        documenDataId: documenDataId,
+        documentId: documentId,
+      });
+
+      toast({
+        description: 'Attempting to retry',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error',
+      });
+      console.error('Error:', error);
     }
   };
 
@@ -322,10 +343,13 @@ export default function DocumentsPage() {
               />
             ) : (
               <DocumentsChatSpaceTable
-                data={data}
+                data={data as TFindDocumentsInternalResponseChat}
                 isLoading={isLoading}
                 isLoadingError={isLoadingError}
-                onMoveDocument={(documentId) => {
+                onHandleRetry={(documentDataId: string, documentId: number) =>
+                  handleRetry(documentDataId, documentId)
+                }
+                onMoveDocument={(documentId: number) => {
                   setDocumentToMove(documentId);
                   setIsMovingDocument(true);
                 }}
