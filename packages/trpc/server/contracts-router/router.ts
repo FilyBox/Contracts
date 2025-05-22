@@ -110,7 +110,7 @@ export const contractsRouter = router({
         page: z.number().optional(),
         perPage: z.number().optional(),
         period: z.enum(['7d', '14d', '30d']).optional(),
-        orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
+        orderBy: z.enum(['endDate', 'updatedAt']).optional(),
         orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
         orderByColumn: z
           .enum([

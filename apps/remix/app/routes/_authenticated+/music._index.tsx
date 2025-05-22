@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro';
 import { useSearchParams } from 'react-router';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
+import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formMusicPath } from '@documenso/lib/utils/teams';
 import { type lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
@@ -13,6 +14,7 @@ import { Button } from '@documenso/ui/primitives/button';
 import { createColumns } from '@documenso/ui/primitives/column-custom';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import MyForm from '@documenso/ui/primitives/form-custom';
+import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
@@ -37,6 +39,8 @@ export function meta() {
 
 export default function TablePage() {
   const [searchParams] = useSearchParams();
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
     [searchParams],
@@ -47,6 +51,7 @@ export default function TablePage() {
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
   });
+  const createManyMusicMutation = trpc.lpm.createManyMusic.useMutation();
 
   const createLpmMutation = trpc.lpm.createLpm.useMutation();
   const updateLpmMutation = trpc.lpm.updateLpmById.useMutation();
@@ -72,6 +77,195 @@ export default function TablePage() {
       setData(data.data);
     }
   }, [data]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setCsvFile(e.target.files[0]);
+    }
+  };
+
+  const handleCsvUpload = async () => {
+    if (!csvFile) return;
+
+    setIsSubmitting(true);
+    try {
+      const csvData = await parseCsvFile(csvFile);
+
+      // Mapear los campos del CSV a la estructura de la base de datos
+      // const validatedData = csvData.map((item) => ({
+      //   // Campos de producto
+      //   productId: item.ProductId || '',
+      //   productType: item.ProductType || '',
+      //   productTitle: item.ProductTitle || '',
+      //   productVersion: item.ProductVersion || undefined,
+      //   productDisplayArtist: item.ProductDisplayArtist || '',
+      //   parentLabel: item.ParentLabel || undefined,
+      //   label: item.Label || '',
+      //   originalReleaseDate: item.OriginalReleaseDate || undefined,
+      //   releaseDate: item.ReleaseDate || '',
+      //   upc: item.UPC || '',
+      //   catalog: item.Catalog || '',
+      //   productPriceTier: item.ProductPriceTier || undefined,
+      //   productGenre: item.ProductGenre || '',
+      //   submissionStatus: item.SubmissionStatus || '',
+      //   productCLine: item.ProductCLine || '',
+      //   productPLine: item.ProductPLine || '',
+      //   preOrderDate: item.PreOrderDate || undefined,
+      //   exclusives: item.Exclusives || undefined,
+      //   explicitLyrics: item.ExplicitLyrics || '',
+      //   productPlayLink: item.ProductPlayLink || undefined,
+      //   linerNotes: item.LinerNotes || undefined,
+      //   primaryMetadataLanguage: item.PrimaryMetadataLanguage || '',
+      //   compilation: item.Compilation || undefined,
+      //   pdfBooklet: item.PdfBooklet || undefined,
+      //   timedReleaseDate: item.TimedReleaseDate || undefined,
+      //   timedReleaseMusicServices: item.TimedReleaseMusicServices || undefined,
+      //   lastProcessDate: item.LastProcessDate || new Date().toISOString(),
+      //   importDate: item.ImportDate || new Date().toISOString(),
+
+      //   // Campos administrativos
+      //   createdBy: item.CreatedBy || 'system',
+      //   lastModified: item.LastModified || new Date().toISOString(),
+      //   submittedAt: item.SubmittedAt || new Date().toISOString(),
+      //   submittedBy: item.SubmittedBy || undefined,
+      //   vevoChannel: item.VevoChannel || undefined,
+
+      //   // Campos de pistas
+      //   trackType: item.TrackType || 'default',
+      //   trackId: item.TrackID || '',
+      //   trackVolume: item.TrackVolume === '1' ? true : undefined,
+      //   trackNumber: item.TrackNumber || '',
+      //   trackName: item.Track || '',
+      //   trackVersion: item.TrackVersion || undefined,
+      //   trackDisplayArtist: item.TrackDisplayArtist || item.Artista || '',
+      //   isrc: item.ISRC || '',
+      //   trackPriceTier: item.TrackPriceTier || undefined,
+      //   trackGenre: item.TrackGenre || '',
+      //   audioLanguage: item.AudioLanguage || '',
+      //   trackCLine: item.TrackCLine || '',
+      //   trackPLine: item.TrackPLine || '',
+      //   writersComposers: item.WritersComposers || '',
+      //   publishersCollectionSocieties: item.PublishersCollectionSocieties || '',
+      //   withholdMechanicals: item.WithholdMechanicals || '',
+      //   preOrderType: item.PreOrderType || undefined,
+      //   instantGratificationDate: item.InstantGratificationDate || '',
+      //   duration: item.Duration || '',
+      //   sampleStartTime: item.SampleStartTime || '',
+      //   explicitLyricsTrack: item.ExplicitLyricsTrack || '',
+      //   albumOnly: item.AlbumOnly || '',
+      //   lyrics: item.Lyrics || undefined,
+      //   additionalContributorsPerforming: item.AdditionalContributorsPerforming || undefined,
+      //   additionalContributorsNonPerforming: item.AdditionalContributorsNonPerforming || undefined,
+      //   producers: item.Producers || '',
+      //   continuousMix: item.ContinuousMix || '',
+      //   continuouslyMixedIndividualSong: item.ContinuouslyMixedIndividualSong || '',
+      //   trackPlayLink: item.TrackPlayLink || '',
+
+      //   // Campos adicionales de licencia
+      //   license: item.Licencia || '',
+      // }));
+      const validatedData = csvData.map((item) => ({
+        // Campos de producto
+        productId: item['Product Id'] || '',
+        productType: item['Product Type'] || '',
+        productTitle: item['Product Title'] || '',
+        productVersion: item['Product Version'] || undefined,
+        productDisplayArtist: item['Product Display Artist'] || '',
+        parentLabel: item['Parent Label'] || undefined,
+        label: item['Label'] || '',
+        originalReleaseDate: item['Original Release Date'] || undefined,
+        releaseDate: item['Release Date'] || '',
+        upc: item['UPC'] || '',
+        catalog: item['Catalog #'] || '',
+        productPriceTier: item['Product Price Tier'] || undefined,
+        productGenre: item['Product Genre'] || '',
+        submissionStatus: item['Submission Status'] || '',
+        productCLine: item['Product C Line'] || '',
+        productPLine: item['Product P Line'] || '',
+        preOrderDate: item['Pre-Order Date'] || undefined,
+        exclusives: item['Exclusives'] || undefined,
+        explicitLyrics: item['ExplicitLyrics'] || '',
+        productPlayLink: item['Product Play Link'] || undefined,
+        linerNotes: item['Liner Notes'] || undefined,
+        primaryMetadataLanguage: item['Primary Metadata Language'] || '',
+        compilation: item['Compilation'] || undefined,
+        pdfBooklet: item['PDF Booklet'] || undefined,
+        timedReleaseDate: item['Timed Release Date'] || undefined,
+        timedReleaseMusicServices: item['Timed Release Music Services'] || undefined,
+        lastProcessDate: item['Last Process Date'] || new Date().toISOString(),
+        importDate: item['Import Date'] || new Date().toISOString(),
+
+        // Campos administrativos
+        createdBy: item['Created By'] || 'system',
+        lastModified: item['Last Modified'] || new Date().toISOString(),
+        submittedAt: item['Submitted At'] || new Date().toISOString(),
+        submittedBy: item['Submitted By'] || undefined,
+        vevoChannel: item['Vevo Channel'] || undefined,
+
+        // Campos de pistas
+        trackType: item['TrackType'] || 'default',
+        trackId: item['Track Id'] || '',
+        trackVolume: item['Track Volume'] === '1' ? true : undefined,
+        trackNumber: item['Track Number'] || '',
+        trackName: item['Track Name'] || '',
+        trackVersion: item['Track Version'] || undefined,
+        trackDisplayArtist: item['Track Display Artist'] || item['Artista'] || '',
+        isrc: item['Isrc'] || '',
+        trackPriceTier: item['Track Price Tier'] || undefined,
+        trackGenre: item['Track Genre'] || '',
+        audioLanguage: item['Audio Language'] || '',
+        trackCLine: item['Track C Line'] || '',
+        trackPLine: item['Track P Line'] || '',
+        writersComposers: item['Writers/Composers'] || '',
+        publishersCollectionSocieties: item['Publishers/Collection Societies'] || '',
+        withholdMechanicals: item['Withhold Mechanicals'] || '',
+        preOrderType: item['Pre-Order Type'] || undefined,
+        instantGratificationDate: item['Instant Gratification Date'] || '',
+        duration: item['Duration'] || '',
+        sampleStartTime: item['Sample Start Time'] || '',
+        explicitLyricsTrack: item['Explicit Lyrics'] || '',
+        albumOnly: item['Album Only'] || '',
+        lyrics: item['Lyrics'] || undefined,
+        additionalContributorsPerforming: item['AdditionalContributors.Performing'] || undefined,
+        additionalContributorsNonPerforming:
+          item['AdditionalContributors.NonPerforming'] || undefined,
+        producers: item['Producers'] || '',
+        continuousMix: item['Continuous Mix'] || '',
+        continuouslyMixedIndividualSong: item['Continuously Mixed Individual Song'] || '',
+        trackPlayLink: item['Track Play Link'] || '',
+
+        // Campos adicionales de licencia
+        license: item['Licencia'] || '',
+      }));
+      // Filtrar cualquier objeto que esté completamente vacío (por si hay filas vacías en el CSV)
+      const filteredData = validatedData.filter((item) =>
+        Object.values(item).some((value) => value !== ''),
+      );
+
+      // Usar la mutación para crear múltiples registros
+      const result = await createManyMusicMutation.mutateAsync({
+        music: filteredData,
+      });
+
+      toast({
+        description: `Se han creado ${result.count} registros exitosamente`,
+      });
+
+      // Refrescar los datos
+      await refetch();
+      setCsvFile(null);
+    } catch (error) {
+      console.error('Error al procesar el CSV:', error);
+      toast({
+        variant: 'destructive',
+        description:
+          'Error al procesar el archivo CSV: ' +
+          (error instanceof Error ? error.message : 'Error desconocido'),
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleCreate = async (newRecord: Omit<lpm, 'id'>) => {
     setIsSubmitting(true);
@@ -292,6 +486,12 @@ export default function TablePage() {
         </h1>
 
         <div className="flex w-full items-center justify-end gap-4">
+          <div className="mb-4 flex items-center gap-2">
+            <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
+            <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
+              {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
+            </Button>
+          </div>
           <Button onClick={openCreateDialog}>Add Item</Button>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />

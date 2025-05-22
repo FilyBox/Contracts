@@ -59,6 +59,7 @@ export const extractBodyContractTask = task({
     documentId: number;
   }) => {
     const documentId = payload.documentId;
+    console.log(`🔹 Buscando archivo con ID: ${documentId} en la base de datos...`);
     try {
       const decryptedId = payload.documentId;
       const teamId = payload.teamId;
@@ -119,18 +120,19 @@ export const extractBodyContractTask = task({
       console.log('visibilityFilters', visibilityFilters);
       const documentWhereClause = {
         id: documentId,
-        ...(teamId
-          ? {
-              OR: [
-                { teamId, ...visibilityFilters },
-                { userId, teamId },
-              ],
-            }
-          : { userId, teamId: null }),
+        // ...(teamId
+        //   ? {
+        //       OR: [
+        //         // { teamId, ...visibilityFilters },
+        //         { teamId },
+        //       ],
+        //     }
+        //   : { userId, teamId: null }),
       };
       const documentBodyExists = await prisma.documentBodyExtracted.findFirst({
         where: { documentId: documentId },
       });
+      console.log('documentBodyExists', documentBodyExists);
       let documentBody;
       if (documentBodyExists) {
         documentBody = documentBodyExists;
@@ -140,7 +142,6 @@ export const extractBodyContractTask = task({
         });
       }
 
-      console.log('documentBody', documentBody);
       console.log('documentWhereClause', documentWhereClause);
 
       const document = await prisma.document.findFirst({
@@ -164,8 +165,18 @@ export const extractBodyContractTask = task({
       console.log(`✅ PDF descargado con éxito, tamaño: ${buffer.length} bytes`);
 
       const fileName = document?.title;
+      let extractedText;
+      // extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
 
-      const extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
+      if (
+        documentBody.body &&
+        documentBody.body !== 'En proceso' &&
+        documentBody.body !== 'Formato no soportado.'
+      ) {
+        extractedText = documentBody.body;
+      } else {
+        extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
+      }
       if (!extractedText) {
         console.log(`⚠️ No se pudo extraer el texto del PDF: ${fileName}`);
         await prisma.document.update({
@@ -175,7 +186,10 @@ export const extractBodyContractTask = task({
         return;
       }
 
-      if (extractedText === 'Error al procesar el PDF.') {
+      if (
+        extractedText === 'Error al procesar el PDF.' ||
+        extractedText === 'Formato no soportado.'
+      ) {
         console.log(`⚠️ No se pudo extraer el texto del PDF: ${fileName}`);
 
         await prisma.document.update({
@@ -196,10 +210,17 @@ el titulo es: ${fileName}
 2. **Artistas**: Nombres de todos los artistas involucrados.
 3. **Fecha de inicio del contrato**: Fecha de inicio del contrato formato dd/mm/aaaa.
 4. **Fecha de finalización del contrato**: Fecha de finalización del contrato formato dd/mm/aaaa.
-5. **¿Es posible expandirlo?**: Indica si el contrato puede extenderse.
-6. **Tiempo de extensión posible**: Especifica el tiempo de extensión (2, 3, 5 años o la cantidad de tiempo especificada), fecha estimada 
-7. **Estatus del contrato**: Si ya está vencido o es vigente . Basado en la fecha actual: ${new Date().toISOString()}.
-8. **Resumen general** del contrato.
+5. **¿Es posible expandirlo?**: Indica si el contrato puede extenderse (SI, NO, NO_ESPECIFICADO).
+6. **Tiempo de extensión posible**: Especifica el tiempo de extensión (2, 3, 5 años o la cantidad de tiempo especificada), fecha estimada.
+7. **Estatus del contrato**: Si ya está vencido (FINALIZADO) o es vigente (VIGENTE). Basado en la fecha actual: ${new Date().toISOString()}.
+8. **Tipo de Contrato**: Clasifica el contrato como uno de los siguientes: ARRENDAMIENTOS, ALQUILERES, VEHICULOS, SERVICIOS, ARTISTAS.
+9. **Periodo de Colección**: Indica si existe un período de Colección específico (SI, NO, NO_ESPECIFICADO).
+10. **Descripción del Periodo de Coleccion**: Detalla cómo funciona el período de Colección.
+11. **Duración del Periodo de Coleccion**: Especifica la duración del período de Colección.
+12. **Periodo de Retención**: Indica si existe un período de retención (SI, NO, NO_ESPECIFICADO).
+13. **Descripción del Periodo de Retención**: Detalla cómo funciona el período de retención.
+14. **Duración del Periodo de Retención**: Especifica la duración del período de retención.
+15. **Resumen general** SIEMPRE genera un resumen del contrato.
 
 este es el contrato: ${extractedText}
         `;
@@ -216,6 +237,51 @@ este es el contrato: ${extractedText}
         });
 
         const ai = new GoogleGenAI({ apiKey: 'AIzaSyABLg4odoWpJX7VpZVSNWLfhsJ07hH5KAE' });
+        // const responses = await ai.models.generateContent({
+        //   model: 'gemini-2.0-flash-lite',
+        //   contents: prompt,
+        //   config: {
+        //     responseMimeType: 'application/json',
+        //     responseSchema: {
+        //       type: Type.ARRAY,
+        //       items: {
+        //         type: Type.OBJECT,
+        //         properties: {
+        //           tituloContrato: { type: Type.STRING },
+        //           artistas: {
+        //             type: Type.ARRAY,
+        //             items: {
+        //               type: Type.OBJECT,
+        //               properties: {
+        //                 nombre: { type: Type.STRING },
+        //               },
+        //             },
+        //           },
+        //           fechaInicio: { type: Type.STRING },
+        //           fechaFin: { type: Type.STRING },
+        //           esPosibleExpandirlo: { type: Type.STRING, enum: ['SI', 'NO', 'NO_ESPECIFICADO'] },
+        //           tiempoExtensionPosible: { type: Type.STRING },
+        //           estatusContrato: {
+        //             type: Type.STRING,
+        //             enum: ['VIGENTE', 'FINALIZADO', 'NO_ESPECIFICADO'],
+        //           },
+        //           resumenGeneral: { type: Type.STRING },
+        //         },
+        //         propertyOrdering: [
+        //           'tituloContrato',
+        //           'artistas',
+        //           'fechaInicio',
+        //           'fechaFin',
+        //           'esPosibleExpandirlo',
+        //           'tiempoExtensionPosible',
+        //           'estatusContrato',
+
+        //           'resumenGeneral',
+        //         ],
+        //       },
+        //     },
+        //   },
+        // });
         const responses = await ai.models.generateContent({
           model: 'gemini-2.0-flash-lite',
           contents: prompt,
@@ -238,12 +304,31 @@ este es el contrato: ${extractedText}
                   },
                   fechaInicio: { type: Type.STRING },
                   fechaFin: { type: Type.STRING },
-                  esPosibleExpandirlo: { type: Type.STRING, enum: ['SI', 'NO', 'NO_ESPECIFICADO'] },
+                  esPosibleExpandirlo: {
+                    type: Type.STRING,
+                    enum: ['SI', 'NO', 'NO_ESPECIFICADO'],
+                  },
                   tiempoExtensionPosible: { type: Type.STRING },
                   estatusContrato: {
                     type: Type.STRING,
                     enum: ['VIGENTE', 'FINALIZADO', 'NO_ESPECIFICADO'],
                   },
+                  tipoContrato: {
+                    type: Type.STRING,
+                    enum: ['ARRENDAMIENTOS', 'ALQUILERES', 'VEHICULOS', 'SERVICIOS', 'ARTISTAS'],
+                  },
+                  periodoColeccion: {
+                    type: Type.STRING,
+                    enum: ['SI', 'NO', 'NO_ESPECIFICADO'],
+                  },
+                  descripcionPeriodoColeccion: { type: Type.STRING },
+                  duracionPeriodoColeccion: { type: Type.STRING },
+                  periodoRetencion: {
+                    type: Type.STRING,
+                    enum: ['SI', 'NO', 'NO_ESPECIFICADO'],
+                  },
+                  descripcionPeriodoRetencion: { type: Type.STRING },
+                  duracionPeriodoRetencion: { type: Type.STRING },
                   resumenGeneral: { type: Type.STRING },
                 },
                 propertyOrdering: [
@@ -254,14 +339,19 @@ este es el contrato: ${extractedText}
                   'esPosibleExpandirlo',
                   'tiempoExtensionPosible',
                   'estatusContrato',
-
+                  'tipoContrato',
+                  'periodoColeccion',
+                  'descripcionPeriodoColeccion',
+                  'duracionPeriodoColeccion',
+                  'periodoRetencion',
+                  'descripcionPeriodoRetencion',
+                  'duracionPeriodoRetencion',
                   'resumenGeneral',
                 ],
               },
             },
           },
         });
-
         console.log('response', responses.text);
 
         const parsedResponse = responses.text ? JSON.parse(responses.text)[0] : null; // Parse JSON and get the first item if text exists
@@ -271,6 +361,7 @@ este es el contrato: ${extractedText}
         const existingContract = await prisma.contract.findFirst({
           where: { documentId: documentId },
         });
+
         if (existingContract) {
           console.log('Ya existe el contrato, actualizando');
           contractsTable = await prisma.contract.update({
@@ -287,6 +378,13 @@ este es el contrato: ${extractedText}
               title: parsedResponse.tituloContrato,
               isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
               possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+              contractType: parsedResponse.tipoContrato,
+              collectionPeriod: parsedResponse.periodoColeccion,
+              collectionPeriodDescription: parsedResponse.descripcionPeriodoColeccion,
+              collectionPeriodDuration: parsedResponse.duracionPeriodoColeccion,
+              retentionPeriod: parsedResponse.periodoRetencion,
+              retentionPeriodDescription: parsedResponse.descripcionPeriodoRetencion,
+              retentionPeriodDuration: parsedResponse.duracionPeriodoRetencion,
               summary: parsedResponse.resumenGeneral,
             },
           });
@@ -305,11 +403,57 @@ este es el contrato: ${extractedText}
               title: parsedResponse.tituloContrato,
               isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
               possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+              contractType: parsedResponse.tipoContrato,
+              collectionPeriod: parsedResponse.periodoColeccion,
+              collectionPeriodDescription: parsedResponse.descripcionPeriodoColeccion,
+              collectionPeriodDuration: parsedResponse.duracionPeriodoColeccion,
+              retentionPeriod: parsedResponse.periodoRetencion,
+              retentionPeriodDescription: parsedResponse.descripcionPeriodoRetencion,
+              retentionPeriodDuration: parsedResponse.duracionPeriodoRetencion,
               summary: parsedResponse.resumenGeneral,
             },
           });
           console.log('contractsTable', contractsTable);
         }
+        // if (existingContract) {
+        //   console.log('Ya existe el contrato, actualizando');
+        //   contractsTable = await prisma.contract.update({
+        //     where: { id: existingContract.id },
+        //     data: {
+        //       documentId: documentId,
+        //       fileName: fileName,
+        //       artists: parsedResponse.artistas
+        //         .map((artist: { nombre: string }) => artist.nombre)
+        //         .join(', '),
+        //       endDate: parsedResponse.fechaFin,
+        //       startDate: parsedResponse.fechaInicio,
+        //       status: parsedResponse.estatusContrato,
+        //       title: parsedResponse.tituloContrato,
+        //       isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
+        //       possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+        //       summary: parsedResponse.resumenGeneral,
+        //     },
+        //   });
+        // } else {
+        //   console.log('No existe el contrato, creando uno nuevo');
+        //   contractsTable = await prisma.contract.create({
+        //     data: {
+        //       documentId: documentId,
+        //       fileName: fileName,
+        //       artists: parsedResponse.artistas
+        //         .map((artist: { nombre: string }) => artist.nombre)
+        //         .join(', '),
+        //       endDate: parsedResponse.fechaFin,
+        //       startDate: parsedResponse.fechaInicio,
+        //       status: parsedResponse.estatusContrato,
+        //       title: parsedResponse.tituloContrato,
+        //       isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
+        //       possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+        //       summary: parsedResponse.resumenGeneral,
+        //     },
+        //   });
+        //   console.log('contractsTable', contractsTable);
+        // }
       }
     } catch (error) {
       console.log('Error procesando el PDF:', error);

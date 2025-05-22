@@ -286,7 +286,8 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
     { label: 'Álbum', value: 'Album' },
     { label: 'Single', value: 'Single' },
     { label: 'EP', value: 'EP' },
-    { label: 'Compilación', value: 'Compilation' },
+    { label: 'Music Video', value: 'Music Video' },
+    { label: 'Audio', value: 'Audio' },
   ];
 
   const trackTypeOptions = [
@@ -538,7 +539,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           name="productPriceTier"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Nivel de Precio (Opcional)</FormLabel>
+                              <FormLabel>Product Price Tier (Opcional)</FormLabel>
                               <FormControl>
                                 <Input placeholder="Ej: Standard, Budget, Premium" {...field} />
                               </FormControl>

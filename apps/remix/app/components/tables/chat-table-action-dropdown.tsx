@@ -178,7 +178,10 @@ export const ChatTableActionDropdown = ({
           <Trans>Download</Trans>
         </DropdownMenuItem> */}
 
-        <DropdownMenuItem onClick={onHandleRetry} disabled={!canManageDocument || isComplete}>
+        <DropdownMenuItem
+          onClick={onHandleRetry}
+          // disabled={!canManageDocument || isComplete}
+        >
           <RefreshCcw className="mr-2 h-4 w-4" />
           <Trans>Retry</Trans>
         </DropdownMenuItem>

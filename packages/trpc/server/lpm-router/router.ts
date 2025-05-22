@@ -157,6 +157,93 @@ export const lpmRouter = router({
         } as unknown as Prisma.lpmCreateInput,
       });
     }),
+
+  createManyMusic: authenticatedProcedure
+    .input(
+      z.object({
+        music: z.array(
+          z.object({
+            productId: z.string(),
+            productType: z.string(),
+            productTitle: z.string(),
+            productVersion: z.string().optional(),
+            productDisplayArtist: z.string(),
+            parentLabel: z.string().optional(),
+            label: z.string(),
+            originalReleaseDate: z.string().optional(),
+            releaseDate: z.string(),
+            upc: z.string(),
+            catalog: z.string(),
+            productPriceTier: z.string().optional(),
+            productGenre: z.string(),
+            submissionStatus: z.string(),
+            productCLine: z.string(),
+            productPLine: z.string(),
+            preOrderDate: z.string().optional(),
+            exclusives: z.string().optional(),
+            explicitLyrics: z.string(),
+            productPlayLink: z.string().optional(),
+            linerNotes: z.string().optional(),
+            primaryMetadataLanguage: z.string(),
+            compilation: z.string().optional(),
+            pdfBooklet: z.string().optional(),
+            timedReleaseDate: z.string().optional(),
+            timedReleaseMusicServices: z.string().optional(),
+            lastProcessDate: z.string(),
+            importDate: z.string(),
+            createdBy: z.string(),
+            lastModified: z.string(),
+            submittedAt: z.string(),
+            submittedBy: z.string().optional(),
+            vevoChannel: z.string().optional(),
+            trackType: z.string(),
+            trackId: z.string(),
+            trackVolume: z.boolean().optional(),
+            trackNumber: z.string(),
+            trackName: z.string(),
+            trackVersion: z.string().optional(),
+            trackDisplayArtist: z.string(),
+            isrc: z.string(),
+            trackPriceTier: z.string().optional(),
+            trackGenre: z.string(),
+            audioLanguage: z.string(),
+            trackCLine: z.string(),
+            trackPLine: z.string(),
+            writersComposers: z.string(),
+            publishersCollectionSocieties: z.string(),
+            withholdMechanicals: z.string(),
+            preOrderType: z.string().optional(),
+            instantGratificationDate: z.string(),
+            duration: z.string(),
+            sampleStartTime: z.string(),
+            explicitLyricsTrack: z.string(),
+            albumOnly: z.string(),
+            lyrics: z.string().optional(),
+            additionalContributorsPerforming: z.string().optional(),
+            additionalContributorsNonPerforming: z.string().optional(),
+            producers: z.string().optional(),
+            continuousMix: z.string(),
+            continuouslyMixedIndividualSong: z.string(),
+            trackPlayLink: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { music } = input;
+      const { user, teamId } = ctx;
+      const userId = user.id;
+      const musicWithUserInfo = music.map((item) => ({
+        ...item,
+        userId,
+        ...(teamId ? { teamId } : {}),
+      }));
+      const createdMusic = await prisma.lpm.createMany({
+        data: musicWithUserInfo,
+      });
+      return createdMusic;
+    }),
+
   findLpmById: authenticatedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
