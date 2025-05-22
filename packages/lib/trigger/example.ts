@@ -1,49 +1,15 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { TeamMemberRole } from '@prisma/client';
 import { task } from '@trigger.dev/sdk/v3';
-import fs from 'fs/promises';
 // Usa la versión asíncrona
 import fetch from 'node-fetch';
 // Asegúrate de instalarlo con `pnpm add node-fetch`
-import * as path from 'node:path';
 import { match } from 'ts-pattern';
 
 import { DocumentVisibility } from '@documenso/lib/types/document-visibility';
-import { getPresignGetUrl } from '@documenso/lib/universal/upload/server-actions';
 import { prisma } from '@documenso/prisma';
 
 import { extractText } from '../services/textparser';
-
-// const __dirname = path.dirname(__filename);
-// const filename = __filename;
-// const downloadsDir = path.join(__dirname, 'downloads');
-
-// // 🔹 Crear la carpeta de descargas si no existe
-// export async function ensureDownloadDir() {
-//   try {
-//     await fs.mkdir(downloadsDir, { recursive: true });
-//   } catch (error) {
-//     console.error('❌ Error creando la carpeta de descargas:', error);
-//   }
-// }
-
-// export const getFileAndAnalyze = async (fileId: number, workspaceId:string) => {
-//   if (!fileId) {
-//     return null;
-//   }
-//   const { id } = await helloWorldTask.trigger({
-//     fileId: fileId, workspaceId: workspaceId
-//   });
-//   return id;
-// };
-
-interface TemplateField {
-  id: string;
-  label: string;
-  type: 'text' | 'textarea' | 'date' | 'number' | 'currency';
-  placeholder?: string;
-  required: boolean;
-}
 
 export const extractBodyContractTask = task({
   id: 'extract-body-contract',
@@ -150,7 +116,6 @@ export const extractBodyContractTask = task({
 
       console.log('document', document);
 
-      const results = [];
       const pdfUrl = payload.urlDocument;
       console.log(`🔹 Descargando PDF desde: ${pdfUrl}`);
 

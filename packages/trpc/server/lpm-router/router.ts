@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { findLpm } from '@documenso/lib/server-only/document/find-lpm';
+import { createArtist } from '@documenso/lib/server-only/user/create-artist';
 import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure, router } from '../trpc';
@@ -233,14 +234,44 @@ export const lpmRouter = router({
       const { music } = input;
       const { user, teamId } = ctx;
       const userId = user.id;
+      const artistsArray = music.map((item) => {
+        // Split by comma and trim whitespace from each artist name
+        return item.trackDisplayArtist.split(',').map((artist) => artist.trim());
+      });
+
+      // Extract artists from all tracks and deduplicate
+      const allArtists = new Set<string>();
+      const artistsArrayByTrack = music.map((item) => {
+        // Split by comma and trim whitespace from each artist name
+        const artists = item.trackDisplayArtist.split(',').map((artist) => artist.trim());
+        // Add each artist to the set of all artists
+        artists.forEach((artist) => allArtists.add(artist));
+        return artists;
+      });
+
+      // Convert set to array to get the unique artists list
+      const uniqueArtistsArray = Array.from(allArtists);
+
       const musicWithUserInfo = music.map((item) => ({
         ...item,
         userId,
+        productGenre: item.productGenre.replace(/\s*\/\s*/g, ', '),
         ...(teamId ? { teamId } : {}),
       }));
+
       const createdMusic = await prisma.lpm.createMany({
         data: musicWithUserInfo,
       });
+
+      const [createdArtists] = await Promise.all(
+        uniqueArtistsArray.map((artist) =>
+          createArtist({
+            name: artist,
+            userId,
+            teamId,
+          }),
+        ),
+      );
       return createdMusic;
     }),
 

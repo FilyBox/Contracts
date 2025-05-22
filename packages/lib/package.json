@@ -56,6 +56,7 @@
     "posthog-js": "^1.224.0",
     "prisma-kysely": "^1.8.0",
     "react": "^18",
+    "react-day-picker": "^9.4.3",
     "remeda": "^2.17.3",
     "sharp": "0.32.6",
     "stripe": "^12.7.0",

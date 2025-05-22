@@ -46,6 +46,7 @@ export interface DataTableProps<TData, TValue> {
   onNavegate?: (data: TData) => void;
 
   onDelete?: (data: TData) => void;
+  onMoveDocument?: (data: TData) => void;
   perPage?: number;
   currentPage?: number;
   totalPages?: number;
@@ -76,6 +77,7 @@ export function DataTable<TData, TValue>({
   currentPage,
   totalPages,
   skeleton,
+  onMoveDocument,
   hasFilters,
   onClearFilters,
   onPaginationChange,
@@ -290,6 +292,18 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         View
+                      </ContextMenuItem>
+                    )}
+
+                    {onMoveDocument && (
+                      <ContextMenuItem
+                        onClick={() => {
+                          console.log('Row clicked:', row.original);
+                          onMoveDocument(row.original);
+                        }}
+                        inset
+                      >
+                        Move To Folder
                       </ContextMenuItem>
                     )}
 

@@ -24,43 +24,49 @@ export const artistRouter = router({
       z.object({
         name: z.string().min(1).optional(),
         role: z.nativeEnum(Role).array().optional(),
-        event: z.array(z.string()).optional(),
-        song: z.array(z.string()).optional(),
+        // event: z.array(z.string()).optional(),
         url: z.string().optional(),
-        createdAt: z.date().optional(),
-        updatedAt: z.date().optional(),
         disabled: z.boolean().optional(),
-        teamId: z.number().optional(),
         avatarImageId: z.string().optional(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       if (!input.name) {
         throw new Error('El nombre del artista es obligatorio');
       }
+      const data = input;
+      const { teamId, user } = ctx;
+      const userId = user.id;
+      const artistInfo = {
+        ...data,
+        userId,
+        ...(teamId ? { teamId } : {}),
+      };
 
       try {
         return await prisma.artist.create({
-          data: {
-            name: input.name,
-            roles: input.role ?? [],
-            event: input.event
-              ? {
-                  connect: input.event.map((eventId) => ({ id: Number(eventId) })),
-                }
-              : undefined,
-            songs: input.song
-              ? {
-                  connect: input.song.map((songId) => ({ id: Number(songId) })),
-                }
-              : undefined,
-            url: input.url,
-            disabled: input.disabled ?? false,
-            createdAt: input.createdAt ?? new Date(),
-            updatedAt: input.updatedAt ?? new Date(),
-            team: input.teamId ? { connect: { id: input.teamId } } : undefined,
-            avatarImageId: input.avatarImageId,
-          },
+          data: { ...artistInfo },
+          // data: {
+          //   name: input.name,
+          //   roles: input.role ?? [],
+          //   event: input.event
+          //     ? {
+          //         connect: input.event.map((eventId) => ({ id: Number(eventId) })),
+          //       }
+          //     : undefined,
+          //   songs: input.song
+          //     ? {
+          //         connect: input.song.map((songId) => ({ id: Number(songId) })),
+          //       }
+          //     : undefined,
+          //   url: input.url,
+          //   disabled: input.disabled ?? false,
+          //   createdAt: input.createdAt ?? new Date(),
+          //   updatedAt: input.updatedAt ?? new Date(),
+          //   userId: userId,
+          //   avatarImageId: input.avatarImageId,
+          //   ...(teamId ? { teamId: teamId } : {}),
+          // },
         });
       } catch (error) {
         console.error('Error al crear artista:', error);

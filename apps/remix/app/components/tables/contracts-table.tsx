@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
   onNavegate?: (data: DocumentsTableRow) => void;
+  onMoveDocument?: (data: DocumentsTableRow) => void;
 }
 
 type DocumentsTableRow = TFindContractsResponse['data'][number];
@@ -42,6 +43,7 @@ export const ContractsTable = ({
   onEdit,
   onNavegate,
   onDelete,
+  onMoveDocument,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
@@ -91,11 +93,7 @@ export const ContractsTable = ({
         header: 'Extension Time',
         enableHiding: true,
       },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        enableHiding: true,
-      },
+
       {
         accessorKey: 'status',
         header: 'Status',
@@ -147,6 +145,7 @@ export const ContractsTable = ({
         currentPage={results.currentPage}
         totalPages={results.totalPages}
         onPaginationChange={onPaginationChange}
+        onMoveDocument={onMoveDocument}
         columnVisibility={{
           sender: team !== undefined,
         }}

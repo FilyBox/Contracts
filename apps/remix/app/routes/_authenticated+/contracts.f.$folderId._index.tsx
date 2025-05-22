@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
@@ -24,19 +24,13 @@ import { FolderDeleteDialog } from '~/components/dialogs/folder-delete-dialog';
 import { FolderMoveDialog } from '~/components/dialogs/folder-move-dialog';
 import { FolderSettingsDialog } from '~/components/dialogs/folder-settings-dialog';
 import { MoveToFolderDialog } from '~/components/dialogs/move-to-folder-dialog';
+import { DocumentDropZoneWrapper } from '~/components/general/document/document-drop-zone-wrapper';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { FolderCard } from '~/components/general/folder/folder-card';
 import { ContractsTable } from '~/components/tables/contracts-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
-
-// import { type IsrcSongsData } from '@documenso/ui/primitives/types';
-
-type CsvColumnMapping = {
-  csvColumn: string;
-  field: keyof Omit<IsrcSongs, 'id'> | '';
-};
 
 export function meta() {
   return appMetaTags('Contracts');
@@ -51,10 +45,12 @@ const ZSearchParamsSchema = ZFindIsrcSongsInternalRequestSchema.pick({
 
 export default function ContractsPage() {
   const [searchParams] = useSearchParams();
-  const team = useOptionalCurrentTeam();
   const navigate = useNavigate();
 
+  const team = useOptionalCurrentTeam();
+
   const documentRootPath = formatContractsPath(team?.url);
+
   const [isMovingDocument, setIsMovingDocument] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<number | null>(null);
   const [isMovingFolder, setIsMovingFolder] = useState(false);
@@ -64,43 +60,46 @@ export default function ContractsPage() {
   const [isSettingsFolderOpen, setIsSettingsFolderOpen] = useState(false);
   const [folderToSettings, setFolderToSettings] = useState<TFolderWithSubfolders | null>(null);
 
+  const { folderId } = useParams();
+  const [dataIntial, setData] = useState<Contract[]>([]);
+  const [editingUser, setEditingUser] = useState<Contract | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+
+  const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
+  const { mutateAsync: unpinFolder } = trpc.folder.unpinFolder.useMutation();
+
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
     [searchParams],
   );
+
   const { data, isLoading, isLoadingError, refetch } = trpc.contracts.findContracts.useQuery({
     query: findDocumentSearchParams.query,
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
+    folderId: folderId,
   });
-
-  const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
-  const { mutateAsync: unpinFolder } = trpc.folder.unpinFolder.useMutation();
-
-  const {
-    data: foldersData,
-    isLoading: isFoldersLoading,
-    refetch: refetchFolders,
-  } = trpc.folder.getFolders.useQuery({
-    type: FolderType.CONTRACT,
-    parentId: null,
-  });
-
-  console.log('foldersData', foldersData);
-
   const createContractsMutation = trpc.contracts.createContracts.useMutation();
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
   const updateContractsMutation = trpc.contracts.updateContractsById.useMutation();
   const deleteContractsMutation = trpc.contracts.deleteContractsById.useMutation();
   const { toast } = useToast();
 
-  // type ContractsData = (typeof data.contracts)[number];
-  const [dataIntial, setData] = useState<Contract[]>([]);
-  const [editingUser, setEditingUser] = useState<Contract | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const {
+    data: foldersData,
+    isLoading: isFoldersLoading,
+    refetch: refetchFolders,
+  } = trpc.folder.getFolders.useQuery({
+    parentId: folderId,
+  });
+
+  useEffect(() => {
+    void refetch();
+    void refetchFolders();
+  }, [team?.url]);
 
   const mapExpansionPossibility = (value: string): string => {
     const normalized = value.trim().toUpperCase();
@@ -129,22 +128,13 @@ export default function ContractsPage() {
 
   useEffect(() => {
     if (data) {
+      console.log('Data:', data);
       setData(data.data);
     }
   }, [data]);
 
   const handleViewAllFolders = () => {
     void navigate(`${formatContractsPath(team?.url)}/folders`);
-  };
-
-  const navigateToFolder = (folderId?: string | null) => {
-    const documentsPath = formatContractsPath(team?.url);
-
-    if (folderId) {
-      void navigate(`${formatContractsPath(team?.url)}/f/${folderId}`);
-    } else {
-      void navigate(documentsPath);
-    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,6 +221,7 @@ export default function ContractsPage() {
         documentId: newRecord.documentId ?? 0,
         summary: newRecord.summary ?? '',
       });
+      console.log('Created Record ID:', id);
       await refetch();
       setIsDialogOpen(false);
     } catch (error) {
@@ -307,46 +298,92 @@ export default function ContractsPage() {
     setIsDialogOpen(true);
   };
 
-  return (
-    <div className="mx-auto flex max-w-screen-xl flex-col gap-y-8 px-4 md:px-8">
-      <div className="flex flex-1 items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center space-x-2 pl-0 hover:bg-transparent"
-          onClick={() => navigateToFolder(null)}
-        >
-          <HomeIcon className="h-4 w-4" />
-          <span>Home</span>
-        </Button>
+  const navigateToFolder = (folderId?: string | null) => {
+    const documentsPath = formatContractsPath(team?.url);
 
-        {foldersData?.breadcrumbs.map((folder) => (
-          <div key={folder.id} className="flex items-center space-x-2">
-            <span>/</span>
+    if (folderId) {
+      void navigate(`${formatContractsPath(team?.url)}/f/${folderId}`);
+    } else {
+      void navigate(documentsPath);
+    }
+  };
+
+  return (
+    <DocumentDropZoneWrapper>
+      <div className="mx-auto w-full max-w-screen-xl px-4 md:px-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-1 items-center">
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-2 pl-1 hover:bg-transparent"
-              onClick={() => navigateToFolder(folder.id)}
+              className="flex items-center space-x-2 pl-0 hover:bg-transparent"
+              onClick={() => navigateToFolder(null)}
             >
-              <FolderIcon className="h-4 w-4" />
-              <span>{folder.name}</span>
+              <HomeIcon className="h-4 w-4" />
+              <span>Home</span>
             </Button>
-          </div>
-        ))}
-      </div>
 
-      {isFoldersLoading ? (
-        <div className="mt-6 flex justify-center">
-          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+            {foldersData?.breadcrumbs.map((folder) => (
+              <div key={folder.id} className="flex items-center space-x-2">
+                <span>/</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 pl-1 hover:bg-transparent"
+                  onClick={() => navigateToFolder(folder.id)}
+                >
+                  <FolderIcon className="h-4 w-4" />
+                  <span>{folder.name}</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-4 sm:flex-row sm:justify-end">
+            <CreateFolderDialogContract />
+          </div>
         </div>
-      ) : (
-        <>
-          {foldersData?.folders?.some((folder) => folder.pinned) && (
+
+        {isFoldersLoading ? (
+          <div className="mt-6 flex justify-center">
+            <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <>
+            {foldersData?.folders && foldersData.folders.some((folder) => folder.pinned) && (
+              <div className="mt-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  {foldersData.folders
+                    .filter((folder) => folder.pinned)
+                    .map((folder) => (
+                      <FolderCard
+                        key={folder.id}
+                        folder={folder}
+                        onNavigate={navigateToFolder}
+                        onMove={(folder) => {
+                          setFolderToMove(folder);
+                          setIsMovingFolder(true);
+                        }}
+                        onPin={(folderId) => void pinFolder({ folderId })}
+                        onUnpin={(folderId) => void unpinFolder({ folderId })}
+                        onSettings={(folder) => {
+                          setFolderToSettings(folder);
+                          setIsSettingsFolderOpen(true);
+                        }}
+                        onDelete={(folder) => {
+                          setFolderToDelete(folder);
+                          setIsDeletingFolder(true);
+                        }}
+                      />
+                    ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {foldersData.folders
-                  .filter((folder) => folder.pinned)
+                {foldersData?.folders
+                  .filter((folder) => !folder.pinned)
                   .map((folder) => (
                     <FolderCard
                       key={folder.id}
@@ -370,159 +407,125 @@ export default function ContractsPage() {
                   ))}
               </div>
             </div>
-          )}
-
-          <div className="mt-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {foldersData?.folders
-                ?.filter((folder) => !folder.pinned)
-                .slice(0, 12)
-                .map((folder) => (
-                  <FolderCard
-                    key={folder.id}
-                    folder={folder}
-                    onNavigate={navigateToFolder}
-                    onMove={(folder) => {
-                      setFolderToMove(folder);
-                      setIsMovingFolder(true);
-                    }}
-                    onPin={(folderId) => void pinFolder({ folderId })}
-                    onUnpin={(folderId) => void unpinFolder({ folderId })}
-                    onSettings={(folder) => {
-                      setFolderToSettings(folder);
-                      setIsSettingsFolderOpen(true);
-                    }}
-                    onDelete={(folder) => {
-                      setFolderToDelete(folder);
-                      setIsDeletingFolder(true);
-                    }}
-                  />
-                ))}
-            </div>
-
-            <div className="mt-6 flex items-center justify-center">
-              {foldersData && foldersData.folders?.length > 12 && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={() => void handleViewAllFolders()}
-                >
-                  View all folders
-                </Button>
-              )}
-            </div>
-          </div>
-        </>
-      )}
-      <div className="flex flex-row items-center pt-1">
-        {team && (
-          <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
-            {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
-            <AvatarFallback className="text-muted-foreground text-xs">
-              {team.name.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
+          </>
         )}
 
-        <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
-          <Trans>Contracts</Trans>
-        </h1>
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
+          <div className="flex flex-row items-center">
+            {team && (
+              <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
+                {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
+                <AvatarFallback className="text-muted-foreground text-xs">
+                  {team.name.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
+            )}
 
-        <div className="flex w-full items-center justify-end gap-4">
-          <CreateFolderDialogContract />
-          <Button onClick={openCreateDialog}>Add Item</Button>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
-            <DocumentSearch initialValue={findDocumentSearchParams.query} />
+            <h2 className="text-4xl font-semibold">
+              <Trans>Contracts</Trans>
+            </h2>
+          </div>
+
+          <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
+            <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4">
+              <Button onClick={openCreateDialog}>Add Item</Button>
+              <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+                <DocumentSearch initialValue={findDocumentSearchParams.query} />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
-          <div>
-            <ContractForm
-              isSubmitting={isSubmitting}
-              onSubmit={editingUser ? handleUpdate : handleCreate}
-              initialData={editingUser}
+
+        <div className="mt-8 flex flex-col gap-4">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="sm:max-w-2xl">
+              <div>
+                <ContractForm
+                  isSubmitting={isSubmitting}
+                  onSubmit={editingUser ? handleUpdate : handleCreate}
+                  initialData={editingUser}
+                />
+              </div>
+            </DialogContent>
+            <div className="mb-4 flex items-center gap-2">
+              <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
+              <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
+                {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
+              </Button>
+            </div>
+          </Dialog>
+          {data && (!data?.data.length || data?.data.length === 0) ? (
+            <GeneralTableEmptyState status={'ALL'} />
+          ) : (
+            <ContractsTable
+              data={data}
+              isLoading={isLoading}
+              isLoadingError={isLoadingError}
+              onAdd={openCreateDialog}
+              onEdit={handleEdit}
+              onNavegate={hanleOnNavegate}
+              onDelete={handleDelete}
+              onMoveDocument={(row: Contract) => {
+                setDocumentToMove(row.id);
+                setIsMovingDocument(true);
+              }}
             />
-          </div>
-        </DialogContent>
-        <div className="mb-4 flex items-center gap-2">
-          <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
-          <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
-            {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
-          </Button>
+          )}
         </div>
-      </Dialog>
-      {data && (!data?.data.length || data?.data.length === 0) ? (
-        <GeneralTableEmptyState status={'ALL'} />
-      ) : (
-        <ContractsTable
-          data={data}
-          isLoading={isLoading}
-          isLoadingError={isLoadingError}
-          onMoveDocument={(row: Contract) => {
-            setDocumentToMove(row.id);
-            setIsMovingDocument(true);
-          }}
-          onAdd={openCreateDialog}
-          onEdit={handleEdit}
-          onNavegate={hanleOnNavegate}
-          onDelete={handleDelete}
-        />
-      )}
 
-      {documentToMove && (
-        <MoveToFolderDialog
-          Id={documentToMove}
-          open={isMovingDocument}
-          type={FolderType.CONTRACT}
+        {documentToMove && (
+          <MoveToFolderDialog
+            Id={documentToMove}
+            open={isMovingDocument}
+            type={FolderType.CONTRACT}
+            onOpenChange={(open) => {
+              setIsMovingDocument(open);
+
+              if (!open) {
+                setDocumentToMove(null);
+              }
+            }}
+            currentFolderId={folderId}
+          />
+        )}
+
+        <FolderMoveDialog
+          foldersData={foldersData?.folders}
+          folder={folderToMove}
+          isOpen={isMovingFolder}
           onOpenChange={(open) => {
-            setIsMovingDocument(open);
+            setIsMovingFolder(open);
 
             if (!open) {
-              setDocumentToMove(null);
+              setFolderToMove(null);
             }
           }}
         />
-      )}
 
-      <FolderMoveDialog
-        foldersData={foldersData?.folders}
-        folder={folderToMove}
-        isOpen={isMovingFolder}
-        onOpenChange={(open) => {
-          setIsMovingFolder(open);
+        <FolderSettingsDialog
+          folder={folderToSettings}
+          isOpen={isSettingsFolderOpen}
+          onOpenChange={(open) => {
+            setIsSettingsFolderOpen(open);
 
-          if (!open) {
-            setFolderToMove(null);
-          }
-        }}
-      />
+            if (!open) {
+              setFolderToSettings(null);
+            }
+          }}
+        />
 
-      <FolderSettingsDialog
-        folder={folderToSettings}
-        isOpen={isSettingsFolderOpen}
-        onOpenChange={(open) => {
-          setIsSettingsFolderOpen(open);
+        <FolderDeleteDialog
+          folder={folderToDelete}
+          isOpen={isDeletingFolder}
+          onOpenChange={(open) => {
+            setIsDeletingFolder(open);
 
-          if (!open) {
-            setFolderToSettings(null);
-          }
-        }}
-      />
-
-      <FolderDeleteDialog
-        folder={folderToDelete}
-        isOpen={isDeletingFolder}
-        onOpenChange={(open) => {
-          setIsDeletingFolder(open);
-
-          if (!open) {
-            setFolderToDelete(null);
-          }
-        }}
-      />
-    </div>
+            if (!open) {
+              setFolderToDelete(null);
+            }
+          }}
+        />
+      </div>
+    </DocumentDropZoneWrapper>
   );
 }

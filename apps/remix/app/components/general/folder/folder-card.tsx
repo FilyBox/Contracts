@@ -57,7 +57,7 @@ export const FolderCard = ({
                 )}
               </span>
               <span>•</span>
-              <span>{formatFolderCount(folder._count.subfolders, 'folder', 'folders')}</span>
+              <span>{formatFolderCount(folder.subfolders.length, 'folder', 'folders')}</span>
             </div>
           </div>
         </button>

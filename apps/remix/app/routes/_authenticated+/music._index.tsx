@@ -5,13 +5,11 @@ import { useSearchParams } from 'react-router';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
-import { formMusicPath } from '@documenso/lib/utils/teams';
 import { type lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
 import { ZFindLpmInternalRequestSchema } from '@documenso/trpc/server/lpm-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
-import { createColumns } from '@documenso/ui/primitives/column-custom';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import MyForm from '@documenso/ui/primitives/form-custom';
 import { Input } from '@documenso/ui/primitives/input';
@@ -58,14 +56,12 @@ export default function TablePage() {
   const deleteLpmMutation = trpc.lpm.deleteLpmById.useMutation();
   const { toast } = useToast();
   const team = useOptionalCurrentTeam();
-  const musicRootPath = formMusicPath(team?.url);
 
   // type LpmData = (typeof data.music)[number];
   const [dataIntial, setData] = useState<lpm[]>([]);
   const [editingUser, setEditingUser] = useState<lpm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const columns = createColumns();
 
   useEffect(() => {
     void refetch();
@@ -73,7 +69,6 @@ export default function TablePage() {
 
   useEffect(() => {
     if (data) {
-      console.log('Data:', data.data);
       setData(data.data);
     }
   }, [data]);
@@ -248,7 +243,9 @@ export default function TablePage() {
       });
 
       toast({
-        description: `Se han creado ${result.count} registros exitosamente`,
+        description: `Se han creado
+         ${result} 
+         registros exitosamente`,
       });
 
       // Refrescar los datos
@@ -258,9 +255,7 @@ export default function TablePage() {
       console.error('Error al procesar el CSV:', error);
       toast({
         variant: 'destructive',
-        description:
-          'Error al procesar el archivo CSV: ' +
-          (error instanceof Error ? error.message : 'Error desconocido'),
+        description: 'Error al procesar el archivo CSV: ',
       });
     } finally {
       setIsSubmitting(false);

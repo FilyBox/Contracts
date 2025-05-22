@@ -81,6 +81,16 @@ export const ZMoveDocumentToFolderSchema = z.object({
   folderId: z.string().nullable().optional(),
   type: z.enum(['DOCUMENT']).optional(),
 });
+export const ZMoveRowToFolderSchema = z.object({
+  rowId: z.number(),
+  folderId: z.string().nullable().optional(),
+  type: ZFolderTypeSchema.optional(),
+});
+export const ZMoveContractToFolderSchema = z.object({
+  documentId: z.number(),
+  folderId: z.string().nullable().optional(),
+  type: z.enum(['CONTRACT']).optional(),
+});
 
 export const ZMoveTemplateToFolderSchema = z.object({
   templateId: z.number(),

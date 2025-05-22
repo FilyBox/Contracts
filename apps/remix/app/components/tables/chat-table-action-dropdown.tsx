@@ -63,42 +63,42 @@ export const ChatTableActionDropdown = ({
   // const isRecipient = !!recipient;
   const isDraft = row.status === DocumentStatus.DRAFT;
   const isError = row.status === 'ERROR';
-  const isPending = row.status === DocumentStatus.PENDING;
+  // const isPending = row.status === DocumentStatus.PENDING;
   const isComplete = isDocumentCompleted(row.status);
   // const isSigned = recipient?.signingStatus === SigningStatus.SIGNED;
   const isCurrentTeamDocument = team && row.team?.url === team.url;
   const canManageDocument = Boolean(isOwner || isCurrentTeamDocument);
 
   const documentsPath = formatChatPath(team?.url);
-  const formatPath = row.folderId
-    ? `${documentsPath}/f/${row.folderId}/${row.id}/edit`
-    : `${documentsPath}/${row.id}/edit`;
+  // const formatPath = row.folderId
+  //   ? `${documentsPath}/f/${row.folderId}/${row.id}/edit`
+  //   : `${documentsPath}/${row.id}/edit`;
 
-  const onDownloadClick = async () => {
-    try {
-      const document = !recipient
-        ? await trpcClient.document.getDocumentById.query({
-            documentId: row.id,
-          })
-        : await trpcClient.document.getDocumentByToken.query({
-            token: recipient.token,
-          });
+  // const onDownloadClick = async () => {
+  //   try {
+  //     const document = !recipient
+  //       ? await trpcClient.document.getDocumentById.query({
+  //           documentId: row.id,
+  //         })
+  //       : await trpcClient.document.getDocumentByToken.query({
+  //           token: recipient.token,
+  //         });
 
-      const documentData = document?.documentData;
+  //     const documentData = document?.documentData;
 
-      if (!documentData) {
-        return;
-      }
+  //     if (!documentData) {
+  //       return;
+  //     }
 
-      await downloadPDF({ documentData, fileName: row.title });
-    } catch (err) {
-      toast({
-        title: _(msg`Something went wrong`),
-        description: _(msg`An error occurred while downloading your document.`),
-        variant: 'destructive',
-      });
-    }
-  };
+  //     await downloadPDF({ documentData, fileName: row.title });
+  //   } catch (err) {
+  //     toast({
+  //       title: _(msg`Something went wrong`),
+  //       description: _(msg`An error occurred while downloading your document.`),
+  //       variant: 'destructive',
+  //     });
+  //   }
+  // };
 
   const onDownloadOriginalClick = async () => {
     try {
@@ -126,7 +126,7 @@ export const ChatTableActionDropdown = ({
     }
   };
 
-  const nonSignedRecipients = row.recipients.filter((item) => item.signingStatus !== 'SIGNED');
+  // const nonSignedRecipients = row.recipients.filter((item) => item.signingStatus !== 'SIGNED');
 
   return (
     <DropdownMenu>

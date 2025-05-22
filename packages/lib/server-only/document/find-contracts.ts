@@ -11,6 +11,7 @@ export type FindReleaseOptions = {
   userId: number;
   teamId?: number;
   page?: number;
+  folderId?: string;
   perPage?: number;
   orderBy?: {
     column: keyof Omit<Contract, 'id'>;
@@ -24,7 +25,7 @@ export type FindReleaseOptions = {
 export const findContracts = async ({
   userId,
   teamId,
-
+  folderId,
   page = 1,
   perPage = 10,
   where,
@@ -96,9 +97,10 @@ export const findContracts = async ({
           userId,
         },
       ],
+      ...(folderId ? { folderId: folderId } : { folderId: null }),
     },
   };
-
+  console.log('folderId', folderId);
   if (team) {
     Filter = {
       AND: {
@@ -106,6 +108,7 @@ export const findContracts = async ({
           ? [
               {
                 teamId: team.id,
+                ...(folderId ? { folderId: folderId } : { folderId: null }),
               },
               {
                 user: {
@@ -116,6 +119,7 @@ export const findContracts = async ({
           : [
               {
                 teamId: team.id,
+                ...(folderId ? { folderId: folderId } : { folderId: null }),
               },
             ],
       },
@@ -127,6 +131,7 @@ export const findContracts = async ({
           {
             userId,
             teamId: null,
+            ...(folderId ? { folderId: folderId } : { folderId: null }),
           },
         ],
       },
@@ -165,7 +170,6 @@ export const findContracts = async ({
       where: whereClause,
     }),
   ]);
-
   return {
     data: data,
     count,

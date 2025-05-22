@@ -76,11 +76,10 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
       await createArtist({
         name: artistData.name,
         role: artistData.role,
-        event: artistData.event,
-        song: artistData.song,
+        // event: artistData.event,
+        // song: artistData.song,
         url: artistData.url,
         disabled: artistData.disabled,
-        teamId: artistData.teamId,
       });
 
       toast({

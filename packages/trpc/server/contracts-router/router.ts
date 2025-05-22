@@ -112,6 +112,7 @@ export const contractsRouter = router({
         period: z.enum(['7d', '14d', '30d']).optional(),
         orderBy: z.enum(['endDate', 'updatedAt']).optional(),
         orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
+        folderId: z.string().optional(),
         orderByColumn: z
           .enum([
             'teamId',
@@ -138,6 +139,7 @@ export const contractsRouter = router({
         page,
         perPage,
         // release,
+        folderId,
         orderByColumn,
         orderByDirection,
         period,
@@ -152,6 +154,7 @@ export const contractsRouter = router({
           page,
           perPage,
           userId,
+          folderId,
           teamId,
           period,
           orderBy: orderByColumn
