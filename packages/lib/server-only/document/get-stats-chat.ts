@@ -18,7 +18,7 @@ export type GetStatsInput = {
   folderId?: string;
 };
 
-export const getStats = async ({
+export const getStatsChat = async ({
   user,
   period,
   search = '',
@@ -121,7 +121,7 @@ const getCounts = async ({ user, createdAt, search, folderId }: GetCountsOption)
       where: {
         userId: user.id,
         createdAt,
-        useToChat: false,
+        useToChat: true,
         teamId: null,
         deletedAt: null,
         AND: [searchFilter, rootPageFilter, folderId ? { folderId } : {}],
@@ -135,8 +135,6 @@ const getCounts = async ({ user, createdAt, search, folderId }: GetCountsOption)
       },
       where: {
         status: ExtendedDocumentStatus.PENDING,
-        useToChat: false,
-
         recipients: {
           some: {
             email: user.email,
@@ -155,9 +153,8 @@ const getCounts = async ({ user, createdAt, search, folderId }: GetCountsOption)
         _all: true,
       },
       where: {
-        useToChat: false,
-
         createdAt,
+        useToChat: true,
         user: {
           email: {
             not: user.email,
@@ -166,8 +163,6 @@ const getCounts = async ({ user, createdAt, search, folderId }: GetCountsOption)
         OR: [
           {
             status: ExtendedDocumentStatus.PENDING,
-            useToChat: false,
-
             recipients: {
               some: {
                 email: user.email,
@@ -178,8 +173,6 @@ const getCounts = async ({ user, createdAt, search, folderId }: GetCountsOption)
           },
           {
             status: ExtendedDocumentStatus.COMPLETED,
-            useToChat: false,
-
             recipients: {
               some: {
                 email: user.email,
@@ -231,8 +224,7 @@ const getTeamCounts = async (options: GetTeamCountsOption) => {
     userId: userIdWhereClause,
     createdAt,
     teamId,
-    useToChat: false,
-
+    useToChat: true,
     deletedAt: null,
     folderId,
   };

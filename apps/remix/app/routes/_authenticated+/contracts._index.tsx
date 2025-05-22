@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
-import { ContractStatus, ExpansionPossibility } from '@prisma/client';
 import { useSearchParams } from 'react-router';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
+import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { type Contract, type IsrcSongs } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
 import { ZFindIsrcSongsInternalRequestSchema } from '@documenso/trpc/server/isrcsong-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
-import { createColumnsIsrc } from '@documenso/ui/primitives/column-custom';
-import { DataTableCustom } from '@documenso/ui/primitives/data-table-custom';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import ContractForm from '@documenso/ui/primitives/form-contracts';
-import MyForm from '@documenso/ui/primitives/form-custom-isrc';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
@@ -46,6 +43,8 @@ const ZSearchParamsSchema = ZFindIsrcSongsInternalRequestSchema.pick({
 export default function ContractsPage() {
   const [searchParams] = useSearchParams();
   const team = useOptionalCurrentTeam();
+
+  const documentRootPath = formatContractsPath(team?.url);
 
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
@@ -183,7 +182,7 @@ export default function ContractsPage() {
         endDate: newRecord.endDate ?? '',
         isPossibleToExpand: newRecord.isPossibleToExpand ?? '',
         possibleExtensionTime: newRecord.possibleExtensionTime ?? '',
-        status: newRecord.status ?? '',
+        status: newRecord.status ?? 'NO_ESPECIFICADO',
         documentId: newRecord.documentId ?? 0,
         summary: newRecord.summary ?? '',
       });
@@ -196,7 +195,13 @@ export default function ContractsPage() {
       setIsSubmitting(false);
     }
   };
-
+  const hanleOnNavegate = (row: Contract) => {
+    console.log('row', row);
+    const { documentId } = row;
+    const documentPath = `${documentRootPath}/${documentId}`;
+    console.log('documentRootPath', documentPath);
+    window.location.href = documentPath;
+  };
   const handleUpdate = async (updatedContracts: Contract) => {
     console.log('Updated User:', updatedContracts);
     console.log('id', updatedContracts.id);
@@ -205,10 +210,10 @@ export default function ContractsPage() {
       const { id } = await updateContractsMutation.mutateAsync({
         id: updatedContracts.id,
         title: updatedContracts.title ?? '',
-        artists: updatedContracts.artists ?? undefined,
+        artists: updatedContracts.artists ?? '',
         fileName: updatedContracts.fileName ?? undefined,
-        startDate: updatedContracts.startDate ?? undefined,
-        endDate: updatedContracts.endDate ?? undefined,
+        startDate: updatedContracts.startDate ?? '',
+        endDate: updatedContracts.endDate ?? '',
         isPossibleToExpand: updatedContracts.isPossibleToExpand ?? undefined,
         possibleExtensionTime: updatedContracts.possibleExtensionTime ?? undefined,
         status: updatedContracts.status ?? undefined,
@@ -307,6 +312,7 @@ export default function ContractsPage() {
           isLoadingError={isLoadingError}
           onAdd={openCreateDialog}
           onEdit={handleEdit}
+          onNavegate={hanleOnNavegate}
           onDelete={handleDelete}
         />
       )}

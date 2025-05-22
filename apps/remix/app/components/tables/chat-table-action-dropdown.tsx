@@ -20,7 +20,7 @@ import { downloadPDF } from '@documenso/lib/client-only/download-pdf';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { TDocumentMany as TDocumentRow } from '@documenso/lib/types/document';
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
-import { formatDocumentsPath } from '@documenso/lib/utils/teams';
+import { formatChatPath } from '@documenso/lib/utils/teams';
 import { trpc as trpcClient } from '@documenso/trpc/client';
 import {
   DropdownMenu,
@@ -69,7 +69,7 @@ export const ChatTableActionDropdown = ({
   const isCurrentTeamDocument = team && row.team?.url === team.url;
   const canManageDocument = Boolean(isOwner || isCurrentTeamDocument);
 
-  const documentsPath = formatDocumentsPath(team?.url);
+  const documentsPath = formatChatPath(team?.url);
   const formatPath = row.folderId
     ? `${documentsPath}/f/${row.folderId}/${row.id}/edit`
     : `${documentsPath}/${row.id}/edit`;

@@ -21,7 +21,6 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuShortcut,
   ContextMenuTrigger,
 } from './context-menu';
 import {
@@ -33,6 +32,7 @@ import {
 import { ScrollArea } from './scroll-area';
 import { Skeleton } from './skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 
 export type DataTableChildren<TData> = (_table: TTable<TData>) => React.ReactNode;
 
@@ -43,6 +43,8 @@ export interface DataTableProps<TData, TValue> {
   columnVisibility?: VisibilityState;
   data: TData[];
   onEdit?: (data: TData) => void;
+  onNavegate?: (data: TData) => void;
+
   onDelete?: (data: TData) => void;
   perPage?: number;
   currentPage?: number;
@@ -69,6 +71,7 @@ export function DataTable<TData, TValue>({
   error,
   onEdit,
   onDelete,
+  onNavegate,
   perPage,
   currentPage,
   totalPages,
@@ -204,6 +207,37 @@ export function DataTable<TData, TValue>({
                             >
                               Link
                             </a>
+                          ) : cell.column.id === 'fileName' && cell.getValue() ? (
+                            <>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger>{cell.getValue() as string}</TooltipTrigger>
+                                  <TooltipContent className="break-words">
+                                    {cell.getValue() as string}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </>
+                          ) : cell.column.id === 'summary' && cell.getValue() ? (
+                            <>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger>{cell.getValue() as string}</TooltipTrigger>
+                                  <TooltipContent className="max-w-40 break-words">
+                                    {cell.getValue() as string}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </>
+                          ) : cell.column.id === 'artists' && cell.getValue() ? (
+                            <>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger>{cell.getValue() as string}</TooltipTrigger>
+                                  <TooltipContent>{cell.getValue() as string}</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </>
                           ) : cell.column.id === 'trackPlayLink' && cell.getValue() ? (
                             <a
                               href={cell.getValue() as string}
@@ -244,7 +278,18 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         Edit
-                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                      </ContextMenuItem>
+                    )}
+
+                    {onNavegate && (
+                      <ContextMenuItem
+                        onClick={() => {
+                          console.log('Row clicked:', row.original);
+                          onNavegate(row.original);
+                        }}
+                        inset
+                      >
+                        View
                       </ContextMenuItem>
                     )}
 
@@ -257,7 +302,6 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         Delete
-                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
                       </ContextMenuItem>
                     )}
                   </ContextMenuContent>

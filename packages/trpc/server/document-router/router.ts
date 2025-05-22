@@ -23,14 +23,13 @@ import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document
 import { getDocumentWithDetailsById } from '@documenso/lib/server-only/document/get-document-with-details-by-id';
 import type { GetStatsInput } from '@documenso/lib/server-only/document/get-stats';
 import { getStats } from '@documenso/lib/server-only/document/get-stats';
+import { getStatsChat } from '@documenso/lib/server-only/document/get-stats-chat';
 import { moveDocumentToTeam } from '@documenso/lib/server-only/document/move-document-to-team';
 import { resendDocument } from '@documenso/lib/server-only/document/resend-document';
 import { searchDocumentsWithKeyword } from '@documenso/lib/server-only/document/search-documents-with-keyword';
 import { sendDocument } from '@documenso/lib/server-only/document/send-document';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 import { getExtractBodyContractTask } from '@documenso/lib/trigger';
-import { getFile } from '@documenso/lib/universal/upload/get-file';
-import { getURL } from '@documenso/lib/universal/upload/get-url';
 import {
   getPresignGetUrl,
   getPresignPostUrl,
@@ -258,7 +257,7 @@ export const documentRouter = router({
       }
 
       const [stats, documents] = await Promise.all([
-        getStats(getStatOptions),
+        getStatsChat(getStatOptions),
         findDocumentsUseToChat({
           userId: user.id,
           teamId,
