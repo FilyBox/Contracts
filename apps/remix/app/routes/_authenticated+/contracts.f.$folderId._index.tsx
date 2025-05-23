@@ -3,19 +3,25 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { type Contract } from '@documenso/prisma/client';
+import { ExtendedContractStatus } from '@documenso/prisma/types/extended-contracts';
 import { trpc } from '@documenso/trpc/react';
+import {
+  type TFindContractsInternalResponse,
+  ZFindContractsInternalRequestSchema,
+} from '@documenso/trpc/server/contracts-router/schema';
 import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
-import { ZFindIsrcSongsInternalRequestSchema } from '@documenso/trpc/server/isrcsong-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import ContractForm from '@documenso/ui/primitives/form-contracts';
+import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { CreateFolderDialogContract } from '~/components/dialogs/folder-create-dialog-contracts';
@@ -26,6 +32,7 @@ import { MoveToFolderDialog } from '~/components/dialogs/move-to-folder-dialog';
 import { DocumentDropZoneWrapper } from '~/components/general/document/document-drop-zone-wrapper';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { FolderCard } from '~/components/general/folder/folder-card';
+import { ContractsStatus } from '~/components/general/task/contracts-status';
 import { ContractsTable } from '~/components/tables/contracts-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -35,10 +42,11 @@ export function meta() {
   return appMetaTags('Contracts');
 }
 
-const ZSearchParamsSchema = ZFindIsrcSongsInternalRequestSchema.pick({
+const ZSearchParamsSchema = ZFindContractsInternalRequestSchema.pick({
   period: true,
   page: true,
   perPage: true,
+  status: true,
   query: true,
 });
 
@@ -65,7 +73,12 @@ export default function ContractsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
-
+  const [status, setStatus] = useState<TFindContractsInternalResponse['status']>({
+    [ExtendedContractStatus.VIGENTE]: 0,
+    [ExtendedContractStatus.NO_ESPECIFICADO]: 0,
+    [ExtendedContractStatus.FINALIZADO]: 0,
+    [ExtendedContractStatus.ALL]: 0,
+  });
   const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
   const { mutateAsync: unpinFolder } = trpc.folder.unpinFolder.useMutation();
 
@@ -80,6 +93,7 @@ export default function ContractsPage() {
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
     folderId: folderId,
+    status: findDocumentSearchParams.status,
   });
 
   const {
@@ -88,12 +102,34 @@ export default function ContractsPage() {
     isLoadingError: isDocumentsLoadingError,
     refetch: refetchDocuments,
   } = trpc.document.findAllDocumentsInternalUseToChat.useQuery({
-    ...findDocumentSearchParams,
+    query: findDocumentSearchParams.query,
+    period: findDocumentSearchParams.period,
+    page: findDocumentSearchParams.page,
+    perPage: findDocumentSearchParams.perPage,
+    // Omit the status parameter as it doesn't match the expected enum values
   });
+
   const createContractsMutation = trpc.contracts.createContracts.useMutation();
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
   const updateContractsMutation = trpc.contracts.updateContractsById.useMutation();
   const deleteContractsMutation = trpc.contracts.deleteContractsById.useMutation();
+
+  const getTabHref = (value: keyof typeof ExtendedContractStatus) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set('status', value);
+
+    if (value === ExtendedContractStatus.ALL) {
+      params.delete('status');
+    }
+
+    if (params.has('page')) {
+      params.delete('page');
+    }
+
+    return `${formatContractsPath(team?.url)}/f/${folderId}?${params.toString()}`;
+  };
+
   const { toast } = useToast();
 
   const {
@@ -135,9 +171,14 @@ export default function ContractsPage() {
   };
 
   useEffect(() => {
+    if (data?.status) {
+      setStatus(data.status);
+    }
+  }, [data?.status]);
+
+  useEffect(() => {
     if (data) {
-      console.log('Data:', data);
-      setData(data.data);
+      setData(data.documents.data);
     }
   }, [data]);
 
@@ -438,6 +479,33 @@ export default function ContractsPage() {
 
           <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
             <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4">
+              <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
+                <TabsList>
+                  {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
+                    return (
+                      <TabsTrigger
+                        key={value}
+                        className="hover:text-foreground min-w-[60px]"
+                        value={value}
+                        asChild
+                      >
+                        <Link
+                          to={getTabHref(value as keyof typeof ExtendedContractStatus)}
+                          preventScrollReset
+                        >
+                          <ContractsStatus status={value as ExtendedContractStatus} />
+
+                          {value !== 'ALL' && (
+                            <span className="ml-1 inline-block opacity-50">
+                              {status[value as ExtendedContractStatus]}
+                            </span>
+                          )}
+                        </Link>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+              </Tabs>
               <Button onClick={openCreateDialog}>Add Item</Button>
               <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
                 <DocumentSearch initialValue={findDocumentSearchParams.query} />
@@ -465,11 +533,19 @@ export default function ContractsPage() {
               </Button>
             </div> */}
           </Dialog>
-          {data && (!data?.data.length || data?.data.length === 0) ? (
+          {data && (!data?.documents.data.length || data?.documents.data.length === 0) ? (
             <GeneralTableEmptyState status={'ALL'} />
           ) : (
             <ContractsTable
-              data={data}
+              data={
+                data?.documents ?? {
+                  data: [],
+                  count: 0,
+                  currentPage: 1,
+                  perPage: 10,
+                  totalPages: 1,
+                }
+              }
               isLoading={isLoading}
               isLoadingError={isLoadingError}
               onAdd={openCreateDialog}

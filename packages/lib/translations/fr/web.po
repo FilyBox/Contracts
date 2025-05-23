@@ -901,6 +901,8 @@ msgstr ""
 #: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "All"
 msgstr "Tout"
@@ -3353,6 +3355,11 @@ msgstr "Le fichier ne peut pas dépasser {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} Mo"
 msgid "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 msgstr "La taille du fichier dépasse la limite de {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Finalizado"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
@@ -4173,6 +4180,14 @@ msgstr "Champ suivant"
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "No active drafts"
 msgstr "Pas de brouillons actifs"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado"
+msgstr ""
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado  "
+msgstr ""
 
 #: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
@@ -7347,6 +7362,11 @@ msgstr "Lecteurs"
 #: packages/lib/constants/recipient-roles.ts
 msgid "Viewing"
 msgstr "Consultation"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Vigente"
+msgstr ""
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 msgid "Waiting"

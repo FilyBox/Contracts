@@ -656,7 +656,7 @@ export const documentRouter = router({
       });
       if (documentData) {
         const { url } = await getPresignGetUrl(documentData.data || '');
-        const id = await getExtractBodyContractTask(userId, documentId, url);
+        const id = await getExtractBodyContractTask(userId, documentId, url, teamId);
 
         await prisma.document.update({
           where: { id: documentId },

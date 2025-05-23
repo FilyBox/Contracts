@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { ZContractsSchema } from '@documenso/lib/types/contracts';
 import { ZFindResultResponse, ZFindSearchParamsSchema } from '@documenso/lib/types/search-params';
+import { ExtendedContractStatus } from '@documenso/prisma/types/extended-contracts';
 
 // import { ExtendedIsrcSongs, ExtendedIsrcSongsType } from '@documenso/prisma/types/extended-IsrcSongs';
 
@@ -57,6 +58,12 @@ export type TFindContractsResponse = z.infer<typeof ZFindContractsResponseSchema
 
 export const ZFindContractsInternalResponseSchema = ZFindResultResponse.extend({
   data: ZContractsSchema.array(),
+  status: z.object({
+    [ExtendedContractStatus.FINALIZADO]: z.number(),
+    [ExtendedContractStatus.NO_ESPECIFICADO]: z.number(),
+    [ExtendedContractStatus.VIGENTE]: z.number(),
+    [ExtendedContractStatus.ALL]: z.number(),
+  }),
 });
 
 export type TFindContractsInternalResponse = z.infer<typeof ZFindContractsInternalResponseSchema>;

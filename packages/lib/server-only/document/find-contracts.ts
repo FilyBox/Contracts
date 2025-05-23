@@ -2,6 +2,10 @@ import type { Contract, Prisma } from '@prisma/client';
 import { DateTime } from 'luxon';
 
 import { prisma } from '@documenso/prisma';
+import {
+  ExtendedContractStatus,
+  ExtendedExpansionPossibility,
+} from '@documenso/prisma/types/extended-contracts';
 
 import { type FindResultResponse } from '../../types/search-params';
 
@@ -9,6 +13,8 @@ export type PeriodSelectorValue = '' | '7d' | '14d' | '30d';
 
 export type FindReleaseOptions = {
   userId: number;
+  status?: ExtendedContractStatus;
+  expansion?: ExtendedExpansionPossibility;
   teamId?: number;
   page?: number;
   folderId?: string;
@@ -30,6 +36,8 @@ export const findContracts = async ({
   perPage = 10,
   where,
   orderBy,
+  status,
+  expansion,
   period,
 
   query,
@@ -103,39 +111,45 @@ export const findContracts = async ({
       ...(folderId ? { folderId: folderId } : { folderId: null }),
     },
   };
+
+  if (status && status !== ExtendedContractStatus.ALL) {
+    Filter.status = status;
+  }
+
+  if (expansion && expansion !== ExtendedExpansionPossibility.ALL) {
+    Filter.isPossibleToExpand = expansion;
+  }
   if (team) {
+    const baseFilter = {
+      teamId: team.id,
+      ...(folderId ? { folderId: folderId } : { folderId: null }),
+      ...(status && status !== ExtendedContractStatus.ALL ? { status } : {}),
+    };
+
     Filter = {
       AND: {
         OR: team.teamEmail
           ? [
-              {
-                teamId: team.id,
-                ...(folderId ? { folderId: folderId } : { folderId: null }),
-              },
+              baseFilter,
               {
                 user: {
                   email: team.teamEmail.email,
                 },
               },
             ]
-          : [
-              {
-                teamId: team.id,
-                ...(folderId ? { folderId: folderId } : { folderId: null }),
-              },
-            ],
+          : [baseFilter],
       },
     };
   } else {
+    const baseFilter = {
+      userId,
+      teamId: null,
+      ...(folderId ? { folderId: folderId } : { folderId: null }),
+      ...(status && status !== ExtendedContractStatus.ALL ? { status } : {}),
+    };
     Filter = {
       AND: {
-        OR: [
-          {
-            userId,
-            teamId: null,
-            ...(folderId ? { folderId: folderId } : { folderId: null }),
-          },
-        ],
+        OR: [baseFilter],
       },
     };
   }

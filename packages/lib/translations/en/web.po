@@ -896,6 +896,8 @@ msgstr "Album"
 #: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "All"
 msgstr "All"
@@ -3348,6 +3350,11 @@ msgstr "File cannot be larger than {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB"
 msgid "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 msgstr "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Finalizado"
+msgstr "Finalizado"
+
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
@@ -4168,6 +4175,14 @@ msgstr "Next field"
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "No active drafts"
 msgstr "No active drafts"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado"
+msgstr "No Especificado"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado  "
+msgstr "No Especificado  "
 
 #: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
@@ -7344,6 +7359,11 @@ msgstr "Viewers"
 #: packages/lib/constants/recipient-roles.ts
 msgid "Viewing"
 msgstr "Viewing"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Vigente"
+msgstr "Vigente"
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 msgid "Waiting"

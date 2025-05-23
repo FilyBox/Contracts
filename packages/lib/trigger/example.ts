@@ -25,11 +25,13 @@ export const extractBodyContractTask = task({
     documentId: number;
   }) => {
     const documentId = payload.documentId;
+    const teamId = payload.teamId;
+    const userId = payload.userId;
+
+    console.log('teamId', teamId);
     console.log(`🔹 Buscando archivo con ID: ${documentId} en la base de datos...`);
     try {
       const decryptedId = payload.documentId;
-      const teamId = payload.teamId;
-      const userId = payload.userId;
       console.log(`🔹 Workspace ID: ${decryptedId} y ${payload.documentId}`);
       if (!decryptedId) {
         console.log(`⚠️ No se pudo desencriptar el ID: ${payload.documentId}`);
@@ -86,14 +88,14 @@ export const extractBodyContractTask = task({
       console.log('visibilityFilters', visibilityFilters);
       const documentWhereClause = {
         id: documentId,
-        // ...(teamId
-        //   ? {
-        //       OR: [
-        //         // { teamId, ...visibilityFilters },
-        //         { teamId },
-        //       ],
-        //     }
-        //   : { userId, teamId: null }),
+        ...(teamId
+          ? {
+              OR: [
+                // { teamId, ...visibilityFilters },
+                { teamId },
+              ],
+            }
+          : { userId, teamId: null }),
       };
       const documentBodyExists = await prisma.documentBodyExtracted.findFirst({
         where: { documentId: documentId },
@@ -138,7 +140,12 @@ export const extractBodyContractTask = task({
         documentBody.body !== 'En proceso' &&
         documentBody.body !== 'Formato no soportado.'
       ) {
-        extractedText = documentBody.body;
+        console.log('documentBody.body', documentBody.body);
+        if (documentBody.body === 'Formato no soportado.') {
+          extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
+        } else {
+          extractedText = documentBody.body;
+        }
       } else {
         extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
       }
@@ -340,6 +347,8 @@ este es el contrato: ${extractedText}
               endDate: parsedResponse.fechaFin,
               startDate: parsedResponse.fechaInicio,
               status: parsedResponse.estatusContrato,
+              teamId: teamId,
+              userId: userId,
               title: parsedResponse.tituloContrato,
               isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
               possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
@@ -364,6 +373,8 @@ este es el contrato: ${extractedText}
                 .join(', '),
               endDate: parsedResponse.fechaFin,
               startDate: parsedResponse.fechaInicio,
+              teamId: teamId,
+              userId: userId,
               status: parsedResponse.estatusContrato,
               title: parsedResponse.tituloContrato,
               isPossibleToExpand: parsedResponse.esPosibleExpandirlo,

@@ -2,7 +2,13 @@ import { ContractStatus, ExpansionPossibility } from '@prisma/client';
 import { z } from 'zod';
 
 import { findContracts } from '@documenso/lib/server-only/document/find-contracts';
+import { getContractStatus } from '@documenso/lib/server-only/document/get-contract-status';
+import { type GetContractsInput } from '@documenso/lib/server-only/document/get-contract-status';
 import { prisma } from '@documenso/prisma';
+import {
+  ExtendedContractStatus,
+  ExtendedExpansionPossibility,
+} from '@documenso/prisma/types/extended-contracts';
 
 import { authenticatedProcedure, router } from '../trpc';
 
@@ -110,7 +116,8 @@ export const contractsRouter = router({
   findContracts: authenticatedProcedure
     .input(
       z.object({
-        // userId: z.number(),
+        status: z.nativeEnum(ExtendedContractStatus).optional(),
+        expansion: z.nativeEnum(ExtendedExpansionPossibility).optional(),
         query: z.string().optional(),
         page: z.number().optional(),
         perPage: z.number().optional(),
@@ -143,6 +150,9 @@ export const contractsRouter = router({
         query,
         page,
         perPage,
+
+        status,
+        expansion,
         // release,
         folderId,
         orderByColumn,
@@ -152,13 +162,22 @@ export const contractsRouter = router({
       } = input;
       const { user, teamId } = ctx;
       const userId = user.id;
-
+      const getStatOptions: GetContractsInput = {
+        user,
+        period,
+        teamId,
+        folderId,
+        search: query,
+      };
+      const [stats] = await Promise.all([getContractStatus(getStatOptions)]);
       const [documents] = await Promise.all([
         findContracts({
           query,
           page,
           perPage,
           userId,
+          expansion,
+          status,
           folderId,
           teamId,
           period,
@@ -167,7 +186,7 @@ export const contractsRouter = router({
             : undefined,
         }),
       ]);
-      return documents;
+      return { documents, status: stats };
     }),
 
   findContractsByDocumentId: authenticatedProcedure
@@ -201,13 +220,11 @@ export const contractsRouter = router({
     )
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
-      console.log('updating isrc song', id, 'and data:', data);
 
       const olalo = await prisma.contract.update({
         where: { id },
         data,
       });
-      console.log('The cable si jala bato', olalo);
 
       return olalo;
     }),
