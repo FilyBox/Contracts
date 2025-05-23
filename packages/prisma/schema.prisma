@@ -278,7 +278,7 @@ model Contract {
   collectionPeriodDescription String?
   collectionPeriodDuration    String?
   contractType                ContractType?
-  documentId                  Int                           @unique
+  documentId                  Int
   createdAt                   DateTime                      @default(now())
   updatedAt                   DateTime                      @updatedAt
   summary                     String?                       @db.Text

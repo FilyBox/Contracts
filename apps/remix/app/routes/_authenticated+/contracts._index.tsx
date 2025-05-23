@@ -3,20 +3,25 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { Link } from 'react-router';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { type Contract, type IsrcSongs } from '@documenso/prisma/client';
+import { ExtendedContractStatus } from '@documenso/prisma/types/extended-contracts';
 import { trpc } from '@documenso/trpc/react';
+import {
+  type TFindContractsInternalResponse,
+  ZFindContractsInternalRequestSchema,
+} from '@documenso/trpc/server/contracts-router/schema';
 import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
-import { ZFindIsrcSongsInternalRequestSchema } from '@documenso/trpc/server/isrcsong-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import ContractForm from '@documenso/ui/primitives/form-contracts';
-import { Input } from '@documenso/ui/primitives/input';
+import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { CreateFolderDialogContract } from '~/components/dialogs/folder-create-dialog-contracts';
@@ -26,6 +31,7 @@ import { FolderSettingsDialog } from '~/components/dialogs/folder-settings-dialo
 import { MoveToFolderDialog } from '~/components/dialogs/move-to-folder-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { FolderCard } from '~/components/general/folder/folder-card';
+import { ContractsStatus } from '~/components/general/task/contracts-status';
 import { ContractsTable } from '~/components/tables/contracts-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -42,10 +48,11 @@ export function meta() {
   return appMetaTags('Contracts');
 }
 
-const ZSearchParamsSchema = ZFindIsrcSongsInternalRequestSchema.pick({
+const ZSearchParamsSchema = ZFindContractsInternalRequestSchema.pick({
   period: true,
   page: true,
   perPage: true,
+  status: true,
   query: true,
 });
 
@@ -63,7 +70,12 @@ export default function ContractsPage() {
   const [folderToDelete, setFolderToDelete] = useState<TFolderWithSubfolders | null>(null);
   const [isSettingsFolderOpen, setIsSettingsFolderOpen] = useState(false);
   const [folderToSettings, setFolderToSettings] = useState<TFolderWithSubfolders | null>(null);
-
+  const [status, setStatus] = useState<TFindContractsInternalResponse['status']>({
+    [ExtendedContractStatus.VIGENTE]: 0,
+    [ExtendedContractStatus.NO_ESPECIFICADO]: 0,
+    [ExtendedContractStatus.FINALIZADO]: 0,
+    [ExtendedContractStatus.ALL]: 0,
+  });
   const findDocumentSearchParams = useMemo(
     () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
     [searchParams],
@@ -73,6 +85,20 @@ export default function ContractsPage() {
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
+    status: findDocumentSearchParams.status,
+  });
+
+  const {
+    data: documentsData,
+    isLoading: isDocumentsLoading,
+    isLoadingError: isDocumentsLoadingError,
+    refetch: refetchDocuments,
+  } = trpc.document.findAllDocumentsInternalUseToChat.useQuery({
+    query: findDocumentSearchParams.query,
+    period: findDocumentSearchParams.period,
+    page: findDocumentSearchParams.page,
+    perPage: findDocumentSearchParams.perPage,
+    // Omit the status parameter as it doesn't match the expected enum values
   });
 
   const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
@@ -87,8 +113,6 @@ export default function ContractsPage() {
     parentId: null,
   });
 
-  console.log('foldersData', foldersData);
-
   const createContractsMutation = trpc.contracts.createContracts.useMutation();
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
   const updateContractsMutation = trpc.contracts.updateContractsById.useMutation();
@@ -101,6 +125,22 @@ export default function ContractsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
+
+  const getTabHref = (value: keyof typeof ExtendedContractStatus) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set('status', value);
+
+    if (value === ExtendedContractStatus.ALL) {
+      params.delete('status');
+    }
+
+    if (params.has('page')) {
+      params.delete('page');
+    }
+
+    return `${formatContractsPath(team?.url)}?${params.toString()}`;
+  };
 
   const mapExpansionPossibility = (value: string): string => {
     const normalized = value.trim().toUpperCase();
@@ -128,8 +168,14 @@ export default function ContractsPage() {
   };
 
   useEffect(() => {
+    if (data?.status) {
+      setStatus(data.status);
+    }
+  }, [data?.status]);
+
+  useEffect(() => {
     if (data) {
-      setData(data.data);
+      setData(data.documents.data);
     }
   }, [data]);
 
@@ -240,10 +286,8 @@ export default function ContractsPage() {
     }
   };
   const hanleOnNavegate = (row: Contract) => {
-    console.log('row', row);
     const { documentId } = row;
     const documentPath = `${documentRootPath}/${documentId}`;
-    console.log('documentRootPath', documentPath);
     window.location.href = documentPath;
   };
   const handleUpdate = async (updatedContracts: Contract) => {
@@ -309,31 +353,37 @@ export default function ContractsPage() {
 
   return (
     <div className="mx-auto flex max-w-screen-xl flex-col gap-y-8 px-4 md:px-8">
-      <div className="flex flex-1 items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center space-x-2 pl-0 hover:bg-transparent"
-          onClick={() => navigateToFolder(null)}
-        >
-          <HomeIcon className="h-4 w-4" />
-          <span>Home</span>
-        </Button>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-1 items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2 pl-0 hover:bg-transparent"
+            onClick={() => navigateToFolder(null)}
+          >
+            <HomeIcon className="h-4 w-4" />
+            <span>Home</span>
+          </Button>
 
-        {foldersData?.breadcrumbs.map((folder) => (
-          <div key={folder.id} className="flex items-center space-x-2">
-            <span>/</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center space-x-2 pl-1 hover:bg-transparent"
-              onClick={() => navigateToFolder(folder.id)}
-            >
-              <FolderIcon className="h-4 w-4" />
-              <span>{folder.name}</span>
-            </Button>
-          </div>
-        ))}
+          {foldersData?.breadcrumbs.map((folder) => (
+            <div key={folder.id} className="flex items-center space-x-2">
+              <span>/</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center space-x-2 pl-1 hover:bg-transparent"
+                onClick={() => navigateToFolder(folder.id)}
+              >
+                <FolderIcon className="h-4 w-4" />
+                <span>{folder.name}</span>
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-4 sm:flex-row sm:justify-end">
+          <CreateFolderDialogContract />
+        </div>
       </div>
 
       {isFoldersLoading ? (
@@ -425,12 +475,39 @@ export default function ContractsPage() {
           </Avatar>
         )}
 
-        <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
+        <h2 className="text-4xl font-semibold">
           <Trans>Contracts</Trans>
-        </h1>
+        </h2>
 
         <div className="flex w-full items-center justify-end gap-4">
-          <CreateFolderDialogContract />
+          <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
+            <TabsList>
+              {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
+                return (
+                  <TabsTrigger
+                    key={value}
+                    className="hover:text-foreground min-w-[60px]"
+                    value={value}
+                    asChild
+                  >
+                    <Link
+                      to={getTabHref(value as keyof typeof ExtendedContractStatus)}
+                      preventScrollReset
+                    >
+                      <ContractsStatus status={value as ExtendedContractStatus} />
+
+                      {value !== 'ALL' && (
+                        <span className="ml-1 inline-block opacity-50">
+                          {status[value as ExtendedContractStatus]}
+                        </span>
+                      )}
+                    </Link>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
+          {/* <CreateFolderDialogContract /> */}
           <Button onClick={openCreateDialog}>Add Item</Button>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
@@ -441,24 +518,33 @@ export default function ContractsPage() {
         <DialogContent className="sm:max-w-2xl">
           <div>
             <ContractForm
+              documents={documentsData || []}
               isSubmitting={isSubmitting}
               onSubmit={editingUser ? handleUpdate : handleCreate}
               initialData={editingUser}
             />
           </div>
         </DialogContent>
-        <div className="mb-4 flex items-center gap-2">
+        {/* <div className="mb-4 flex items-center gap-2">
           <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
           <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
             {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
           </Button>
-        </div>
+        </div> */}
       </Dialog>
-      {data && (!data?.data.length || data?.data.length === 0) ? (
+      {data && (!data?.documents.data.length || data?.documents.data.length === 0) ? (
         <GeneralTableEmptyState status={'ALL'} />
       ) : (
         <ContractsTable
-          data={data}
+          data={
+            data?.documents ?? {
+              data: [],
+              count: 0,
+              currentPage: 1,
+              perPage: 10,
+              totalPages: 1,
+            }
+          }
           isLoading={isLoading}
           isLoadingError={isLoadingError}
           onMoveDocument={(row: Contract) => {

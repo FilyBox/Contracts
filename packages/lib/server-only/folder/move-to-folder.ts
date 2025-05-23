@@ -84,7 +84,6 @@ export const moveToFolder = async ({
     const folder = await prisma.folder.findFirst({
       where: folderWhereClause,
     });
-    console.log('folder', folder);
 
     if (!folder) {
       throw new AppError(AppErrorCode.NOT_FOUND, {

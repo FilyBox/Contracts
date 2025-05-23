@@ -290,7 +290,7 @@ export default function DocumentsPage() {
             )}
 
             <h2 className="text-4xl font-semibold">
-              <Trans>Documents</Trans>
+              <Trans>Documents To Chat</Trans>
             </h2>
           </div>
 
@@ -298,7 +298,6 @@ export default function DocumentsPage() {
             <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
               <TabsList>
                 {[
-                  ExtendedDocumentStatus.INBOX,
                   ExtendedDocumentStatus.PENDING,
                   ExtendedDocumentStatus.COMPLETED,
                   ExtendedDocumentStatus.ERROR,
