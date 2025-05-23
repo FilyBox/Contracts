@@ -488,6 +488,10 @@ msgstr "<0>Typed</0> - A signature that is typed using a keyboard."
 msgid "<0>Uploaded</0> - A signature that is uploaded from a file."
 msgstr "<0>Uploaded</0> - A signature that is uploaded from a file."
 
+#: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
+msgid "<0>Uploader:</0> All"
+msgstr "<0>Uploader:</0> All"
+
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 msgid "<0>You are about to complete approving <1>\"{documentTitle}\"</1>.</0><2/> Are you sure?"
 msgstr "<0>You are about to complete approving <1>\"{documentTitle}\"</1>.</0><2/> Are you sure?"
@@ -2799,7 +2803,6 @@ msgstr "Document will be permanently deleted"
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id.edit.tsx
@@ -2826,6 +2829,10 @@ msgstr "Documents created from template"
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Documents Received"
 msgstr "Documents Received"
+
+#: apps/remix/app/routes/_authenticated+/chatspace._index.tsx
+msgid "Documents To Chat"
+msgstr "Documents To Chat"
 
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Documents Viewed"
@@ -5158,6 +5165,7 @@ msgstr "Save Template"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
+#: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx

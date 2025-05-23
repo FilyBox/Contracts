@@ -251,6 +251,8 @@ export default function ContractsPage() {
     window.location.href = documentPath;
   };
   const handleUpdate = async (updatedContracts: Contract) => {
+    console.log('Updated User:', updatedContracts);
+    console.log('id', updatedContracts.id);
     setIsSubmitting(true);
     try {
       const { id } = await updateContractsMutation.mutateAsync({
@@ -266,6 +268,8 @@ export default function ContractsPage() {
         documentId: updatedContracts.documentId ?? undefined,
         summary: updatedContracts.summary ?? undefined,
       });
+
+      console.log('Updated Record ID:', id);
 
       setData(
         dataIntial.map((record) => (record.id === updatedContracts.id ? updatedContracts : record)),

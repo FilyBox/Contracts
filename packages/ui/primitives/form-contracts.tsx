@@ -131,7 +131,9 @@ export default function ContractForm({
   }, [form, initialData]);
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
+    console.log('handleSubmit', values);
     try {
+      console.log('actualizando');
       setIsLoading(true);
       const dataToSubmit = initialData?.id ? { ...values, id: initialData.id } : values;
       await onSubmit(dataToSubmit as Contract);
@@ -498,9 +500,16 @@ export default function ContractForm({
               <Button
                 disabled={isLoading || isSubmitting}
                 loading={isLoading}
-                type="submit"
+                type="button"
                 size="lg"
                 className="flex-1"
+                onClick={() => {
+                  // Trigger validation before submitting
+                  void form.trigger().then((isValid) => {
+                    const values = form.getValues();
+                    void handleSubmit(values);
+                  });
+                }}
               >
                 {initialData?.id ? 'Actualizar' : 'Agregar'}
               </Button>

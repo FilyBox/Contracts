@@ -201,7 +201,7 @@ este es el contrato: ${extractedText}
           data: { status: 'COMPLETED' },
         });
 
-        const ai = new GoogleGenAI({ apiKey: 'AIzaSyABLg4odoWpJX7VpZVSNWLfhsJ07hH5KAE' });
+        const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY });
         // const responses = await ai.models.generateContent({
         //   model: 'gemini-2.0-flash-lite',
         //   contents: prompt,
