@@ -65,6 +65,7 @@ model User {
   avatarImageId         String?
   disabled              Boolean                 @default(false)
   releases              Releases[]
+  artists               Artist[]
   distributionStatement DistributionStatement[]
   accounts              Account[]
   sessions              Session[]
@@ -113,10 +114,9 @@ model UserProfile {
 
 model Artist {
   id            Int            @id @default(autoincrement())
-  name          String?
+  name          String?        @unique
   createdAt     DateTime       @default(now())
-  teamId        Int?
-  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  lpmId         Int?
   updatedAt     DateTime       @default(now()) @updatedAt
   roles         Role[]         @default([USER])
   avatarImageId String?
@@ -126,6 +126,12 @@ model Artist {
   ArtistProfile ArtistProfile?
   songs         Songs[]
   isrcSongs     IsrcSongs[] // Added for many-to-many relation with IsrcSongs
+  lpm           lpm[]
+  userId        Int?
+  teamId        Int?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
 }
 
 model ArtistProfile {
@@ -221,11 +227,11 @@ model lpm {
   continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song")
   trackPlayLink                       String?  @map("Track Play Link")
 
-  userId Int?
-  teamId Int?
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  userId  Int?
+  teamId  Int?
+  artists Artist[]
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team    Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
 }
 
 enum ContractStatus {
@@ -603,6 +609,7 @@ enum FolderType {
   DOCUMENT
   TEMPLATE
   CHAT
+  CONTRACT
 }
 
 model Folder {

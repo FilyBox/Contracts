@@ -49,7 +49,6 @@ export const FolderMoveDialog = ({
   onOpenChange,
 }: FolderMoveDialogProps) => {
   const { _ } = useLingui();
-
   const { toast } = useToast();
   const { mutateAsync: moveFolder } = trpc.folder.moveFolder.useMutation();
 

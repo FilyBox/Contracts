@@ -189,7 +189,6 @@ export const createDocument = async ({
       }
 
       const { url } = await getPresignGetUrl(documentData?.data);
-      console.log('url al crear documento', url);
       await getExtractBodyContractTask(userId, document.id, url, teamId);
 
       // await tx.documentAuditLog.create({

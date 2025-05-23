@@ -9,6 +9,7 @@ import { moveChatToFolder } from '@documenso/lib/server-only/folder/move-chat-to
 import { moveDocumentToFolder } from '@documenso/lib/server-only/folder/move-document-to-folder';
 import { moveFolder } from '@documenso/lib/server-only/folder/move-folder';
 import { moveTemplateToFolder } from '@documenso/lib/server-only/folder/move-template-to-folder';
+import { moveToFolder } from '@documenso/lib/server-only/folder/move-to-folder';
 import { pinFolder } from '@documenso/lib/server-only/folder/pin-folder';
 import { unpinFolder } from '@documenso/lib/server-only/folder/unpin-folder';
 import { updateFolder } from '@documenso/lib/server-only/folder/update-folder';
@@ -25,6 +26,7 @@ import {
   ZGetFoldersSchema,
   ZMoveDocumentToFolderSchema,
   ZMoveFolderSchema,
+  ZMoveRowToFolderSchema,
   ZMoveTemplateToFolderSchema,
   ZPinFolderSchema,
   ZSuccessResponseSchema,
@@ -107,7 +109,7 @@ export const folderRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { teamId, user } = ctx;
       const { name, parentId, type } = input;
-
+      console.log;
       if (parentId) {
         try {
           await getFolderById({
@@ -300,6 +302,48 @@ export const folderRouter = router({
       return {
         ...result,
         type: FolderType.CHAT,
+      };
+    }),
+
+  moveRowToFolder: authenticatedProcedure
+    .input(ZMoveRowToFolderSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { teamId, user } = ctx;
+      const { rowId, folderId, type } = input;
+      if (folderId !== null) {
+        try {
+          console.log('getFolderById');
+          const pepe = await getFolderById({
+            userId: user.id,
+            teamId,
+            folderId,
+            type: type,
+          });
+          console.log('pepe', pepe);
+        } catch (error) {
+          console.log('error', error);
+          console.log('pepe malo');
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Folder not found',
+          });
+        }
+        console.log('folderId', folderId);
+      }
+
+      const result = await moveToFolder({
+        userId: user.id,
+        teamId,
+        documentId: rowId,
+        folderId,
+        requestMetadata: ctx.metadata,
+        type: type,
+      });
+
+      console.log('result', result);
+      return {
+        ...result,
+        type: type,
       };
     }),
 

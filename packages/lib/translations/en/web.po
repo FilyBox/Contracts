@@ -1039,7 +1039,6 @@ msgstr "An error occurred while disabling the user."
 #: apps/remix/app/components/tables/documents-table-action-button.tsx
 #: apps/remix/app/components/tables/chatspace-table-action-button.tsx
 #: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
-#: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/general/share-document-download-button.tsx
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
 #: apps/remix/app/components/general/document/document-page-view-dropdown.tsx
@@ -1067,6 +1066,7 @@ msgstr "An error occurred while loading team members. Please try again later."
 msgid "An error occurred while loading the document."
 msgstr "An error occurred while loading the document."
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
@@ -1189,6 +1189,7 @@ msgstr "An unknown error occurred"
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
+#: apps/remix/app/components/dialogs/folder-create-dialog-contracts.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog-chat.tsx
 msgid "An unknown error occurred while creating the folder."
 msgstr "An unknown error occurred while creating the folder."
@@ -1571,6 +1572,7 @@ msgstr "Can prepare"
 #: apps/remix/app/components/dialogs/task-create-dialog.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
 #: apps/remix/app/components/dialogs/passkey-create-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-resend-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
@@ -1945,6 +1947,7 @@ msgid "Continue to login"
 msgstr "Continue to login"
 
 #: apps/remix/app/routes/_authenticated+/contracts._index.tsx
+#: apps/remix/app/routes/_authenticated+/contracts.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/contracts.$id._index.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
@@ -2672,6 +2675,7 @@ msgstr "Document Limit Exceeded!"
 msgid "Document metrics"
 msgstr "Document metrics"
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
@@ -3175,6 +3179,8 @@ msgstr "EPK"
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
 #: apps/remix/app/components/dialogs/template-duplicate-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
@@ -3336,6 +3342,7 @@ msgid "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 msgstr "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "Folder"
@@ -4010,6 +4017,7 @@ msgstr "Monthly Active Users: Users that had at least one of their documents com
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/template-move-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
@@ -4020,6 +4028,7 @@ msgstr "Move"
 msgid "Move \"{templateTitle}\" to a folder"
 msgstr "Move \"{templateTitle}\" to a folder"
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "Move Document to Folder"
@@ -5120,6 +5129,7 @@ msgid "Roles"
 msgstr "Roles"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "Root (No Folder)"
@@ -5192,6 +5202,7 @@ msgstr "Security activity"
 msgid "Select"
 msgstr "Select"
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "Select a folder to move this document to."
@@ -5604,7 +5615,6 @@ msgstr "Some signers have not been assigned a signature field. Please assign at 
 #: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
 #: apps/remix/app/components/tables/documents-table-action-button.tsx
 #: apps/remix/app/components/tables/chatspace-table-action-button.tsx
-#: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/tables/chat-table-action-dropdown.tsx
 #: apps/remix/app/components/general/share-document-download-button.tsx
 #: apps/remix/app/components/general/billing-portal-button.tsx
@@ -6098,6 +6108,7 @@ msgstr "The content to show in the banner, HTML is allowed"
 msgid "The direct link has been copied to your clipboard"
 msgstr "The direct link has been copied to your clipboard"
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "The document has been moved successfully."
@@ -6163,6 +6174,7 @@ msgstr "The folder you are trying to delete does not exist."
 msgid "The folder you are trying to move does not exist."
 msgstr "The folder you are trying to move does not exist."
 
+#: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/chat-move-to-folder-dialog.tsx
 msgid "The folder you are trying to move the document to does not exist."
@@ -6495,6 +6507,7 @@ msgstr "This field cannot be modified or deleted. When you share this template's
 
 #: apps/remix/app/components/dialogs/template-folder-create-dialog.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
+#: apps/remix/app/components/dialogs/folder-create-dialog-contracts.tsx
 #: apps/remix/app/components/dialogs/folder-create-dialog-chat.tsx
 msgid "This folder name is already taken."
 msgstr "This folder name is already taken."

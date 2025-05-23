@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import { CalendarIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { type lpm } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { cn } from '../lib/utils';
 import { Button } from './button';
+import { Calendar } from './calendar-year-picker';
 import { Card, CardContent } from './card';
 import {
   DropdownMenu,
@@ -28,6 +32,7 @@ import {
   FormMessage,
 } from './form';
 import { Input } from './input';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { ScrollArea } from './scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { Separator } from './separator';
@@ -286,7 +291,8 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
     { label: 'Álbum', value: 'Album' },
     { label: 'Single', value: 'Single' },
     { label: 'EP', value: 'EP' },
-    { label: 'Compilación', value: 'Compilation' },
+    { label: 'Music Video', value: 'Music Video' },
+    { label: 'Audio', value: 'Audio' },
   ];
 
   const trackTypeOptions = [
@@ -389,7 +395,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           name="productTitle"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Título del Producto</FormLabel>
+                              <FormLabel>Product Title</FormLabel>
                               <FormControl>
                                 <Input placeholder="Nombre del álbum o single" {...field} />
                               </FormControl>
@@ -436,11 +442,60 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           control={form.control}
                           name="releaseDate"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Fecha de Lanzamiento</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Release Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
                               <FormMessage />
                             </FormItem>
                           )}
@@ -473,11 +528,60 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           control={form.control}
                           name="originalReleaseDate"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Fecha de Lanzamiento Original</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Original Release Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
                               <FormMessage />
                             </FormItem>
                           )}
@@ -538,7 +642,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           name="productPriceTier"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Nivel de Precio (Opcional)</FormLabel>
+                              <FormLabel>Product Price Tier (Opcional)</FormLabel>
                               <FormControl>
                                 <Input placeholder="Ej: Standard, Budget, Premium" {...field} />
                               </FormControl>
@@ -806,7 +910,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           name="explicitLyrics"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Contenido Explícito</FormLabel>
+                              <FormLabel>Explicit Lyrics</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
@@ -834,7 +938,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         name="productPlayLink"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>productPlayLink(URL)</FormLabel>
+                            <FormLabel>Product Play Link (URL)</FormLabel>
                             <FormControl>
                               <Input placeholder="Enlace de Reproducción" {...field} />
                             </FormControl>
@@ -880,11 +984,58 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         control={form.control}
                         name="timedReleaseDate"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Fecha de Lanzamiento Programada</FormLabel>
-                            <FormControl>
-                              <Input type="datetime-local" {...field} />
-                            </FormControl>
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Timed Release Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'w-[240px] pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      (() => {
+                                        try {
+                                          // Handle different date formats safely
+                                          const date = new Date(field.value);
+                                          return isNaN(date.getTime())
+                                            ? 'Select date'
+                                            : format(date, 'dd/MM/yyyy');
+                                        } catch (error) {
+                                          return 'Select date';
+                                        }
+                                      })()
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={(() => {
+                                    try {
+                                      // Safely parse the date
+                                      const date = field.value ? new Date(field.value) : undefined;
+                                      return date && !isNaN(date.getTime()) ? date : undefined;
+                                    } catch (error) {
+                                      return undefined;
+                                    }
+                                  })()}
+                                  onSelect={(date) =>
+                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                  }
+                                  disabled={(date) => date < new Date('1900-01-01')}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -896,11 +1047,58 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         control={form.control}
                         name="timedReleaseMusicServices"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Fecha de Lanzamiento en Servicios de Música</FormLabel>
-                            <FormControl>
-                              <Input type="datetime-local" {...field} />
-                            </FormControl>
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Timed Release MusicServices</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'w-[240px] pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      (() => {
+                                        try {
+                                          // Handle different date formats safely
+                                          const date = new Date(field.value);
+                                          return isNaN(date.getTime())
+                                            ? 'Select date'
+                                            : format(date, 'dd/MM/yyyy');
+                                        } catch (error) {
+                                          return 'Select date';
+                                        }
+                                      })()
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={(() => {
+                                    try {
+                                      // Safely parse the date
+                                      const date = field.value ? new Date(field.value) : undefined;
+                                      return date && !isNaN(date.getTime()) ? date : undefined;
+                                    } catch (error) {
+                                      return undefined;
+                                    }
+                                  })()}
+                                  onSelect={(date) =>
+                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                  }
+                                  disabled={(date) => date < new Date('1900-01-01')}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -960,11 +1158,60 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           control={form.control}
                           name="lastProcessDate"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Última Fecha de Procesamiento</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Last Process Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
                               <FormMessage />
                             </FormItem>
                           )}
@@ -976,11 +1223,60 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           control={form.control}
                           name="importDate"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Fecha de Importación</FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
+                            <FormItem className="flex flex-col">
+                              <FormLabel>ImportDate</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
                               <FormMessage />
                             </FormItem>
                           )}
@@ -1036,7 +1332,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                       </div>
 
                       <div className="col-span-12 md:col-span-6">
-                        <FormField
+                        {/* <FormField
                           control={form.control}
                           name="lastModified"
                           render={({ field }) => (
@@ -1048,6 +1344,69 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                               <FormMessage />
                             </FormItem>
                           )}
+                        /> */}
+
+                        <FormField
+                          control={form.control}
+                          name="lastModified"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>lastModified</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
                       </div>
 
@@ -1056,11 +1415,60 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           control={form.control}
                           name="submittedAt"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Enviado En</FormLabel>
-                              <FormControl>
-                                <Input type="datetime-local" {...field} />
-                              </FormControl>
+                            <FormItem className="flex flex-col">
+                              <FormLabel>submittedAt</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) =>
+                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
+                                    }
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
                               <FormMessage />
                             </FormItem>
                           )}

@@ -25,6 +25,7 @@ export const ZFindIsrcSongsRequestSchema = ZFindSearchParamsSchema.extend({
 
 export const ZFindIsrcSongsInternalRequestSchema = ZFindIsrcSongsRequestSchema.extend({
   period: z.enum(['7d', '14d', '30d']).optional(),
+  folderId: z.string().optional(),
 });
 
 export const ZFindIsrcSongsResponseSchema = ZFindResultResponse.extend({
