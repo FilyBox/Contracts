@@ -1,3 +1,9 @@
+import {
+  ContractStatus,
+  ContractType,
+  ExpansionPossibility,
+  RetentionAndCollectionPeriod,
+} from '@prisma/client';
 import { z } from 'zod';
 
 import { ZContractsSchema } from '@documenso/lib/types/contracts';
@@ -19,12 +25,26 @@ export const ZGenericSuccessResponse = {
 } satisfies z.infer<typeof ZSuccessResponseSchema>;
 
 export const ZFindContractsRequestSchema = ZFindSearchParamsSchema.extend({
+  status: z.nativeEnum(ContractStatus).describe('Filter tasks by how it was created.').optional(),
+  type: z.nativeEnum(ContractType).describe('Filter tasks by how it was created.').optional(),
+  expansion: z
+    .nativeEnum(ExpansionPossibility)
+    .describe('Filter tasks by how it was created.')
+    .optional(),
+  retentionAndCollection: z.nativeEnum(RetentionAndCollectionPeriod),
   orderByColumn: z.enum(['createdAt']).optional(),
   orderByDirection: z.enum(['asc', 'desc']).describe('').default('desc'),
 });
 
 export const ZFindContractsInternalRequestSchema = ZFindContractsRequestSchema.extend({
   period: z.enum(['7d', '14d', '30d']).optional(),
+  status: z.nativeEnum(ContractStatus).describe('Filter tasks by how it was created.').optional(),
+  type: z.nativeEnum(ContractType).describe('Filter tasks by how it was created.').optional(),
+  expansion: z
+    .nativeEnum(ExpansionPossibility)
+    .describe('Filter tasks by how it was created.')
+    .optional(),
+  retentionAndCollection: z.nativeEnum(RetentionAndCollectionPeriod),
 });
 
 export const ZFindContractsResponseSchema = ZFindResultResponse.extend({

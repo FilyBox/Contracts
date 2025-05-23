@@ -4,17 +4,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ContractStatus, ExpansionPossibility } from '@prisma/client';
 import { format, isValid, parse } from 'date-fns';
 // Add import for parse and isValid
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { type Contract } from '@documenso/prisma/client';
+import { type Contract, type Document } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { cn } from '../lib/utils';
 import { Button } from './button';
-import { Calendar } from './calendar';
+import { Calendar } from './calendar-year-picker';
 import { Card, CardContent } from './card';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from './command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
 import { Input } from './input';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
@@ -37,13 +45,16 @@ const formSchema = z.object({
   possibleExtensionTime: z.string().optional().nullable(),
   status: z.nativeEnum(ContractStatus),
   documentId: z.number().optional(),
+  folderId: z.string().optional(),
   summary: z.string().optional().nullable(),
 });
 
 interface ContractFormProps {
   onSubmit: (data: Contract) => void;
+  folderId?: string;
   initialData: Contract | null;
   isSubmitting?: boolean;
+  documents: Document[];
 }
 
 const parseDate = (dateString: string | null | undefined) => {
@@ -79,13 +90,14 @@ const formatDateForApi = (date: Date | null | undefined) => {
 };
 
 export default function ContractForm({
+  documents,
+  folderId,
   onSubmit,
   initialData,
   isSubmitting = false,
 }: ContractFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,6 +106,7 @@ export default function ContractForm({
       artists: '',
       startDate: '',
       endDate: '',
+      folderId: folderId,
       isPossibleToExpand: ExpansionPossibility.NO_ESPECIFICADO,
       possibleExtensionTime: '',
       status: ContractStatus.NO_ESPECIFICADO,
@@ -121,9 +134,7 @@ export default function ContractForm({
     try {
       setIsLoading(true);
       const dataToSubmit = initialData?.id ? { ...values, id: initialData.id } : values;
-      console.log('Form submitted:', dataToSubmit);
       await onSubmit(dataToSubmit as Contract);
-      console.log('Form submitted successfully', values);
       toast({
         description: 'Contract data submitted successfully',
       });
@@ -165,19 +176,82 @@ export default function ContractForm({
 
             <ScrollArea className="h-[60vh] w-full">
               <hr className="-mx-6 my-4" />
-              <CardContent className="px-1 pb-0">
-                <fieldset disabled={isSubmitting} className="space-y-6">
+              <CardContent className="gap-4 px-1 pb-0">
+                <fieldset disabled={isSubmitting} className="">
                   <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="space-y-0">
                             <FormLabel>Título</FormLabel>
                             <FormControl>
                               <Input placeholder="Título del contrato" {...field} />
                             </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="documentId"
+                        render={({ field }) => (
+                          <FormItem className="flex h-full w-full flex-col space-y-2.5">
+                            <FormLabel>Document</FormLabel>
+                            <Popover modal={true}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    className={cn(
+                                      'justify-between',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value
+                                      ? documents.find((document) => document.id === field.value)
+                                          ?.id
+                                      : 'Select document'}
+                                    <ChevronsUpDown className="opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 p-0">
+                                <Command>
+                                  <CommandInput placeholder="Search document..." className="h-9" />
+                                  <CommandList>
+                                    <CommandEmpty>No document found.</CommandEmpty>
+                                    <CommandGroup>
+                                      {documents.map((document) => (
+                                        <CommandItem
+                                          value={document.title}
+                                          key={document.id}
+                                          onSelect={() => {
+                                            form.setValue('documentId', document.id);
+                                          }}
+                                        >
+                                          {document.title}
+                                          <Check
+                                            className={cn(
+                                              'ml-auto',
+                                              document.id === field.value
+                                                ? 'opacity-100'
+                                                : 'opacity-0',
+                                            )}
+                                          />
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -428,7 +502,7 @@ export default function ContractForm({
                 size="lg"
                 className="flex-1"
               >
-                {initialData?.id ? 'Actualizar Contrato' : 'Crear Contrato'}
+                {initialData?.id ? 'Actualizar' : 'Agregar'}
               </Button>
             </div>
           </Card>

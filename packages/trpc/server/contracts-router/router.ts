@@ -1,4 +1,4 @@
-import { ContractStatus, ExpansionPossibility, Release } from '@prisma/client';
+import { ContractStatus, ExpansionPossibility } from '@prisma/client';
 import { z } from 'zod';
 
 import { findContracts } from '@documenso/lib/server-only/document/find-contracts';
@@ -25,6 +25,7 @@ export const contractsRouter = router({
         artists: z.string(),
         startDate: z.string(),
         endDate: z.string(),
+        folderId: z.string().optional(),
         isPossibleToExpand: z
           .nativeEnum(ExpansionPossibility)
           .optional()
@@ -48,6 +49,7 @@ export const contractsRouter = router({
         possibleExtensionTime,
         status,
         documentId,
+        folderId,
         summary,
       } = input;
 
@@ -61,6 +63,7 @@ export const contractsRouter = router({
           isPossibleToExpand,
           possibleExtensionTime,
           status,
+          folderId,
           documentId,
           summary,
           userId,
@@ -80,6 +83,8 @@ export const contractsRouter = router({
             artists: z.string(),
             startDate: z.string(),
             endDate: z.string(),
+            folderId: z.string().optional(),
+
             isPossibleToExpand: z
               .nativeEnum(ExpansionPossibility)
               .optional()
@@ -169,7 +174,7 @@ export const contractsRouter = router({
     .input(z.object({ documentId: z.number() }))
     .query(async ({ input }) => {
       const { documentId } = input;
-      const contract = await prisma.contract.findUnique({
+      const contract = await prisma.contract.findFirst({
         where: { documentId },
       });
       return contract;

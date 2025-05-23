@@ -8,7 +8,7 @@ import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
-import { type Contract, type IsrcSongs } from '@documenso/prisma/client';
+import { type Contract } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
 import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
 import { ZFindIsrcSongsInternalRequestSchema } from '@documenso/trpc/server/isrcsong-router/schema';
@@ -16,7 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/av
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import ContractForm from '@documenso/ui/primitives/form-contracts';
-import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { CreateFolderDialogContract } from '~/components/dialogs/folder-create-dialog-contracts';
@@ -81,6 +80,15 @@ export default function ContractsPage() {
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
     folderId: folderId,
+  });
+
+  const {
+    data: documentsData,
+    isLoading: isDocumentsLoading,
+    isLoadingError: isDocumentsLoadingError,
+    refetch: refetchDocuments,
+  } = trpc.document.findAllDocumentsInternalUseToChat.useQuery({
+    ...findDocumentSearchParams,
   });
   const createContractsMutation = trpc.contracts.createContracts.useMutation();
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
@@ -173,6 +181,7 @@ export default function ContractsPage() {
           status,
           documentId: parseInt(item.documentId || '0'),
           summary: item.summary || undefined,
+          folderId: folderId || undefined,
         };
       });
 
@@ -211,6 +220,7 @@ export default function ContractsPage() {
     try {
       const { id } = await createContractsMutation.mutateAsync({
         title: newRecord.title ?? '',
+        folderId: folderId,
         fileName: newRecord.fileName ?? '',
         artists: newRecord.artists ?? '',
         startDate: newRecord.startDate ?? '',
@@ -441,18 +451,19 @@ export default function ContractsPage() {
             <DialogContent className="sm:max-w-2xl">
               <div>
                 <ContractForm
+                  documents={documentsData ?? []}
                   isSubmitting={isSubmitting}
                   onSubmit={editingUser ? handleUpdate : handleCreate}
                   initialData={editingUser}
                 />
               </div>
             </DialogContent>
-            <div className="mb-4 flex items-center gap-2">
+            {/* <div className="mb-4 flex items-center gap-2">
               <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
               <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
                 {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
               </Button>
-            </div>
+            </div> */}
           </Dialog>
           {data && (!data?.data.length || data?.data.length === 0) ? (
             <GeneralTableEmptyState status={'ALL'} />

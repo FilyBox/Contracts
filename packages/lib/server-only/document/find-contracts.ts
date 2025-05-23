@@ -67,13 +67,16 @@ export const findContracts = async ({
     OR: [
       {
         fileName: { contains: query, mode: 'insensitive' },
+        folderId: folderId || undefined,
       },
 
       {
         title: { contains: query, mode: 'insensitive' },
+        folderId: folderId || undefined,
       },
       {
         artists: { contains: query, mode: 'insensitive' },
+        folderId: folderId || undefined,
       },
     ],
   };
@@ -100,7 +103,6 @@ export const findContracts = async ({
       ...(folderId ? { folderId: folderId } : { folderId: null }),
     },
   };
-  console.log('folderId', folderId);
   if (team) {
     Filter = {
       AND: {

@@ -16,7 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/av
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import ContractForm from '@documenso/ui/primitives/form-contracts';
-import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { CreateFolderDialogContract } from '~/components/dialogs/folder-create-dialog-contracts';
@@ -75,6 +74,15 @@ export default function ContractsPage() {
     perPage: findDocumentSearchParams.perPage,
   });
 
+  const {
+    data: documentsData,
+    isLoading: isDocumentsLoading,
+    isLoadingError: isDocumentsLoadingError,
+    refetch: refetchDocuments,
+  } = trpc.document.findAllDocumentsInternalUseToChat.useQuery({
+    ...findDocumentSearchParams,
+  });
+
   const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
   const { mutateAsync: unpinFolder } = trpc.folder.unpinFolder.useMutation();
 
@@ -86,8 +94,6 @@ export default function ContractsPage() {
     type: FolderType.CONTRACT,
     parentId: null,
   });
-
-  console.log('foldersData', foldersData);
 
   const createContractsMutation = trpc.contracts.createContracts.useMutation();
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
@@ -240,15 +246,11 @@ export default function ContractsPage() {
     }
   };
   const hanleOnNavegate = (row: Contract) => {
-    console.log('row', row);
     const { documentId } = row;
     const documentPath = `${documentRootPath}/${documentId}`;
-    console.log('documentRootPath', documentPath);
     window.location.href = documentPath;
   };
   const handleUpdate = async (updatedContracts: Contract) => {
-    console.log('Updated User:', updatedContracts);
-    console.log('id', updatedContracts.id);
     setIsSubmitting(true);
     try {
       const { id } = await updateContractsMutation.mutateAsync({
@@ -264,8 +266,6 @@ export default function ContractsPage() {
         documentId: updatedContracts.documentId ?? undefined,
         summary: updatedContracts.summary ?? undefined,
       });
-
-      console.log('Updated Record ID:', id);
 
       setData(
         dataIntial.map((record) => (record.id === updatedContracts.id ? updatedContracts : record)),
@@ -309,31 +309,37 @@ export default function ContractsPage() {
 
   return (
     <div className="mx-auto flex max-w-screen-xl flex-col gap-y-8 px-4 md:px-8">
-      <div className="flex flex-1 items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center space-x-2 pl-0 hover:bg-transparent"
-          onClick={() => navigateToFolder(null)}
-        >
-          <HomeIcon className="h-4 w-4" />
-          <span>Home</span>
-        </Button>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-1 items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center space-x-2 pl-0 hover:bg-transparent"
+            onClick={() => navigateToFolder(null)}
+          >
+            <HomeIcon className="h-4 w-4" />
+            <span>Home</span>
+          </Button>
 
-        {foldersData?.breadcrumbs.map((folder) => (
-          <div key={folder.id} className="flex items-center space-x-2">
-            <span>/</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center space-x-2 pl-1 hover:bg-transparent"
-              onClick={() => navigateToFolder(folder.id)}
-            >
-              <FolderIcon className="h-4 w-4" />
-              <span>{folder.name}</span>
-            </Button>
-          </div>
-        ))}
+          {foldersData?.breadcrumbs.map((folder) => (
+            <div key={folder.id} className="flex items-center space-x-2">
+              <span>/</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center space-x-2 pl-1 hover:bg-transparent"
+                onClick={() => navigateToFolder(folder.id)}
+              >
+                <FolderIcon className="h-4 w-4" />
+                <span>{folder.name}</span>
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-4 sm:flex-row sm:justify-end">
+          <CreateFolderDialogContract />
+        </div>
       </div>
 
       {isFoldersLoading ? (
@@ -425,12 +431,12 @@ export default function ContractsPage() {
           </Avatar>
         )}
 
-        <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
+        <h2 className="text-4xl font-semibold">
           <Trans>Contracts</Trans>
-        </h1>
+        </h2>
 
         <div className="flex w-full items-center justify-end gap-4">
-          <CreateFolderDialogContract />
+          {/* <CreateFolderDialogContract /> */}
           <Button onClick={openCreateDialog}>Add Item</Button>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
@@ -441,18 +447,19 @@ export default function ContractsPage() {
         <DialogContent className="sm:max-w-2xl">
           <div>
             <ContractForm
+              documents={documentsData || []}
               isSubmitting={isSubmitting}
               onSubmit={editingUser ? handleUpdate : handleCreate}
               initialData={editingUser}
             />
           </div>
         </DialogContent>
-        <div className="mb-4 flex items-center gap-2">
+        {/* <div className="mb-4 flex items-center gap-2">
           <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
           <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
             {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
           </Button>
-        </div>
+        </div> */}
       </Dialog>
       {data && (!data?.data.length || data?.data.length === 0) ? (
         <GeneralTableEmptyState status={'ALL'} />
