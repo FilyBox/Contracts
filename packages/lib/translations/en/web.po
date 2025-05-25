@@ -426,6 +426,10 @@ msgstr "<0>{senderName}</0> has requested that you take ownership of the followi
 msgid "<0>{teamName}</0> has requested to use your email address for their team."
 msgstr "<0>{teamName}</0> has requested to use your email address for their team."
 
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
+msgid "<0>Artist:</0> All"
+msgstr "<0>Artist:</0> All"
+
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "<0>Click to upload</0> or drag and drop"
 msgstr "<0>Click to upload</0> or drag and drop"
@@ -5180,6 +5184,7 @@ msgstr "Save Template"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
 #: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx

@@ -431,6 +431,10 @@ msgstr "<0>{senderName}</0> hat angefordert, dass du das folgende Team übernimm
 msgid "<0>{teamName}</0> has requested to use your email address for their team."
 msgstr ""
 
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
+msgid "<0>Artist:</0> All"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "<0>Click to upload</0> or drag and drop"
 msgstr "<0>Klicken Sie hier, um hochzuladen</0> oder ziehen Sie die Datei per Drag & Drop"
@@ -5185,6 +5189,7 @@ msgstr "Vorlage speichern"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
 #: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx

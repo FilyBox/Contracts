@@ -27,6 +27,17 @@ export const ZFindLpmInternalRequestSchema = ZFindLpmRequestSchema.extend({
   period: z.enum(['7d', '14d', '30d']).optional(),
 });
 
+export const ZExtendedLpmSchema = ZLpmSchema.extend({
+  artist: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+    })
+    .array()
+    .optional(),
+  ZLpmSchema,
+});
+
 export const ZFindLpmResponseSchema = ZFindResultResponse.extend({
   data: ZLpmSchema.array(),
 });

@@ -12,6 +12,7 @@ import { cn } from '../lib/utils';
 import { Button } from './button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from './command';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { ScrollArea } from './scroll-area';
 
 type OptionValue = string | number | boolean | null;
 
@@ -103,7 +104,7 @@ export function MultiSelectCombobox<T = OptionValue>({
   const showClearButton = enableClearAllButton && selectedValues.length > 0;
 
   return (
-    <Popover open={open && !loading} onOpenChange={setOpen}>
+    <Popover modal={true} open={open && !loading} onOpenChange={setOpen}>
       <div className="relative">
         <PopoverTrigger asChild>
           <Button
@@ -155,19 +156,21 @@ export function MultiSelectCombobox<T = OptionValue>({
           <CommandEmpty>
             <Trans>No value found.</Trans>
           </CommandEmpty>
-          <CommandGroup>
-            {options.map((option, i) => (
-              <CommandItem key={i} onSelect={() => handleSelect(option.value)}>
-                <Check
-                  className={cn(
-                    'mr-2 h-4 w-4',
-                    selectedValues.includes(option.value) ? 'opacity-100' : 'opacity-0',
-                  )}
-                />
-                {option.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <ScrollArea className="h-96">
+            <CommandGroup>
+              {options.map((option, i) => (
+                <CommandItem key={i} onSelect={() => handleSelect(option.value)}>
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      selectedValues.includes(option.value) ? 'opacity-100' : 'opacity-0',
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </ScrollArea>
         </Command>
       </PopoverContent>
     </Popover>

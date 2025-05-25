@@ -19,6 +19,7 @@ export type FindReleaseOptions = {
   where?: Prisma.lpmWhereInput;
   period?: PeriodSelectorValue;
   query?: string;
+  artistIds?: number[];
 };
 
 export const findLpm = async ({
@@ -30,7 +31,7 @@ export const findLpm = async ({
   where,
   orderBy,
   period,
-
+  artistIds,
   query,
 }: FindReleaseOptions) => {
   let team = null;
@@ -65,18 +66,6 @@ export const findLpm = async ({
   const searchFilter: Prisma.lpmWhereInput = {
     OR: [{ productTitle: { contains: query, mode: 'insensitive' } }],
   };
-
-  // let filters: Prisma.ReleasesWhereInput | null = findReleasesFilter(release);
-  // // filters = findReleasesTypeFilter(type);
-  // if (filters === null) {
-  //   return {
-  //     data: [],
-  //     count: 0,
-  //     currentPage: 1,
-  //     perPage,
-  //     totalPages: 0,
-  //   };
-  // }
 
   let Filter: Prisma.lpmWhereInput = {
     AND: {
@@ -133,6 +122,16 @@ export const findLpm = async ({
     AND: whereAndClause,
   };
 
+  if (artistIds && artistIds.length > 0) {
+    whereClause.lpmArtists = {
+      some: {
+        artistId: {
+          in: artistIds,
+        },
+      },
+    };
+  }
+
   if (period) {
     const daysAgo = parseInt(period.replace(/d$/, ''), 10);
     const startOfPeriod = DateTime.now().minus({ days: daysAgo }).startOf('day');
@@ -146,6 +145,9 @@ export const findLpm = async ({
       where: whereClause,
       skip: Math.max(page - 1, 0) * perPage,
       take: perPage,
+      include: {
+        lpmArtists: true,
+      },
       orderBy: {
         [orderByColumn]: orderByDirection,
       },
