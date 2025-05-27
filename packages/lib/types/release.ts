@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 
 import { ReleasesSchema } from '@documenso/prisma/generated/zod/modelSchema/ReleasesSchema';
 import { TaskSchema } from '@documenso/prisma/generated/zod/modelSchema/TaskSchema';
@@ -10,6 +10,15 @@ import { UserSchema } from '@documenso/prisma/generated/zod/modelSchema/UserSche
  *
  * Mainly used for returning a single document from the API.
  */
+
+const ZArtistSchema = z.object({
+  id: z.number(),
+  artistName: z.string(),
+  artistId: z.number(),
+  createdAt: z.date(),
+  teamId: z.number().nullable(),
+  userId: z.number().nullable(),
+});
 export const ZReleaseSchema = ReleasesSchema.pick({
   id: true,
   date: true,
@@ -30,6 +39,8 @@ export const ZReleaseSchema = ReleasesSchema.pick({
   streamingLink: true,
   typeOfRelease: true,
   WebSiteUpdates: true,
+}).extend({
+  releasesArtists: z.array(ZArtistSchema).optional(),
 });
 
 export type TRelease = z.infer<typeof ZReleaseSchema>;

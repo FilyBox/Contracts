@@ -15,6 +15,8 @@ export type FindReleaseOptions = {
   userId: number;
   teamId?: number;
   page?: number;
+  artistIds?: number[];
+
   perPage?: number;
   orderBy?: {
     column: keyof Omit<Releases, 'release'>;
@@ -36,6 +38,7 @@ export const findRelease = async ({
   perPage = 10,
   where,
   orderBy,
+  artistIds,
   period,
 
   query,
@@ -73,7 +76,6 @@ export const findRelease = async ({
     OR: [
       { lanzamiento: { contains: query, mode: 'insensitive' } },
       { artist: { contains: query, mode: 'insensitive' } },
-      { assets: { contains: query, mode: 'insensitive' } },
     ],
   };
 
@@ -152,11 +154,24 @@ export const findRelease = async ({
     };
   }
 
+  if (artistIds && artistIds.length > 0) {
+    whereClause.releasesArtists = {
+      some: {
+        artistId: {
+          in: artistIds,
+        },
+      },
+    };
+  }
+
   const [data, count] = await Promise.all([
     prisma.releases.findMany({
       where: whereClause,
       skip: Math.max(page - 1, 0) * perPage,
       take: perPage,
+      include: {
+        releasesArtists: true,
+      },
       orderBy: {
         [orderByColumn]: orderByDirection,
       },

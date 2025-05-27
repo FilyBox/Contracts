@@ -4,14 +4,28 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router';
 
 import { useIsMounted } from '@documenso/lib/client-only/hooks/use-is-mounted';
 import { parseToIntegerArray } from '@documenso/lib/utils/params';
-import { trpc } from '@documenso/trpc/react';
 import { MultiSelectCombobox } from '@documenso/ui/primitives/multi-select-combobox';
 
 type DocumentsTableSenderFilterProps = {
   teamId: number;
 };
-
-export const TableArtistFilter = () => {
+type artistData =
+  | {
+      teamId: number | null;
+      id: number;
+      userId: number | null;
+      createdAt: Date;
+      artistId: number;
+      artistName: string;
+    }[]
+  | undefined;
+export const TableArtistFilter = ({
+  artistData,
+  isLoading,
+}: {
+  artistData: artistData;
+  isLoading: boolean;
+}) => {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -20,7 +34,7 @@ export const TableArtistFilter = () => {
 
   const artistIds = parseToIntegerArray(searchParams?.get('artistIds') ?? '');
 
-  const { data: artistData, isLoading } = trpc.lpm.findLpmUniqueArtists.useQuery();
+  // const { data: artistData, isLoading } = trpc.lpm.findLpmUniqueArtists.useQuery();
 
   const comboBoxOptions = (artistData ?? []).map((artist) => ({
     label: artist.artistName,

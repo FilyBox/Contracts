@@ -29,7 +29,7 @@ import { resendDocument } from '@documenso/lib/server-only/document/resend-docum
 import { searchDocumentsWithKeyword } from '@documenso/lib/server-only/document/search-documents-with-keyword';
 import { sendDocument } from '@documenso/lib/server-only/document/send-document';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
-import { getExtractBodyContractTask } from '@documenso/lib/trigger';
+import { getContractInfoTask, getExtractBodyContractTask } from '@documenso/lib/trigger';
 import {
   getPresignGetUrl,
   getPresignPostUrl,
@@ -644,14 +644,29 @@ export const documentRouter = router({
     }),
 
   retryChatDocument: authenticatedProcedure
-    .input(z.object({ documenDataId: z.string(), documentId: z.number() }))
+    .input(z.object({ documenDataId: z.string().optional(), documentId: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const { documenDataId, documentId } = input;
       const { teamId, user } = ctx;
       const userId = user.id;
+      console.log('documenDataId', documenDataId, 'documentId', documentId);
+
+      const document = await prisma.document.findUnique({
+        where: { id: documentId },
+        select: {
+          documentDataId: true,
+        },
+      });
+      if (!document) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Document not found.',
+        });
+      }
+
       const documentData = await prisma.documentData.findUnique({
         where: {
-          id: documenDataId,
+          id: document.documentDataId ?? documenDataId,
         },
       });
       if (documentData) {
@@ -666,6 +681,55 @@ export const documentRouter = router({
       }
 
       return documentData;
+    }),
+
+  retryContractData: authenticatedProcedure
+    .input(z.object({ documentId: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const { documentId } = input;
+      const { teamId, user } = ctx;
+      const userId = user.id;
+
+      let newPulicAccessToken = '';
+      let newId = '';
+
+      const document = await prisma.document.findUnique({
+        where: { id: documentId },
+        select: {
+          documentDataId: true,
+        },
+      });
+      if (!document) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Document not found.',
+        });
+      }
+
+      const documentData = await prisma.documentData.findUnique({
+        where: {
+          id: document.documentDataId,
+        },
+      });
+      if (documentData) {
+        const { url } = await getPresignGetUrl(documentData.data || '');
+        const { publicAccessToken, id } = await getContractInfoTask(
+          userId,
+          documentId,
+          url,
+          teamId,
+        );
+        newPulicAccessToken = publicAccessToken;
+        newId = id;
+        await prisma.document.update({
+          where: { id: documentId },
+          data: { status: 'PENDING' },
+        });
+        // const url = await getURL({ type: documentData.type, data: documentData.data });
+      }
+      // const { publicAccessToken, id } = await getContractInfoTask(userId, documentId, teamId);
+
+      return { publicAccessToken: newPulicAccessToken, id: newId };
     }),
 
   /**

@@ -1,8 +1,11 @@
+import { useState } from 'react';
+
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, TeamMemberRole } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
 import { Link, redirect } from 'react-router';
+import { useNavigate } from 'react-router';
 import { match } from 'ts-pattern';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
@@ -14,8 +17,9 @@ import { getRecipientsForDocument } from '@documenso/lib/server-only/recipient/g
 import { type TGetTeamByUrlResponse, getTeamByUrl } from '@documenso/lib/server-only/team/get-team';
 import { DocumentVisibility } from '@documenso/lib/types/document-visibility';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
+import { trpc } from '@documenso/trpc/react';
+import Component from '@documenso/ui/components/ai-card/ai-generation-card';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
-import { PDFViewer } from '@documenso/ui/primitives/pdf-viewer';
 
 import { DocumentRecipientLinkCopyDialog } from '~/components/general/document/document-recipient-link-copy-dialog';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
@@ -45,6 +49,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   if (!contract) {
     ('no contract found');
+    throw redirect(documentRootPath);
   }
 
   if (!documentId || Number.isNaN(documentId)) {
@@ -117,17 +122,29 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function DocumentPage() {
   const loaderData = useSuperLoaderData<typeof loader>();
-
+  const navigate = useNavigate();
+  const [isGenerating, setIsGenerating] = useState(false);
   const { _ } = useLingui();
   const { user } = useSession();
+  const retryDocument = trpc.document.retryContractData.useMutation();
 
   const { document, documentRootPath, fields, contract } = loaderData;
-  console.log('contract', contract);
   const { recipients, documentData, documentMeta } = document;
 
   // This was a feature flag. Leave to false since it's not ready.
   const isDocumentHistoryEnabled = false;
-
+  const handleRetry = async () => {
+    try {
+      setIsGenerating(true);
+      const { publicAccessToken, id } = await retryDocument.mutateAsync({
+        documentId: contract.documentId,
+      });
+      void navigate(`${documentRootPath}/${contract.documentId}/${id}/${publicAccessToken}/retry`);
+    } catch (error) {
+      console.error('Error navigating to folders:', error);
+      setIsGenerating(false);
+    }
+  };
   return (
     <div className="relative mx-auto -mt-4 w-full max-w-screen-xl px-4 md:px-8">
       {document.status === DocumentStatus.PENDING && (
@@ -156,11 +173,22 @@ export default function DocumentPage() {
           gradient
         >
           <CardContent className="p-2">
-            <PDFViewer document={document} key={documentData.id} documentData={documentData} />
+            {/* <PDFViewer document={document} key={documentData.id} documentData={documentData} /> */}
           </CardContent>
         </Card>
 
-        <Card
+        <div className="col-span-12 lg:fixed lg:right-8 lg:top-20 lg:col-span-6 xl:col-span-5">
+          {contract && (
+            <Component
+              generating={isGenerating}
+              handleRetry={handleRetry}
+              documentRootPath={documentRootPath}
+              contract={contract}
+            />
+          )}
+        </div>
+
+        {/* <Card
           className="col-span-12 rounded-xl before:rounded-xl lg:fixed lg:right-8 lg:top-20 lg:col-span-6 lg:max-w-[32rem] xl:col-span-7"
           gradient
         >
@@ -235,7 +263,7 @@ export default function DocumentPage() {
               </div>
             </section>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* <div className="right-8 top-20 col-span-12 flex max-h-screen w-full overflow-y-auto md:max-w-[32rem] lg:fixed lg:col-span-6 xl:col-span-5">
           <section className="border-border bg-widget flex w-full flex-col rounded-xl border pb-4 pt-6">

@@ -61,10 +61,10 @@ const formSchema = z.object({
     .nullable()
     .transform((val) => (val === null ? '' : val)),
   assets: z
-    .string()
+    .boolean()
     .optional()
     .nullable()
-    .transform((val) => (val === null ? '' : val)),
+    .transform((val) => (val === null ? false : val)),
   canvas: z
     .boolean()
     .optional()
@@ -131,7 +131,7 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
       release: undefined,
       uploaded: '',
       streamingLink: '',
-      assets: '',
+      assets: false,
       canvas: false,
       cover: false,
       audioWAV: false,
@@ -403,7 +403,7 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                       />
                     </div>
 
-                    <div className="col-span-12">
+                    {/* <div className="col-span-12">
                       <FormField
                         control={form.control}
                         name="assets"
@@ -417,13 +417,28 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                           </FormItem>
                         )}
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   <Separator />
 
                   {/* Checkboxes Section */}
                   <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="assets"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-2">
+                            <FormControl>
+                              <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <FormLabel className="font-normal">Assets</FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}

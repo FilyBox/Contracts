@@ -3,11 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
+import { z } from 'zod';
 
-import { useSession } from '@documenso/lib/client-only/providers/session';
 import type { findTasks } from '@documenso/lib/server-only/task/find-task';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
+import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formReleasePath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { type Releases } from '@documenso/prisma/client';
@@ -28,6 +29,7 @@ import {
   DialogTitle,
 } from '@documenso/ui/primitives/dialog';
 import FormReleases from '@documenso/ui/primitives/form-releases';
+import { Input } from '@documenso/ui/primitives/input';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
@@ -35,6 +37,7 @@ import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
 import { ReleaseType } from '~/components/general/task/release-type';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
+import { TableArtistFilter } from '~/components/tables/lpm-table-artist-filter';
 import { ReleasesTable } from '~/components/tables/releases-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
@@ -55,8 +58,9 @@ const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
   page: true,
   perPage: true,
   query: true,
+}).extend({
+  artistIds: z.string().transform(parseToIntegerArray).optional().catch([]),
 });
-
 export default function TasksPage() {
   const [searchParams] = useSearchParams();
 
@@ -95,7 +99,7 @@ export default function TasksPage() {
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const releasesRootPath = formReleasePath(team?.url);
-  const { user } = useSession();
+
   const { data, isLoading, isLoadingError, refetch } = trpc.release.findRelease.useQuery({
     query: findDocumentSearchParams.query,
     type: findDocumentSearchParams.type,
@@ -103,16 +107,25 @@ export default function TasksPage() {
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
+    artistIds: findDocumentSearchParams.artistIds,
   });
+
+  const { data: artistData, isLoading: artistDataloading } =
+    trpc.release.findReleasesUniqueArtists.useQuery();
+
+  const createManyReleasesMutation = trpc.release.createManyReleases.useMutation();
+
   const createMutation = trpc.release.createRelease.useMutation();
   const updateMutation = trpc.release.updateRelease.useMutation();
   const deleteMutation = trpc.release.deleteRelease.useMutation();
   const convertDatesMutation = trpc.release.convertDates.useMutation();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dataIntial, setData] = useState<TFindReleaseResponse>();
+  const [dataIntial, setData] = useState<TFindReleaseResponse | null>(null);
   const [editingUser, setEditingUser] = useState<Releases | null>(null);
   const { toast } = useToast();
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [type, setType] = useState<TFindReleaseInternalResponse['type']>({
     [ExtendedReleaseType.Album]: 0,
@@ -140,6 +153,161 @@ export default function TasksPage() {
     }
   }, [data?.types]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setCsvFile(e.target.files[0]);
+    }
+  };
+
+  const spanishMonths: Record<string, number> = {
+    enero: 0,
+    Enero: 0,
+    febrero: 1,
+    Febrero: 1,
+    marzo: 2,
+    Marzo: 2,
+    abril: 3,
+    Abril: 3,
+    mayo: 4,
+    Mayo: 4,
+    junio: 5,
+    Junio: 5,
+    julio: 6,
+    Julio: 6,
+    agosto: 7,
+    Agosto: 7,
+    septiembre: 8,
+    Septiembre: 8,
+    octubre: 9,
+    Octubre: 9,
+    noviembre: 10,
+    Noviembre: 10,
+    diciembre: 11,
+    Diciembre: 11,
+  };
+
+  function parseSpanishDate(dateString: string): Date | null {
+    if (!dateString) return null;
+
+    try {
+      // No need to normalize to lowercase since we have both cases in the mapping
+      const normalizedInput = dateString.trim();
+
+      // Match patterns like "24 de abril", "24 abril", "24 de Abril", etc.
+      const regex = /(\d+)(?:\s+de)?\s+([a-zA-Zé]+)(?:\s+de\s+(\d{4}))?/;
+      const match = normalizedInput.match(regex);
+
+      if (!match) return null;
+
+      const day = parseInt(match[1], 10);
+      const monthName = match[2];
+      // If year is provided use it, otherwise use current year
+      const year = match[3] ? parseInt(match[3], 10) : new Date().getFullYear();
+
+      if (!Object.prototype.hasOwnProperty.call(spanishMonths, monthName)) return null;
+      const month = spanishMonths[monthName];
+      const date = new Date(year, month, day);
+
+      return date;
+    } catch (error) {
+      console.error(`Failed to parse date: ${dateString}`, error);
+      return null;
+    }
+  }
+
+  // Format date to ISO string or in a custom format
+  function formatDate(date: Date | null): string {
+    if (!date) return '';
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  const handleCsvUpload = async () => {
+    if (!csvFile) return;
+
+    setIsSubmitting(true);
+    try {
+      const csvData = await parseCsvFile(csvFile);
+
+      const validatedData = csvData.map((item) => {
+        console.log('CSV Item:', item);
+        const parsedDate = parseSpanishDate(item['Fecha'] || '');
+        console.log("item['Fecha']:", item['Fecha']);
+        console.log('Parsed Date:', parsedDate);
+        const formattedDate = formatDate(parsedDate);
+
+        // Validate typeOfRelease to ensure it's one of the allowed values
+        let typeOfRelease: 'Sencillo' | 'Album' | 'EP' | undefined = undefined;
+        if (
+          item['Tipo de Release'] === 'Sencillo' ||
+          item['Tipo de Release'] === 'Album' ||
+          item['Tipo de Release'] === 'EP'
+        ) {
+          typeOfRelease = item['Tipo de Release'] as 'Sencillo' | 'Album' | 'EP';
+        }
+
+        // Validate release to ensure it's one of the allowed values
+        let release: 'Soft' | 'Focus' | undefined = undefined;
+        if (item['Release'] === 'Soft' || item['Release'] === 'Focus') {
+          release = item['Release'] as 'Soft' | 'Focus';
+        }
+
+        // Convert string values to boolean for boolean fields
+        const convertToBoolean = (value: string | undefined): boolean | undefined => {
+          if (value === undefined) return undefined;
+          return value.toLowerCase() === 'true' || value === '1' || value.toLowerCase() === 'yes';
+        };
+
+        return {
+          date: formattedDate || undefined,
+          artist: item['Artista'] || undefined,
+          lanzamiento: item['Lanzamiento'] || undefined,
+          typeOfRelease,
+          release,
+          uploaded: item['Uploaded'] || undefined,
+          streamingLink: item['Streaming Link'] || undefined,
+          assets: convertToBoolean(item['Assets']) || undefined,
+          canvas: convertToBoolean(item['Canvas']),
+          cover: convertToBoolean(item['Portada']), // Convert cover to boolean
+          audioWAV: convertToBoolean(item['Audio WAV']), // Convert audioWAV to boolean
+          video: convertToBoolean(item['Video']),
+          banners: convertToBoolean(item['Banners']),
+          pitch: convertToBoolean(item['Pitch']),
+
+          EPKUpdates: convertToBoolean(item['Actualización del EPK']),
+          WebSiteUpdates: convertToBoolean(item['Actualización del sitio web']),
+          Biography: convertToBoolean(item['Actualización de Biografía']),
+        };
+      });
+      // Filtrar cualquier objeto que esté completamente vacío (por si hay filas vacías en el CSV)
+      const filteredData = validatedData.filter((item) =>
+        Object.values(item).some((value) => value !== ''),
+      );
+
+      // Usar la mutación para crear múltiples registros
+      const result = await createManyReleasesMutation.mutateAsync({
+        releases: filteredData,
+      });
+
+      toast({
+        description: `Se han creado
+           ${result} 
+           registros exitosamente`,
+      });
+
+      // Refrescar los datos
+      await refetch();
+      setCsvFile(null);
+    } catch (error) {
+      console.error('Error al procesar el CSV:', error);
+      toast({
+        variant: 'destructive',
+        description: 'Error al procesar el archivo CSV: ',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleCreate = async (newRecord: Omit<Releases, 'id'>) => {
     try {
       const { id } = await createMutation.mutateAsync({
@@ -162,7 +330,6 @@ export default function TasksPage() {
         Biography: newRecord.Biography || undefined,
       });
       console.log('Created Record ID:', id);
-      await refetch();
       setIsDialogOpen(false);
       toast({
         description: 'Data added successfully',
@@ -173,38 +340,34 @@ export default function TasksPage() {
         description: 'Error adding data',
       });
       console.error('Error creating record:', error);
+    } finally {
+      await refetch();
     }
     console.log('New Record:', newRecord);
-    const record = { ...newRecord, id: Number(dataIntial?.data?.length ?? 0) + 1 };
-    if (dataIntial) {
-      setData({
-        ...dataIntial,
-        data: [...dataIntial.data, record],
-        count: dataIntial.count + 1,
-      });
-    }
+    // const record = { ...newRecord, id: Number(dataIntial?.releases?.length ?? 0) + 1 };
+
     setIsDialogOpen(false);
   };
 
-  const handleConvertDates = async () => {
-    try {
-      const result = await convertDatesMutation.mutateAsync();
-      toast({
-        title: 'Date Format Conversion',
-        description: `Successfully converted ${result.successCount} dates. Failed: ${result.failCount}`,
-      });
+  // const handleConvertDates = async () => {
+  //   try {
+  //     const result = await convertDatesMutation.mutateAsync();
+  //     toast({
+  //       title: 'Date Format Conversion',
+  //       description: `Successfully converted ${result.successCount} dates. Failed: ${result.failCount}`,
+  //     });
 
-      // Refresh the data
-      await refetch();
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to convert dates',
-      });
-      console.error('Error converting dates:', error);
-    }
-  };
+  //     // Refresh the data
+  //     await refetch();
+  //   } catch (error) {
+  //     toast({
+  //       variant: 'destructive',
+  //       title: 'Error',
+  //       description: 'Failed to convert dates',
+  //     });
+  //     console.error('Error converting dates:', error);
+  //   }
+  // };
 
   const handleUpdate = async (updated: Releases) => {
     console.log('Updated User:', updated);
@@ -233,12 +396,12 @@ export default function TasksPage() {
 
       console.log('Updated Record ID:', id);
 
-      if (dataIntial) {
-        setData({
-          ...dataIntial,
-          data: dataIntial.data.map((record) => (record.id === updated.id ? updated : record)),
-        });
-      }
+      // if (dataIntial) {
+      //   setData({
+      //     ...dataIntial,
+      //     data: dataIntial.data.map((record) => (record.id === updated.id ? updated : record)),
+      //   });
+      // }
       setIsDialogOpen(false);
       setEditingUser(null);
       toast({
@@ -250,6 +413,8 @@ export default function TasksPage() {
         description: 'Error updating data',
       });
       console.error('Error updating record:', error);
+    } finally {
+      await refetch();
     }
   };
 
@@ -261,28 +426,20 @@ export default function TasksPage() {
   const handleDelete = async (deleteData: TFindReleaseResponse['data'][number]) => {
     try {
       if (dataIntial) {
-        setData({
-          ...dataIntial,
-          data: dataIntial.data.filter((record) => record.id !== deleteData.id),
-          count: dataIntial.count - 1,
+        await deleteMutation.mutateAsync({ releaseId: deleteData.id });
+
+        toast({
+          description: 'Data deleted successfully',
         });
       }
-      await deleteMutation.mutateAsync({ releaseId: deleteData.id });
-
-      toast({
-        description: 'Data deleted successfully',
-      });
     } catch (error) {
-      setData((prevData) =>
-        prevData
-          ? { ...prevData, data: [...prevData.data, deleteData], count: prevData.count + 1 }
-          : undefined,
-      );
       toast({
         variant: 'destructive',
         description: 'Error deleting data',
       });
       console.error('Error deleting record:', error);
+    } finally {
+      await refetch();
     }
   };
 
@@ -397,6 +554,14 @@ export default function TasksPage() {
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <PeriodSelector />
           </div>
+          <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
+
+          <div className="mb-4 flex items-center gap-2">
+            <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
+            <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
+              {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
+            </Button>
+          </div>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
@@ -415,14 +580,12 @@ export default function TasksPage() {
         </div>
 
         <div className="mt w-full">
-          {data &&
-          data.releases.count === 0 &&
-          (!data?.releases.data.length || data?.releases.data.length === 0) ? (
+          {data && (!data?.releases.data.length || data?.releases.data.length === 0) ? (
             <GeneralTableEmptyState status={'ALL'} />
           ) : (
             // <p>sin data</p>
             <ReleasesTable
-              data={dataIntial}
+              data={data?.releases}
               isLoading={isLoading}
               isLoadingError={isLoadingError}
               onAdd={openCreateDialog}

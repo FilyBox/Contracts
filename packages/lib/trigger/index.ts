@@ -1,4 +1,4 @@
-import { extractBodyContractTask } from './example';
+import { contractInfoTask, extractBodyContractTask } from './example';
 
 interface Template {
   id: string;
@@ -41,4 +41,27 @@ export const getExtractBodyContractTask = async (
     { ttl: '24h' },
   );
   return id;
+};
+
+export const getContractInfoTask = async (
+  userId: number,
+  documentId: number,
+  urlDocument: string,
+  teamId?: number,
+) => {
+  const { publicAccessToken, id } = await contractInfoTask.trigger(
+    {
+      userId: userId,
+      documentId: documentId,
+      teamId: teamId,
+      urlDocument: urlDocument,
+    },
+    { ttl: '24h' },
+    {
+      publicAccessToken: {
+        expirationTime: '1hr',
+      },
+    },
+  );
+  return { publicAccessToken, id };
 };

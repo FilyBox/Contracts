@@ -1306,6 +1306,10 @@ msgstr "Artist"
 msgid "Artist created successfully"
 msgstr "Artist created successfully"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Artists"
+msgstr "Artists"
+
 #: apps/remix/app/components/general/task/tasks-list.tsx
 msgid "Asignados"
 msgstr "Asignados"
@@ -1959,6 +1963,7 @@ msgstr "Continue to login"
 #: apps/remix/app/routes/_authenticated+/contracts._index.tsx
 #: apps/remix/app/routes/_authenticated+/contracts.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/contracts.$id._index.tsx
+#: apps/remix/app/routes/_authenticated+/contracts.$id.$runId.$publicAccessToken.retry.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Contracts"

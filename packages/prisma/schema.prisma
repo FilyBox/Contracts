@@ -65,6 +65,7 @@ model User {
   avatarImageId            String?
   disabled                 Boolean                    @default(false)
   releases                 Releases[]
+  releasesArtists          releasesArtists[]
   artists                  Artist[]
   distributionStatement    DistributionStatement[]
   accounts                 Account[]
@@ -127,6 +128,20 @@ model lpmProductDisplayArtists {
   artist Artist @relation(fields: [artistId], references: [id])
 }
 
+model releasesArtists {
+  id         Int        @id @default(autoincrement())
+  artistId   Int
+  artistName String
+  Releases   Releases[]
+  createdAt  DateTime   @default(now())
+  userId     Int?
+  teamId     Int?
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
 model Artist {
   id                Int                        @id @default(autoincrement())
   name              String?                    @unique
@@ -138,6 +153,7 @@ model Artist {
   event             Event[]
   url               String?                    @unique
   ArtistProfile     ArtistProfile?
+  releasesArtists   releasesArtists[]
   lpmProductArtists lpmProductDisplayArtists[]
   songs             Songs[]
   isrcSongs         IsrcSongs[] // Added for many-to-many relation with IsrcSongs
@@ -352,31 +368,31 @@ model DistributionStatement {
 }
 
 model Releases {
-  id             Int            @id @default(autoincrement())
-  date           String?
-  artist         String?
-  lanzamiento    String?
-  typeOfRelease  TypeOfRelease?
-  release        Release?
-  uploaded       String?
-  streamingLink  String?
-  assets         String?
-  canvas         Boolean?
-  cover          Boolean?
-  audioWAV       Boolean?
-  video          Boolean?
-  banners        Boolean?
-  pitch          Boolean?
-  EPKUpdates     Boolean?
-  WebSiteUpdates Boolean?
-  Biography      Boolean?
-  userId         Int?
-  teamId         Int?
-
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  team      Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id              Int               @id @default(autoincrement())
+  date            String?
+  artist          String?
+  lanzamiento     String?
+  typeOfRelease   TypeOfRelease?
+  release         Release?
+  uploaded        String?
+  streamingLink   String?
+  assets          Boolean?
+  canvas          Boolean?
+  cover           Boolean?
+  audioWAV        Boolean?
+  video           Boolean?
+  banners         Boolean?
+  pitch           Boolean?
+  EPKUpdates      Boolean?
+  WebSiteUpdates  Boolean?
+  Biography       Boolean?
+  userId          Int?
+  teamId          Int?
+  releasesArtists releasesArtists[]
+  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team            Team?             @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
 }
 
 model IsrcSongs {
@@ -1091,6 +1107,7 @@ model Team {
   subscription             Subscription?
   distributionStatement    DistributionStatement[]
   releases                 Releases[]
+  releasesArtists          releasesArtists[]
   contract                 Contract[]
   documents                Document[]
   tasks                    Task[]

@@ -38,9 +38,9 @@ const formSchema = z.object({
   id: z.number().optional(),
   title: z.string().min(1, { message: 'Title is required' }),
   fileName: z.string().optional().nullable(),
-  artists: z.string().min(1, { message: 'Artists are required' }),
-  startDate: z.string().min(1, { message: 'Start date is required' }),
-  endDate: z.string().min(1, { message: 'End date is required' }),
+  artists: z.string().optional().nullable(),
+  startDate: z.string().optional().nullable(),
+  endDate: z.string().optional().nullable(),
   isPossibleToExpand: z.nativeEnum(ExpansionPossibility),
   possibleExtensionTime: z.string().optional().nullable(),
   status: z.nativeEnum(ContractStatus),
@@ -288,7 +288,11 @@ export default function ContractForm({
                           <FormItem>
                             <FormLabel>Artistas</FormLabel>
                             <FormControl>
-                              <Input placeholder="Nombres de los artistas" {...field} />
+                              <Input
+                                placeholder="Nombres de los artistas"
+                                {...field}
+                                value={field.value || ''}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
