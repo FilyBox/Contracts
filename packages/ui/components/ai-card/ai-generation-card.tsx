@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { type Contract } from '@documenso/prisma/client';
-import { Button } from '@documenso/ui/primitives/button';
 
 import { Card, CardContent } from '../../primitives/card';
 import { ScrollArea } from '../../primitives/scroll-area';
@@ -228,7 +227,7 @@ export default function Component({
               </AnimatePresence>
             </motion.section>
 
-            <AnimatePresence>
+            {/* <AnimatePresence>
               <motion.div
                 className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700"
                 initial={{ opacity: 0, y: 20 }}
@@ -248,7 +247,7 @@ export default function Component({
                   Generar de nuevo
                 </Button>
               </motion.div>
-            </AnimatePresence>
+            </AnimatePresence> */}
           </CardContent>
         </Card>
       </motion.div>

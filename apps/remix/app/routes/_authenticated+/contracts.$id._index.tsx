@@ -20,6 +20,7 @@ import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 import Component from '@documenso/ui/components/ai-card/ai-generation-card';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
+import PDFViewer from '@documenso/ui/primitives/pdf-viewer';
 
 import { DocumentRecipientLinkCopyDialog } from '~/components/general/document/document-recipient-link-copy-dialog';
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
@@ -173,7 +174,7 @@ export default function DocumentPage() {
           gradient
         >
           <CardContent className="p-2">
-            {/* <PDFViewer document={document} key={documentData.id} documentData={documentData} /> */}
+            <PDFViewer document={document} key={documentData.id} documentData={documentData} />
           </CardContent>
         </Card>
 
