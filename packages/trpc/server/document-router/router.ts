@@ -283,6 +283,21 @@ export const documentRouter = router({
       };
     }),
 
+  findAllDocumentsInternalUseToChat: authenticatedProcedure
+    .input(ZFindDocumentsInternalRequestSchema)
+    .query(async ({ input, ctx }) => {
+      const { user, teamId } = ctx;
+      const userId = user.id;
+
+      const documentsChat = await prisma.document.findMany({
+        where: {
+          ...(!teamId ? { userId, teamId: null } : { teamId }),
+          useToChat: true,
+        },
+      });
+      return documentsChat;
+    }),
+
   /**
    * @public
    *
@@ -634,23 +649,20 @@ export const documentRouter = router({
       const { documenDataId, documentId } = input;
       const { teamId, user } = ctx;
       const userId = user.id;
-      console.log('documenDataId', documenDataId);
       const documentData = await prisma.documentData.findUnique({
         where: {
           id: documenDataId,
         },
       });
-      console.log('documentData', documentData);
       if (documentData) {
         const { url } = await getPresignGetUrl(documentData.data || '');
-        const id = await getExtractBodyContractTask(userId, documentId, url);
+        const id = await getExtractBodyContractTask(userId, documentId, url, teamId);
 
         await prisma.document.update({
           where: { id: documentId },
           data: { status: 'PENDING' },
         });
         // const url = await getURL({ type: documentData.type, data: documentData.data });
-        console.log('url', url);
       }
 
       return documentData;

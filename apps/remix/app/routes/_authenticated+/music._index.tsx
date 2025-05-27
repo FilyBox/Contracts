@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { useSearchParams } from 'react-router';
+import { z } from 'zod';
 
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
+import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { type lpm } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
 import { ZFindLpmInternalRequestSchema } from '@documenso/trpc/server/lpm-router/schema';
@@ -19,6 +21,7 @@ import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { LpmTable } from '~/components/tables/lpm-custom-table';
+import { TableArtistFilter } from '~/components/tables/lpm-table-artist-filter';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
 
@@ -29,6 +32,8 @@ const ZSearchParamsSchema = ZFindLpmInternalRequestSchema.pick({
   page: true,
   perPage: true,
   query: true,
+}).extend({
+  artistIds: z.string().transform(parseToIntegerArray).optional().catch([]),
 });
 
 export function meta() {
@@ -45,10 +50,12 @@ export default function TablePage() {
   );
   const { data, isLoading, isLoadingError, refetch } = trpc.lpm.findLpm.useQuery({
     query: findDocumentSearchParams.query,
+    artistIds: findDocumentSearchParams.artistIds,
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
   });
+
   const createManyMusicMutation = trpc.lpm.createManyMusic.useMutation();
 
   const createLpmMutation = trpc.lpm.createLpm.useMutation();
@@ -244,7 +251,7 @@ export default function TablePage() {
 
       toast({
         description: `Se han creado
-         ${result} 
+         ${result.length} 
          registros exitosamente`,
       });
 
@@ -487,6 +494,7 @@ export default function TablePage() {
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
             </Button>
           </div>
+          <TableArtistFilter />
           <Button onClick={openCreateDialog}>Add Item</Button>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
@@ -513,26 +521,9 @@ export default function TablePage() {
         </DialogContent>
       </Dialog>
 
-      {/* <Input
-                  placeholder="Filter..."
-                  value={(table.getColumn('trackName')?.getFilterValue() as string) ?? ''}
-                  onChange={(event) => table.getColumn('trackName')?.setFilterValue(event.target.value)}
-                  className="max-w-sm"
-                /> */}
-
       {data && (!data?.data.length || data?.data.length === 0) ? (
         <GeneralTableEmptyState status={'ALL'} />
       ) : (
-        // <p>sin data</p>
-        // <LpmTable
-        //   columns={columns}
-        //   data={dataIntial}
-        //   datafull={data || { data: [], count: 0, currentPage: 1, perPage: 10, totalPages: 0 }}
-        //   onAdd={openCreateDialog}
-        //   onEdit={handleEdit}
-        //   onDelete={handleDelete}
-        // />
-
         <LpmTable
           data={data}
           isLoading={isLoading}

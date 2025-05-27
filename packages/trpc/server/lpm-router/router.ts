@@ -3,7 +3,6 @@ import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { findLpm } from '@documenso/lib/server-only/document/find-lpm';
-import { createArtist } from '@documenso/lib/server-only/user/create-artist';
 import { prisma } from '@documenso/prisma';
 
 import { authenticatedProcedure, router } from '../trpc';
@@ -234,46 +233,117 @@ export const lpmRouter = router({
       const { music } = input;
       const { user, teamId } = ctx;
       const userId = user.id;
-      const artistsArray = music.map((item) => {
-        // Split by comma and trim whitespace from each artist name
-        return item.trackDisplayArtist.split(',').map((artist) => artist.trim());
+
+      // const allArtists = new Set<string>();
+      // const artistsArrayByTrack = music.map((item) => {
+      //   // Split by comma and trim whitespace from each artist name
+      //   const artists = item.trackDisplayArtist.split(',').map((artist) => artist.trim());
+      //   // Add each artist to the set of all artists
+      //   artists.forEach((artist) => allArtists.add(artist));
+      //   return artists;
+      // });
+
+      // // Convert set to array to get the unique artists list
+      // const uniqueArtistsArray = Array.from(allArtists);
+
+      // const existingArtists = await prisma.artist.findMany({
+      //   where: {
+      //     name: {
+      //       in: uniqueArtistsArray,
+      //     },
+      //   },
+      // });
+      // const existingArtistMap = new Map(existingArtists.map((artist) => [artist.name, artist]));
+      // const artistsToCreate = uniqueArtistsArray.filter((artist) => !existingArtistMap.has(artist));
+      // let createdArtists: Artist[] = [];
+      // if (artistsToCreate.length > 0) {
+      //   createdArtists = await prisma.$transaction(
+      //     artistsToCreate.map((artist) =>
+      //       prisma.artist.create({ data: { name: artist, userId, teamId } }),
+      //     ),
+      //   );
+      // }
+
+      // // Merge existing and newly created artists
+      // const allArtistsToUse = [...existingArtists, ...createdArtists];
+
+      const pepe = await prisma.$transaction(async (prismaClient) => {
+        const results = [];
+        for (const file of music) {
+          const result = await prismaClient.lpm.create({
+            data: {
+              ...file,
+              userId: userId,
+              ...(teamId ? { teamId } : {}),
+              lpmArtists: {
+                create: file.trackDisplayArtist.split(',').map((artistName) => ({
+                  artistName: artistName.trim(),
+                  userId,
+                  ...(teamId ? { teamId } : {}),
+                  artist: {
+                    connectOrCreate: {
+                      where: { name: artistName.trim() },
+                      create: {
+                        name: artistName.trim(),
+                        userId,
+                        ...(teamId ? { teamId } : {}),
+                      },
+                    },
+                  },
+                })),
+              },
+            },
+          });
+          results.push(result);
+        }
+        return results;
       });
+      // const createdMusic = await Promise.all(
+      //   music.map((file) =>
+      //     prisma.lpm.create({
+      //       data: {
+      //         ...file,
+      //         userId: userId,
+      //         teamId: teamId,
+      //         lpmArtists: {
+      //           create: file.trackDisplayArtist.split(',').map((artistName) => ({
+      //             artistName: artistName.trim(),
+      //             artist: {
+      //               connectOrCreate: {
+      //                 where: { name: artistName.trim() },
+      //                 create: {
+      //                   name: artistName.trim(),
+      //                   userId,
+      //                   teamId,
+      //                 },
+      //               },
+      //             },
+      //           })),
+      //         },
+      //       },
+      //     }),
+      //   ),
+      // );
 
-      // Extract artists from all tracks and deduplicate
-      const allArtists = new Set<string>();
-      const artistsArrayByTrack = music.map((item) => {
-        // Split by comma and trim whitespace from each artist name
-        const artists = item.trackDisplayArtist.split(',').map((artist) => artist.trim());
-        // Add each artist to the set of all artists
-        artists.forEach((artist) => allArtists.add(artist));
-        return artists;
-      });
-
-      // Convert set to array to get the unique artists list
-      const uniqueArtistsArray = Array.from(allArtists);
-
-      const musicWithUserInfo = music.map((item) => ({
-        ...item,
-        userId,
-        productGenre: item.productGenre.replace(/\s*\/\s*/g, ', '),
-        ...(teamId ? { teamId } : {}),
-      }));
-
-      const createdMusic = await prisma.lpm.createMany({
-        data: musicWithUserInfo,
-      });
-
-      const [createdArtists] = await Promise.all(
-        uniqueArtistsArray.map((artist) =>
-          createArtist({
-            name: artist,
-            userId,
-            teamId,
-          }),
-        ),
-      );
-      return createdMusic;
+      return pepe;
     }),
+
+  findLpmUniqueArtists: authenticatedProcedure.query(async ({ ctx }) => {
+    const { user, teamId } = ctx;
+    const userId = user.id;
+
+    const uniqueArtists = await prisma.lpmProductDisplayArtists.findMany({
+      where: {
+        ...(teamId ? { teamId } : { teamId: null, userId }),
+      },
+      distinct: ['artistName'],
+      orderBy: {
+        artistName: 'asc',
+      },
+    });
+
+    return uniqueArtists;
+  }),
 
   findLpmById: authenticatedProcedure
     .input(z.object({ id: z.number() }))
@@ -299,6 +369,7 @@ export const lpmRouter = router({
         orderByColumn: z
           .enum(['id', 'lanzamiento', 'typeOfRelease', 'createdAt', 'updatedAt'])
           .optional(),
+        artistIds: z.array(z.number()).optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -308,6 +379,7 @@ export const lpmRouter = router({
         perPage,
         // release,
         orderByColumn,
+        artistIds,
         orderByDirection,
         period,
         // orderBy = 'createdAt',
@@ -319,6 +391,8 @@ export const lpmRouter = router({
       const [documents] = await Promise.all([
         findLpm({
           query,
+
+          artistIds,
           page,
           perPage,
           userId,

@@ -25,11 +25,13 @@ export const extractBodyContractTask = task({
     documentId: number;
   }) => {
     const documentId = payload.documentId;
+    const teamId = payload.teamId;
+    const userId = payload.userId;
+
+    console.log('teamId', teamId);
     console.log(`🔹 Buscando archivo con ID: ${documentId} en la base de datos...`);
     try {
       const decryptedId = payload.documentId;
-      const teamId = payload.teamId;
-      const userId = payload.userId;
       console.log(`🔹 Workspace ID: ${decryptedId} y ${payload.documentId}`);
       if (!decryptedId) {
         console.log(`⚠️ No se pudo desencriptar el ID: ${payload.documentId}`);
@@ -86,14 +88,14 @@ export const extractBodyContractTask = task({
       console.log('visibilityFilters', visibilityFilters);
       const documentWhereClause = {
         id: documentId,
-        // ...(teamId
-        //   ? {
-        //       OR: [
-        //         // { teamId, ...visibilityFilters },
-        //         { teamId },
-        //       ],
-        //     }
-        //   : { userId, teamId: null }),
+        ...(teamId
+          ? {
+              OR: [
+                // { teamId, ...visibilityFilters },
+                { teamId },
+              ],
+            }
+          : { userId, teamId: null }),
       };
       const documentBodyExists = await prisma.documentBodyExtracted.findFirst({
         where: { documentId: documentId },
@@ -117,17 +119,6 @@ export const extractBodyContractTask = task({
       console.log('document', document);
 
       const pdfUrl = payload.urlDocument;
-      console.log(`🔹 Descargando PDF desde: ${pdfUrl}`);
-
-      const response = await fetch(pdfUrl);
-
-      if (!response.ok) {
-        console.log(`⚠️ Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
-        throw new Error(`Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
-      }
-
-      const buffer = Buffer.from(await response.arrayBuffer());
-      console.log(`✅ PDF descargado con éxito, tamaño: ${buffer.length} bytes`);
 
       const fileName = document?.title;
       let extractedText;
@@ -138,8 +129,31 @@ export const extractBodyContractTask = task({
         documentBody.body !== 'En proceso' &&
         documentBody.body !== 'Formato no soportado.'
       ) {
-        extractedText = documentBody.body;
+        console.log('documentBody.body', documentBody.body);
+        if (documentBody.body === 'Formato no soportado.') {
+          const response = await fetch(pdfUrl);
+
+          if (!response.ok) {
+            console.log(`⚠️ Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
+            throw new Error(`Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
+          }
+
+          const buffer = Buffer.from(await response.arrayBuffer());
+          console.log(`✅ PDF descargado con éxito, tamaño: ${buffer.length} bytes`);
+          extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
+        } else {
+          extractedText = documentBody.body;
+        }
       } else {
+        const response = await fetch(pdfUrl);
+
+        if (!response.ok) {
+          console.log(`⚠️ Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
+          throw new Error(`Error al obtener ${pdfUrl}, código HTTP: ${response.status}`);
+        }
+
+        const buffer = Buffer.from(await response.arrayBuffer());
+        console.log(`✅ PDF descargado con éxito, tamaño: ${buffer.length} bytes`);
         extractedText = await extractText(fileName ?? 'archivo_desconocido', buffer, pdfUrl);
       }
       if (!extractedText) {
@@ -173,8 +187,8 @@ Extrae la información clave de este contrato en base a los siguientes requerimi
 el titulo es: ${fileName}
 1. **Título del contrato**: Nombre del contrato.
 2. **Artistas**: Nombres de todos los artistas involucrados.
-3. **Fecha de inicio del contrato**: Fecha de inicio del contrato formato dd/mm/aaaa.
-4. **Fecha de finalización del contrato**: Fecha de finalización del contrato formato dd/mm/aaaa.
+3. **Fecha de inicio del contrato**: Fecha de inicio del contrato formato dd/mm/aaaa, si solo esta el año escribe la fecha como si fuera desde ese incio de año, es decir, 01/01/AÑO.
+4. **Fecha de finalización del contrato**: Fecha de finalización del contrato formato dd/mm/aaaa, si no esta especificada dejalo vacio.
 5. **¿Es posible expandirlo?**: Indica si el contrato puede extenderse (SI, NO, NO_ESPECIFICADO).
 6. **Tiempo de extensión posible**: Especifica el tiempo de extensión (2, 3, 5 años o la cantidad de tiempo especificada), fecha estimada.
 7. **Estatus del contrato**: Si ya está vencido (FINALIZADO) o es vigente (VIGENTE). Basado en la fecha actual: ${new Date().toISOString()}.
@@ -201,7 +215,7 @@ este es el contrato: ${extractedText}
           data: { status: 'COMPLETED' },
         });
 
-        const ai = new GoogleGenAI({ apiKey: 'AIzaSyABLg4odoWpJX7VpZVSNWLfhsJ07hH5KAE' });
+        const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY });
         // const responses = await ai.models.generateContent({
         //   model: 'gemini-2.0-flash-lite',
         //   contents: prompt,
@@ -268,6 +282,7 @@ este es el contrato: ${extractedText}
                     },
                   },
                   fechaInicio: { type: Type.STRING },
+
                   fechaFin: { type: Type.STRING },
                   esPosibleExpandirlo: {
                     type: Type.STRING,
@@ -332,27 +347,30 @@ este es el contrato: ${extractedText}
           contractsTable = await prisma.contract.update({
             where: { id: existingContract.id },
             data: {
-              documentId: documentId,
-              fileName: fileName,
-              artists: parsedResponse.artistas
-                .map((artist: { nombre: string }) => artist.nombre)
-                .join(', '),
-              endDate: parsedResponse.fechaFin,
+              // documentId: documentId,
+              // fileName: fileName,
+              // artists: parsedResponse.artistas
+              //   .map((artist: { nombre: string }) => artist.nombre)
+              //   .join(', '),
+              endDate: parsedResponse.fechaFin === 'string' ? null : parsedResponse.fechaFin,
               startDate: parsedResponse.fechaInicio,
               status: parsedResponse.estatusContrato,
-              title: parsedResponse.tituloContrato,
-              isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
-              possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
-              contractType: parsedResponse.tipoContrato,
-              collectionPeriod: parsedResponse.periodoColeccion,
-              collectionPeriodDescription: parsedResponse.descripcionPeriodoColeccion,
-              collectionPeriodDuration: parsedResponse.duracionPeriodoColeccion,
-              retentionPeriod: parsedResponse.periodoRetencion,
-              retentionPeriodDescription: parsedResponse.descripcionPeriodoRetencion,
-              retentionPeriodDuration: parsedResponse.duracionPeriodoRetencion,
-              summary: parsedResponse.resumenGeneral,
+              // teamId: teamId,
+              // userId: userId,
+              // title: parsedResponse.tituloContrato,
+              // isPossibleToExpand: parsedResponse.esPosibleExpandirlo,
+              // possibleExtensionTime: parsedResponse.tiempoExtensionPosible,
+              // contractType: parsedResponse.tipoContrato,
+              // collectionPeriod: parsedResponse.periodoColeccion,
+              // collectionPeriodDescription: parsedResponse.descripcionPeriodoColeccion,
+              // collectionPeriodDuration: parsedResponse.duracionPeriodoColeccion,
+              // retentionPeriod: parsedResponse.periodoRetencion,
+              // retentionPeriodDescription: parsedResponse.descripcionPeriodoRetencion,
+              // retentionPeriodDuration: parsedResponse.duracionPeriodoRetencion,
+              // summary: parsedResponse.resumenGeneral,
             },
           });
+          console.log('contractsTable', contractsTable);
         } else {
           console.log('No existe el contrato, creando uno nuevo');
           contractsTable = await prisma.contract.create({
@@ -364,6 +382,8 @@ este es el contrato: ${extractedText}
                 .join(', '),
               endDate: parsedResponse.fechaFin,
               startDate: parsedResponse.fechaInicio,
+              teamId: teamId,
+              userId: userId,
               status: parsedResponse.estatusContrato,
               title: parsedResponse.tituloContrato,
               isPossibleToExpand: parsedResponse.esPosibleExpandirlo,

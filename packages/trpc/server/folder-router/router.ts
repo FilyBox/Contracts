@@ -312,23 +312,18 @@ export const folderRouter = router({
       const { rowId, folderId, type } = input;
       if (folderId !== null) {
         try {
-          console.log('getFolderById');
           const pepe = await getFolderById({
             userId: user.id,
             teamId,
             folderId,
             type: type,
           });
-          console.log('pepe', pepe);
         } catch (error) {
-          console.log('error', error);
-          console.log('pepe malo');
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'Folder not found',
           });
         }
-        console.log('folderId', folderId);
       }
 
       const result = await moveToFolder({
@@ -340,7 +335,6 @@ export const folderRouter = router({
         type: type,
       });
 
-      console.log('result', result);
       return {
         ...result,
         type: type,

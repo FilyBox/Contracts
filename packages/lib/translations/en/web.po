@@ -426,6 +426,10 @@ msgstr "<0>{senderName}</0> has requested that you take ownership of the followi
 msgid "<0>{teamName}</0> has requested to use your email address for their team."
 msgstr "<0>{teamName}</0> has requested to use your email address for their team."
 
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
+msgid "<0>Artist:</0> All"
+msgstr "<0>Artist:</0> All"
+
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "<0>Click to upload</0> or drag and drop"
 msgstr "<0>Click to upload</0> or drag and drop"
@@ -487,6 +491,10 @@ msgstr "<0>Typed</0> - A signature that is typed using a keyboard."
 #: packages/ui/components/document/document-signature-settings-tooltip.tsx
 msgid "<0>Uploaded</0> - A signature that is uploaded from a file."
 msgstr "<0>Uploaded</0> - A signature that is uploaded from a file."
+
+#: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
+msgid "<0>Uploader:</0> All"
+msgstr "<0>Uploader:</0> All"
 
 #: apps/remix/app/components/general/document-signing/document-signing-complete-dialog.tsx
 msgid "<0>You are about to complete approving <1>\"{documentTitle}\"</1>.</0><2/> Are you sure?"
@@ -892,6 +900,8 @@ msgstr "Album"
 #: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
 #: apps/remix/app/components/general/document/document-status.tsx
 msgid "All"
 msgstr "All"
@@ -2799,7 +2809,6 @@ msgstr "Document will be permanently deleted"
 #: apps/remix/app/routes/_authenticated+/documents.f.$folderId.$id.edit.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/documents.$id.edit.tsx
-#: apps/remix/app/routes/_authenticated+/chatspace._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id._index.tsx
 #: apps/remix/app/routes/_authenticated+/chatspace.f.$folderId.$id.edit.tsx
@@ -2826,6 +2835,10 @@ msgstr "Documents created from template"
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Documents Received"
 msgstr "Documents Received"
+
+#: apps/remix/app/routes/_authenticated+/chatspace._index.tsx
+msgid "Documents To Chat"
+msgstr "Documents To Chat"
 
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Documents Viewed"
@@ -3340,6 +3353,11 @@ msgstr "File cannot be larger than {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB"
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
 msgid "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
 msgstr "File size exceeds the limit of {APP_DOCUMENT_UPLOAD_SIZE_LIMIT} MB"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Finalizado"
+msgstr "Finalizado"
 
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/move-to-folder-dialog.tsx
@@ -4161,6 +4179,14 @@ msgstr "Next field"
 #: apps/remix/app/components/tables/documents-table-empty-state.tsx
 msgid "No active drafts"
 msgstr "No active drafts"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado"
+msgstr "No Especificado"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "No Especificado  "
+msgstr "No Especificado  "
 
 #: apps/remix/app/routes/_recipient+/sign.$token+/rejected.tsx
 #: apps/remix/app/components/embed/embed-document-rejected.tsx
@@ -5158,6 +5184,8 @@ msgstr "Save Template"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.members.tsx
 #: apps/remix/app/components/tables/user-settings-teams-page-table.tsx
+#: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
+#: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
@@ -7336,6 +7364,11 @@ msgstr "Viewers"
 #: packages/lib/constants/recipient-roles.ts
 msgid "Viewing"
 msgstr "Viewing"
+
+#: apps/remix/app/components/general/task/contracts-status.tsx
+#: apps/remix/app/components/general/task/contracts-status.tsx
+msgid "Vigente"
+msgstr "Vigente"
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 msgid "Waiting"

@@ -16,6 +16,7 @@ import {
 } from '@tanstack/react-table';
 import type { ColumnFiltersState } from '@tanstack/react-table';
 
+import { StackAvatarsArtistWithTooltip } from '../components/lpm/stack-avatars-artist-with-tooltip';
 import { Button } from './button';
 import {
   ContextMenu,
@@ -37,7 +38,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 export type DataTableChildren<TData> = (_table: TTable<TData>) => React.ReactNode;
 
 export type { ColumnDef as DataTableColumnDef } from '@tanstack/react-table';
-
+type enhancedAssignees = {
+  artistName: string | null;
+  id: number;
+};
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   columnVisibility?: VisibilityState;
@@ -231,14 +235,18 @@ export function DataTable<TData, TValue>({
                                 </Tooltip>
                               </TooltipProvider>
                             </>
-                          ) : cell.column.id === 'artists' && cell.getValue() ? (
+                          ) : cell.column.id === 'lpmArtists' && cell.getValue() ? (
                             <>
-                              <TooltipProvider>
+                              {/* <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger>{cell.getValue() as string}</TooltipTrigger>
                                   <TooltipContent>{cell.getValue() as string}</TooltipContent>
                                 </Tooltip>
-                              </TooltipProvider>
+                              </TooltipProvider> */}
+
+                              <StackAvatarsArtistWithTooltip
+                                enhancedAssignees={cell.getValue() as enhancedAssignees[]}
+                              />
                             </>
                           ) : cell.column.id === 'trackPlayLink' && cell.getValue() ? (
                             <a

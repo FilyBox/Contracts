@@ -82,10 +82,7 @@ export const getFolderById = async ({ userId, teamId, folderId, type }: GetFolde
     where: whereClause,
   });
 
-  console.log('folder encontrada', folder);
-
   if (!folder) {
-    console.log('folder no econtrada not found');
     throw new AppError(AppErrorCode.NOT_FOUND, {
       message: 'Folder not found',
     });
