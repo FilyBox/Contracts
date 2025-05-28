@@ -84,16 +84,24 @@ export const lpmRouter = router({
         productDisplayArtist: z.string(),
         parentLabel: z.string().optional(),
         label: z.string(),
-        originalReleaseDate: z.string().optional(),
-        releaseDate: z.string(),
+        artists: z
+          .array(
+            z.object({
+              id: z.number(),
+              artistName: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        originalReleaseDate: z.date().optional(),
+        releaseDate: z.date(),
         upc: z.string(),
         catalog: z.string(),
         productPriceTier: z.string().optional(),
-        productGenre: z.string().optional(),
+        productGenre: z.string(),
         submissionStatus: z.string(),
         productCLine: z.string(),
         productPLine: z.string(),
-        preOrderDate: z.string().optional(),
+        preOrderDate: z.date().optional(),
         exclusives: z.string().optional(),
         explicitLyrics: z.string(),
         productPlayLink: z.string().optional(),
@@ -101,13 +109,13 @@ export const lpmRouter = router({
         primaryMetadataLanguage: z.string(),
         compilation: z.string().optional(),
         pdfBooklet: z.string().optional(),
-        timedReleaseDate: z.string().optional(),
-        timedReleaseMusicServices: z.string().optional(),
-        lastProcessDate: z.string(),
-        importDate: z.string(),
+        timedReleaseDate: z.date().optional(),
+        timedReleaseMusicServices: z.date().optional(),
+        lastProcessDate: z.date(),
+        importDate: z.date(),
         createdBy: z.string(),
-        lastModified: z.string(),
-        submittedAt: z.string(),
+        lastModified: z.date(),
+        submittedAt: z.date(),
         submittedBy: z.string().optional(),
         vevoChannel: z.string().optional(),
         trackType: z.string(),
@@ -127,7 +135,7 @@ export const lpmRouter = router({
         publishersCollectionSocieties: z.string(),
         withholdMechanicals: z.string(),
         preOrderType: z.string().optional(),
-        instantGratificationDate: z.string(),
+        instantGratificationDate: z.date().optional(),
         duration: z.string(),
         sampleStartTime: z.string(),
         explicitLyricsTrack: z.string(),
@@ -144,17 +152,46 @@ export const lpmRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { user, teamId } = ctx;
       const userId = user.id;
-      // Remove undefined properties to satisfy Prisma's strict typing
-      const cleanedInput = Object.fromEntries(
-        Object.entries(input).filter(([_, v]) => v !== undefined),
-      );
+      const { artists, ...data } = input;
+
+      console.log('artists to create:', artists);
+      const allData = { ...data, userId, ...(teamId ? { teamId } : {}) };
 
       return await prisma.lpm.create({
+        // data: {
+        //   ...cleanedInput,
+        //   userId,
+        //   ...(teamId ? { teamId } : {}), // Add teamId if it exists
+        // } as unknown as Prisma.lpmCreateInput,
         data: {
-          ...cleanedInput,
-          userId,
-          ...(teamId ? { teamId } : {}), // Add teamId if it exists
-        } as unknown as Prisma.lpmCreateInput,
+          ...data,
+          user: {
+            connect: { id: userId },
+          },
+          ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+          lpmArtists: {
+            create:
+              artists?.map((artist) => ({
+                artistName: artist.artistName?.trim() || '',
+                user: {
+                  connect: { id: userId },
+                },
+                ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                artist: {
+                  connectOrCreate: {
+                    where: { name: artist.artistName?.trim() || '' },
+                    create: {
+                      name: artist.artistName?.trim() || '',
+                      user: {
+                        connect: { id: userId },
+                      },
+                      ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    },
+                  },
+                },
+              })) || [],
+          },
+        },
       });
     }),
 
@@ -170,8 +207,8 @@ export const lpmRouter = router({
             productDisplayArtist: z.string(),
             parentLabel: z.string().optional(),
             label: z.string(),
-            originalReleaseDate: z.string().optional(),
-            releaseDate: z.string(),
+            originalReleaseDate: z.date().optional(),
+            releaseDate: z.date(),
             upc: z.string(),
             catalog: z.string(),
             productPriceTier: z.string().optional(),
@@ -179,7 +216,7 @@ export const lpmRouter = router({
             submissionStatus: z.string(),
             productCLine: z.string(),
             productPLine: z.string(),
-            preOrderDate: z.string().optional(),
+            preOrderDate: z.date().optional(),
             exclusives: z.string().optional(),
             explicitLyrics: z.string(),
             productPlayLink: z.string().optional(),
@@ -187,13 +224,13 @@ export const lpmRouter = router({
             primaryMetadataLanguage: z.string(),
             compilation: z.string().optional(),
             pdfBooklet: z.string().optional(),
-            timedReleaseDate: z.string().optional(),
-            timedReleaseMusicServices: z.string().optional(),
-            lastProcessDate: z.string(),
-            importDate: z.string(),
+            timedReleaseDate: z.date().optional(),
+            timedReleaseMusicServices: z.date().optional(),
+            lastProcessDate: z.date(),
+            importDate: z.date(),
             createdBy: z.string(),
-            lastModified: z.string(),
-            submittedAt: z.string(),
+            lastModified: z.date(),
+            submittedAt: z.date(),
             submittedBy: z.string().optional(),
             vevoChannel: z.string().optional(),
             trackType: z.string(),
@@ -213,7 +250,7 @@ export const lpmRouter = router({
             publishersCollectionSocieties: z.string(),
             withholdMechanicals: z.string(),
             preOrderType: z.string().optional(),
-            instantGratificationDate: z.string(),
+            instantGratificationDate: z.date(),
             duration: z.string(),
             sampleStartTime: z.string(),
             explicitLyricsTrack: z.string(),
@@ -234,98 +271,61 @@ export const lpmRouter = router({
       const { user, teamId } = ctx;
       const userId = user.id;
 
-      // const allArtists = new Set<string>();
-      // const artistsArrayByTrack = music.map((item) => {
-      //   // Split by comma and trim whitespace from each artist name
-      //   const artists = item.trackDisplayArtist.split(',').map((artist) => artist.trim());
-      //   // Add each artist to the set of all artists
-      //   artists.forEach((artist) => allArtists.add(artist));
-      //   return artists;
-      // });
+      // Process in batches to avoid timeout
+      const BATCH_SIZE = 30; // Adjust based on your needs
+      const allResults = [];
 
-      // // Convert set to array to get the unique artists list
-      // const uniqueArtistsArray = Array.from(allArtists);
+      for (let i = 0; i < music.length; i += BATCH_SIZE) {
+        const batch = music.slice(i, i + BATCH_SIZE);
 
-      // const existingArtists = await prisma.artist.findMany({
-      //   where: {
-      //     name: {
-      //       in: uniqueArtistsArray,
-      //     },
-      //   },
-      // });
-      // const existingArtistMap = new Map(existingArtists.map((artist) => [artist.name, artist]));
-      // const artistsToCreate = uniqueArtistsArray.filter((artist) => !existingArtistMap.has(artist));
-      // let createdArtists: Artist[] = [];
-      // if (artistsToCreate.length > 0) {
-      //   createdArtists = await prisma.$transaction(
-      //     artistsToCreate.map((artist) =>
-      //       prisma.artist.create({ data: { name: artist, userId, teamId } }),
-      //     ),
-      //   );
-      // }
-
-      // // Merge existing and newly created artists
-      // const allArtistsToUse = [...existingArtists, ...createdArtists];
-
-      const pepe = await prisma.$transaction(async (prismaClient) => {
-        const results = [];
-        for (const file of music) {
-          const result = await prismaClient.lpm.create({
-            data: {
-              ...file,
-              userId: userId,
-              ...(teamId ? { teamId } : {}),
-              lpmArtists: {
-                create: file.trackDisplayArtist.split(',').map((artistName) => ({
-                  artistName: artistName.trim(),
-                  userId,
-                  ...(teamId ? { teamId } : {}),
-                  artist: {
-                    connectOrCreate: {
-                      where: { name: artistName.trim() },
-                      create: {
-                        name: artistName.trim(),
-                        userId,
-                        ...(teamId ? { teamId } : {}),
-                      },
-                    },
+        const batchResults = await prisma.$transaction(
+          async (prismaClient) => {
+            const createdRecords = [];
+            for (const file of batch) {
+              console.log('Creating LPM record for:', file.productTitle);
+              const result = await prismaClient.lpm.create({
+                data: {
+                  ...file,
+                  user: {
+                    connect: { id: userId },
                   },
-                })),
-              },
-            },
-          });
-          results.push(result);
-        }
-        return results;
-      });
-      // const createdMusic = await Promise.all(
-      //   music.map((file) =>
-      //     prisma.lpm.create({
-      //       data: {
-      //         ...file,
-      //         userId: userId,
-      //         teamId: teamId,
-      //         lpmArtists: {
-      //           create: file.trackDisplayArtist.split(',').map((artistName) => ({
-      //             artistName: artistName.trim(),
-      //             artist: {
-      //               connectOrCreate: {
-      //                 where: { name: artistName.trim() },
-      //                 create: {
-      //                   name: artistName.trim(),
-      //                   userId,
-      //                   teamId,
-      //                 },
-      //               },
-      //             },
-      //           })),
-      //         },
-      //       },
-      //     }),
-      //   ),
-      // );
+                  ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                  lpmArtists: {
+                    create: file.trackDisplayArtist.split(',').map((artistName) => ({
+                      artistName: artistName.trim(),
+                      user: {
+                        connect: { id: userId },
+                      },
+                      ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                      artist: {
+                        connectOrCreate: {
+                          where: { name: artistName.trim() },
+                          create: {
+                            name: artistName.trim(),
+                            user: {
+                              connect: { id: userId },
+                            },
+                            ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                          },
+                        },
+                      },
+                    })),
+                  },
+                },
+              });
+              createdRecords.push(result);
+            }
+            return createdRecords;
+          },
+          {
+            maxWait: 10000, // 10 seconds
+            timeout: 30000, // 30 seconds
+          },
+        );
 
-      return pepe;
+        allResults.push(...batchResults);
+      }
+      return allResults.length;
     }),
 
   findLpmUniqueArtists: authenticatedProcedure.query(async ({ ctx }) => {
@@ -416,16 +416,24 @@ export const lpmRouter = router({
         productDisplayArtist: z.string(),
         parentLabel: z.string().optional(),
         label: z.string(),
-        originalReleaseDate: z.string().optional(),
-        releaseDate: z.string(),
+        artists: z
+          .array(
+            z.object({
+              id: z.number(),
+              artistName: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        originalReleaseDate: z.date().optional(),
+        releaseDate: z.date(),
         upc: z.string(),
         catalog: z.string(),
         productPriceTier: z.string().optional(),
-        productGenre: z.string().optional(),
+        productGenre: z.string(),
         submissionStatus: z.string(),
         productCLine: z.string(),
         productPLine: z.string(),
-        preOrderDate: z.string().optional(),
+        preOrderDate: z.date().optional(),
         exclusives: z.string().optional(),
         explicitLyrics: z.string(),
         productPlayLink: z.string().optional(),
@@ -433,13 +441,13 @@ export const lpmRouter = router({
         primaryMetadataLanguage: z.string(),
         compilation: z.string().optional(),
         pdfBooklet: z.string().optional(),
-        timedReleaseDate: z.string().optional(),
-        timedReleaseMusicServices: z.string().optional(),
-        lastProcessDate: z.string(),
-        importDate: z.string(),
+        timedReleaseDate: z.date().optional(),
+        timedReleaseMusicServices: z.date().optional(),
+        lastProcessDate: z.date(),
+        importDate: z.date(),
         createdBy: z.string(),
-        lastModified: z.string(),
-        submittedAt: z.string(),
+        lastModified: z.date(),
+        submittedAt: z.date(),
         submittedBy: z.string().optional(),
         vevoChannel: z.string().optional(),
         trackType: z.string(),
@@ -459,7 +467,7 @@ export const lpmRouter = router({
         publishersCollectionSocieties: z.string(),
         withholdMechanicals: z.string(),
         preOrderType: z.string().optional(),
-        instantGratificationDate: z.string(),
+        instantGratificationDate: z.date().optional(),
         duration: z.string(),
         sampleStartTime: z.string(),
         explicitLyricsTrack: z.string(),
@@ -473,13 +481,48 @@ export const lpmRouter = router({
         trackPlayLink: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const { id, ...data } = input;
-      console.log('Updating LPM with ID:', id, 'and data:', data);
+    .mutation(async ({ input, ctx }) => {
+      const { id, artists, ...data } = input;
+      const { user, teamId } = ctx;
+      const userId = user.id;
 
+      console.log('Updating LPM with ID:', id);
+      console.log('updating artists:', artists);
       const pepe = await prisma.lpm.update({
         where: { id },
-        data,
+        data: {
+          ...data,
+          lpmArtists:
+            artists && artists.length > 0
+              ? {
+                  deleteMany: {}, // remove existing artists
+                  create: artists.map((artist) => ({
+                    artistName: artist.artistName?.trim() || '',
+                    user: {
+                      connect: { id: userId },
+                    },
+                    ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    artist: {
+                      connectOrCreate: {
+                        where: { name: artist.artistName?.trim() || '' },
+                        create: {
+                          name: artist.artistName?.trim() || '',
+                          user: {
+                            connect: { id: userId },
+                          },
+                          ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                        },
+                      },
+                    },
+                  })),
+                }
+              : {
+                  deleteMany: {}, // remove existing artists if no new artists provided
+                },
+        },
+        include: {
+          lpmArtists: true,
+        },
       });
 
       console.log('pepe', pepe);

@@ -1,27 +1,23 @@
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+import { type TLpm } from '@documenso/lib/types/lpm';
 import { type lpm } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { PopoverArtists } from '../components/popover-artists';
 import { cn } from '../lib/utils';
+import { Avatar, AvatarFallback } from './avatar';
 import { Button } from './button';
 import { Calendar } from './calendar-year-picker';
 import { Card, CardContent } from './card';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './dropdown-menu';
 import {
   Form,
   FormControl,
@@ -47,8 +43,16 @@ const formSchema = z.object({
   productDisplayArtist: z.string(),
   parentLabel: z.string().optional(),
   label: z.string(),
-  originalReleaseDate: z.string().optional(),
-  releaseDate: z.string(),
+  artists: z
+    .array(
+      z.object({
+        id: z.number(),
+        artistName: z.string().nullable(),
+      }),
+    )
+    .optional(),
+  originalReleaseDate: z.date().optional(),
+  releaseDate: z.date(),
   upc: z.string(),
   catalog: z.string(),
   productPriceTier: z.string().optional(),
@@ -56,7 +60,7 @@ const formSchema = z.object({
   submissionStatus: z.string(),
   productCLine: z.string(),
   productPLine: z.string(),
-  preOrderDate: z.string().optional(),
+  preOrderDate: z.date().optional(),
   exclusives: z.string().optional(),
   explicitLyrics: z.string(),
   productPlayLink: z.string().optional(),
@@ -64,13 +68,13 @@ const formSchema = z.object({
   primaryMetadataLanguage: z.string(),
   compilation: z.string().optional(),
   pdfBooklet: z.string().optional(),
-  timedReleaseDate: z.string().optional(),
-  timedReleaseMusicServices: z.string().optional(),
-  lastProcessDate: z.string(),
-  importDate: z.string(),
+  timedReleaseDate: z.date().optional(),
+  timedReleaseMusicServices: z.date().optional(),
+  lastProcessDate: z.date(),
+  importDate: z.date(),
   createdBy: z.string(),
-  lastModified: z.string(),
-  submittedAt: z.string(),
+  lastModified: z.date(),
+  submittedAt: z.date(),
   submittedBy: z.string().optional(),
   vevoChannel: z.string().optional(),
   trackType: z.string(),
@@ -90,33 +94,56 @@ const formSchema = z.object({
   publishersCollectionSocieties: z.string(),
   withholdMechanicals: z.string(),
   preOrderType: z.string().optional(),
-  instantGratificationDate: z.string().optional(),
+  instantGratificationDate: z.date().optional(),
   duration: z.string(),
-  sampleStartTime: z.string().optional(),
+  sampleStartTime: z.string(),
   explicitLyricsTrack: z.string(),
   albumOnly: z.string(),
   lyrics: z.string().optional(),
   additionalContributorsPerforming: z.string().optional(),
   additionalContributorsNonPerforming: z.string().optional(),
   producers: z.string().optional(),
-  continuousMix: z.string().optional(),
-  continuouslyMixedIndividualSong: z.string().optional(),
-  trackPlayLink: z.string().optional(),
+  continuousMix: z.string(),
+  continuouslyMixedIndividualSong: z.string(),
+  trackPlayLink: z.string(),
 });
+
+type artistData = {
+  teamId: number | null;
+  id: number;
+  userId: number | null;
+  createdAt: Date;
+  artistId: number;
+  artistName: string;
+}[];
+
+type artistSingleData = {
+  teamId: number | null;
+  id: number;
+  userId: number | null;
+  createdAt: Date;
+  artistId: number;
+  artistName: string;
+};
 interface MyFormProps {
   onSubmit: (data: lpm) => void;
   initialData: lpm | null;
   isSubmitting: boolean;
+  artistData?: artistData;
 }
 
 // Tipo para los pasos del formulario
 type FormStep = 'PRODUCT_INFO' | 'TRACK_INFO';
 
-export default function MyForm({ onSubmit, initialData }: MyFormProps) {
+export default function MyForm({ onSubmit, initialData, artistData }: MyFormProps) {
   const { toast } = useToast();
 
+  console.log('Initial data:', initialData);
+  console.log('Artist data:', artistData);
   const [step, setStep] = useState<FormStep>('PRODUCT_INFO');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedArtists, setSelectedArtists] = React.useState<artistData>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -129,20 +156,18 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       continuousMix: 'No',
       continuouslyMixedIndividualSong: 'No',
       productGenre: [],
-
-      // Add default empty strings for all optional fields
       productVersion: '',
       parentLabel: '',
-      originalReleaseDate: '',
+      originalReleaseDate: new Date(),
       productPriceTier: '',
-      preOrderDate: '',
+      preOrderDate: new Date(),
       exclusives: '',
       productPlayLink: '',
       linerNotes: '',
       compilation: '',
       pdfBooklet: '',
-      timedReleaseDate: '',
-      timedReleaseMusicServices: '',
+      timedReleaseDate: new Date(),
+      timedReleaseMusicServices: new Date(),
       submittedBy: '',
       vevoChannel: '',
       trackVersion: '',
@@ -154,7 +179,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       producers: '',
       trackPlayLink: '',
       preOrderType: '',
-      instantGratificationDate: '',
+      instantGratificationDate: new Date(),
     },
   });
 
@@ -167,6 +192,12 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
           // Skip the id field
           // @ts-expect-error - We know these fields exist in our form schema
           form.setValue(key, initialData[key]);
+          if (key === 'lpmArtists') {
+            // Use type assertion to tell TypeScript that artists property exists
+            const artistsData = (initialData as unknown as { lpmArtists: artistData })?.lpmArtists;
+            console.log('Setting artists:', key, artistsData);
+            setSelectedArtists(artistsData);
+          }
         }
       });
     }
@@ -194,9 +225,14 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
         productGenre: Array.isArray(dataToSubmit.productGenre)
           ? dataToSubmit.productGenre.join(',')
           : dataToSubmit.productGenre,
+        lpmArtists: selectedArtists.map((artist) => ({
+          id: artist.artistId,
+          artistName: artist.artistName || '',
+        })),
       };
+      console.log('Data to send:', dataToSend);
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      await onSubmit(dataToSend as unknown as lpm);
+      await onSubmit(dataToSend as unknown as TLpm);
       console.log('Form submitted successfully', values);
       toast({
         description: 'Data submitted successfully',
@@ -421,7 +457,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         />
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
+                      {/* <div className="col-span-12 md:col-span-6">
                         <FormField
                           control={form.control}
                           name="productDisplayArtist"
@@ -435,6 +471,46 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                             </FormItem>
                           )}
                         />
+                      </div> */}
+                      <div className="col-span-12">
+                        {artistData && artistData.length > 0 && (
+                          <div className="flex flex-col gap-2">
+                            <p>Artistas</p>
+                            <Popover modal={true}>
+                              <PopoverTrigger asChild className="w-fit">
+                                <Button className="min-h-9 min-w-9">
+                                  <PlusIcon width="25" height="25" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-fit">
+                                <PopoverArtists
+                                  selectedArtists={selectedArtists}
+                                  setSelectedArtists={setSelectedArtists}
+                                  userArray={artistData}
+                                />
+                              </PopoverContent>
+                            </Popover>
+
+                            {selectedArtists.length > 0 ? (
+                              <div className="flex -space-x-2 overflow-hidden">
+                                {selectedArtists.map((user) => (
+                                  <Avatar
+                                    key={user.id}
+                                    className="border-background inline-block border-2"
+                                  >
+                                    {user.artistName && (
+                                      <AvatarFallback>{user.artistName[0]}</AvatarFallback>
+                                    )}
+                                  </Avatar>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-muted-foreground h-10 text-sm">
+                                Select artists to add to this thread.
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="col-span-12 md:col-span-6">
@@ -444,6 +520,92 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           render={({ field }) => (
                             <FormItem className="flex flex-col">
                               <FormLabel>Release Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={'outline'}
+                                      className={cn(
+                                        'w-[240px] pl-3 text-left font-normal',
+                                        !field.value && 'text-muted-foreground',
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        (() => {
+                                          try {
+                                            // Handle different date formats safely
+                                            const date = new Date(field.value);
+                                            return isNaN(date.getTime())
+                                              ? 'Select date'
+                                              : format(date, 'dd/MM/yyyy');
+                                          } catch (error) {
+                                            return 'Select date';
+                                          }
+                                        })()
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={(() => {
+                                      try {
+                                        // Safely parse the date
+                                        const date = field.value
+                                          ? field.value instanceof Date
+                                            ? field.value
+                                            : new Date(field.value)
+                                          : undefined;
+                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                      } catch (error) {
+                                        return undefined;
+                                      }
+                                    })()}
+                                    onSelect={(date) => field.onChange(date)} // Enviar Date directamente
+                                    disabled={(date) => date < new Date('1900-01-01')}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Sección 2: Información de sello y comercial */}
+                    <div className="grid grid-cols-12 gap-4">
+                      <div className="col-span-12 md:col-span-6">
+                        <FormField
+                          control={form.control}
+                          name="label"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Sello Discográfico</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Nombre del sello" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-12 md:col-span-6">
+                        {/* <FormField
+                          control={form.control}
+                          name="originalReleaseDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Original Release Date</FormLabel>
                               <Popover>
                                 <PopoverTrigger asChild>
                                   <FormControl>
@@ -499,31 +661,8 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                               <FormMessage />
                             </FormItem>
                           )}
-                        />
-                      </div>
-                    </div>
+                        /> */}
 
-                    <Separator />
-
-                    {/* Sección 2: Información de sello y comercial */}
-                    <div className="grid grid-cols-12 gap-4">
-                      <div className="col-span-12 md:col-span-6">
-                        <FormField
-                          control={form.control}
-                          name="label"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Sello Discográfico</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Nombre del sello" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="col-span-12 md:col-span-6">
                         <FormField
                           control={form.control}
                           name="originalReleaseDate"
@@ -543,6 +682,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                       {field.value ? (
                                         (() => {
                                           try {
+                                            console.log('Field value:', field.value);
                                             // Handle different date formats safely
                                             const date = new Date(field.value);
                                             return isNaN(date.getTime())
@@ -553,6 +693,13 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                           }
                                         })()
                                       ) : (
+                                        // format(
+                                        //   // Only try to format if field.value is a non-empty string
+                                        //   field.value && field.value.trim() !== ''
+                                        //     ? new Date(field.value + 'T00:00:00')
+                                        //     : new Date(),
+                                        //   'dd/MM/yyyy',
+                                        // )
                                         <span>Pick a date</span>
                                       )}
                                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -564,18 +711,12 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                     mode="single"
                                     selected={(() => {
                                       try {
-                                        // Safely parse the date
-                                        const date = field.value
-                                          ? new Date(field.value)
-                                          : undefined;
-                                        return date && !isNaN(date.getTime()) ? date : undefined;
+                                        return field.value ? new Date(field.value) : undefined;
                                       } catch (error) {
                                         return undefined;
                                       }
                                     })()}
-                                    onSelect={(date) =>
-                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                    }
+                                    onSelect={(date) => field.onChange(date)}
                                     disabled={(date) => date < new Date('1900-01-01')}
                                     initialFocus
                                   />
@@ -846,7 +987,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         />
                       </div>
                       <div className="col-span-12 md:col-span-6">
-                        <FormField
+                        {/* <FormField
                           control={form.control}
                           name="preOrderDate"
                           render={({ field }) => (
@@ -858,10 +999,10 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                               <FormMessage />
                             </FormItem>
                           )}
-                        />
+                        /> */}
                       </div>
 
-                      <div className="col-span-12 md:col-span-6">
+                      <div className="col-span-12">
                         <FormField
                           control={form.control}
                           name="exclusives"
@@ -1021,15 +1162,17 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                   selected={(() => {
                                     try {
                                       // Safely parse the date
-                                      const date = field.value ? new Date(field.value) : undefined;
+                                      const date = field.value
+                                        ? field.value instanceof Date
+                                          ? field.value
+                                          : new Date(field.value)
+                                        : undefined;
                                       return date && !isNaN(date.getTime()) ? date : undefined;
                                     } catch (error) {
                                       return undefined;
                                     }
                                   })()}
-                                  onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                  }
+                                  onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus
                                 />
@@ -1084,15 +1227,17 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                   selected={(() => {
                                     try {
                                       // Safely parse the date
-                                      const date = field.value ? new Date(field.value) : undefined;
+                                      const date = field.value
+                                        ? field.value instanceof Date
+                                          ? field.value
+                                          : new Date(field.value)
+                                        : undefined;
                                       return date && !isNaN(date.getTime()) ? date : undefined;
                                     } catch (error) {
                                       return undefined;
                                     }
                                   })()}
-                                  onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                  }
+                                  onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus
                                 />
@@ -1196,16 +1341,16 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                       try {
                                         // Safely parse the date
                                         const date = field.value
-                                          ? new Date(field.value)
+                                          ? field.value instanceof Date
+                                            ? field.value
+                                            : new Date(field.value)
                                           : undefined;
                                         return date && !isNaN(date.getTime()) ? date : undefined;
                                       } catch (error) {
                                         return undefined;
                                       }
                                     })()}
-                                    onSelect={(date) =>
-                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                    }
+                                    onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                     disabled={(date) => date < new Date('1900-01-01')}
                                     initialFocus
                                   />
@@ -1261,16 +1406,16 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                       try {
                                         // Safely parse the date
                                         const date = field.value
-                                          ? new Date(field.value)
+                                          ? field.value instanceof Date
+                                            ? field.value
+                                            : new Date(field.value)
                                           : undefined;
                                         return date && !isNaN(date.getTime()) ? date : undefined;
                                       } catch (error) {
                                         return undefined;
                                       }
                                     })()}
-                                    onSelect={(date) =>
-                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                    }
+                                    onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                     disabled={(date) => date < new Date('1900-01-01')}
                                     initialFocus
                                   />
@@ -1388,16 +1533,16 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                       try {
                                         // Safely parse the date
                                         const date = field.value
-                                          ? new Date(field.value)
+                                          ? field.value instanceof Date
+                                            ? field.value
+                                            : new Date(field.value)
                                           : undefined;
                                         return date && !isNaN(date.getTime()) ? date : undefined;
                                       } catch (error) {
                                         return undefined;
                                       }
                                     })()}
-                                    onSelect={(date) =>
-                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                    }
+                                    onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                     disabled={(date) => date < new Date('1900-01-01')}
                                     initialFocus
                                   />
@@ -1453,16 +1598,16 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                       try {
                                         // Safely parse the date
                                         const date = field.value
-                                          ? new Date(field.value)
+                                          ? field.value instanceof Date
+                                            ? field.value
+                                            : new Date(field.value)
                                           : undefined;
                                         return date && !isNaN(date.getTime()) ? date : undefined;
                                       } catch (error) {
                                         return undefined;
                                       }
                                     })()}
-                                    onSelect={(date) =>
-                                      field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                    }
+                                    onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                     disabled={(date) => date < new Date('1900-01-01')}
                                     initialFocus
                                   />
@@ -1913,7 +2058,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                     </div>
 
                     <div className="col-span-12 md:col-span-6">
-                      <FormField
+                      {/* <FormField
                         control={form.control}
                         name="instantGratificationDate"
                         render={({ field }) => (
@@ -1925,7 +2070,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      /> */}
                     </div>
 
                     <Separator />

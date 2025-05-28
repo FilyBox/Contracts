@@ -233,13 +233,14 @@ export default function FormReleases({ onSubmit, initialData }: MyFormProps) {
                                     )}
                                   >
                                     {field.value ? (
+                                      (console.log('pepe', field.value),
                                       format(
                                         // Only try to format if field.value is a non-empty string
                                         field.value && field.value.trim() !== ''
                                           ? new Date(field.value + 'T00:00:00')
                                           : new Date(),
                                         'dd/MM/yyyy',
-                                      )
+                                      ))
                                     ) : (
                                       <span>Pick a date</span>
                                     )}

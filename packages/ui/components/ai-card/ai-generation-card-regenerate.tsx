@@ -383,7 +383,7 @@ export default function Component({
                   </AnimatePresence>
                 </motion.section>
 
-                {/* <AnimatePresence>
+                <AnimatePresence>
                   {showResult && (
                     <motion.div
                       className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700"
@@ -401,7 +401,7 @@ export default function Component({
                       </Button>
                     </motion.div>
                   )}
-                </AnimatePresence> */}
+                </AnimatePresence>
               </CardContent>
             </Card>
           </motion.div>
