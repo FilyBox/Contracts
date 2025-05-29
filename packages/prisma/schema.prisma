@@ -36,6 +36,21 @@ enum Role {
   USER
 }
 
+enum BuyerRole {
+  ADMIN
+  USER
+}
+
+model SessionBuyers {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  buyerId      String
+  expires      DateTime
+  buyer        Buyer    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@index([buyerId])
+  @@map(name: "sessions")
+}
 
 model User {
   id               Int              @id @default(autoincrement())
@@ -83,6 +98,7 @@ model User {
   passkeys           Passkey[]
   avatarImage        AvatarImage?           @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
   // lpms               Lpm[]
+  // TwoFactorConfirmation TwoFactorConfirmation?
 
   @@index([email])
 }
@@ -153,7 +169,6 @@ model Lpm {
   continuousMix                       String?  @map("Continuous Mix") @db.VarChar
   continuouslyMixedIndividualSong     String?  @map("Continuously Mixed Individual Song") @db.VarChar
   trackPlayLink                       String?  @map("Track Play Link") @db.VarChar
-
 }
 
 model Songs {
@@ -202,22 +217,21 @@ enum SongType {
   SYNCHRONIZATION
 }
 
-model Writers{
-  id            Int            @id @default(autoincrement())
+model Writers {
+  id            Int         @id @default(autoincrement())
   name          String?
-  createdAt     DateTime       @default(now())
+  createdAt     DateTime    @default(now())
   teamId        Int?
   // team          Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  updatedAt     DateTime       @default(now()) @updatedAt
-  songroles         songRoles[]         @default([WRITER])
+  updatedAt     DateTime    @default(now()) @updatedAt
+  songroles     songRoles[] @default([WRITER])
   avatarImageId String?
-  disabled      Boolean?       @default(false)
+  disabled      Boolean?    @default(false)
   // event         Event[]
-  lpm          Lpm[]
-  url           String?        @unique
+  lpm           Lpm[]
+  url           String?     @unique
 
   // ArtistProfile ArtistProfile?
-
 }
 
 enum songRoles {
@@ -229,35 +243,33 @@ enum songRoles {
   MASTERING_ENGINEER
 }
 
-
 model Artist {
   id            Int            @id @default(autoincrement())
   name          String?
   createdAt     DateTime       @default(now())
   teamId        Int?
-  team          Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team          Team?          @relation(fields: [teamId], references: [id], onDelete: Cascade)
   updatedAt     DateTime       @default(now()) @updatedAt
-  roles         Role[]         @default([USER])
+  // roles         Role[]       @default([USER])
   avatarImageId String?
   disabled      Boolean?       @default(false)
   event         Event[]
   url           String?        @unique
   ArtistProfile ArtistProfile?
   songs         Songs[]
-  isrcSongs     IsrcSongs[]    // Added for many-to-many relation with IsrcSongs
-
+  isrcSongs     IsrcSongs[] // Added for many-to-many relation with IsrcSongs
 }
 
-model IsrcSongs{
-  id           Int            @id @default(autoincrement())
-  date       String?
-  isrc       String?
-  artist     String?
-  duration   String?
-  trackName  String?
-  title      String?
+model IsrcSongs {
+  id        Int      @id @default(autoincrement())
+  date      String?
+  isrc      String?
+  artist    String?
+  duration  String?
+  trackName String?
+  title     String?
   license   String?
-  memebers           Artist[]
+  memebers  Artist[]
 }
 
 model ArtistProfile {
@@ -291,20 +303,33 @@ model Event {
 
 // Buyers table
 model Buyer {
-  id               String    @id @default(cuid())
-  password         String?
-  uid              String?
-  rfc              String?   @unique @db.VarChar(13)
-  fullname         String    @db.VarChar(250)
-  email            String    @unique @db.VarChar(250)
-  image            String?   @db.Text
-  emailVerified    DateTime?
-  phoneNumber      String?   @db.VarChar(20)
-  stripeCustomerId String    @unique @db.VarChar(255)
-  createdAt        DateTime  @default(now())
-  deletedAt        DateTime?
+  id            String    @id @default(cuid())
+  password      String?
+  uid           String?   @unique
+  name          String?
+  rfc           String?
+  email         String?   @unique
+  emailVerified DateTime?
+  phoneNumber   String?   @db.VarChar(20)
+  image         String?
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+  role          BuyerRole @default(USER)
 
-  ticketBuyers TicketBuyer[]
+  accounts              Account[]
+  sessionBuyers         SessionBuyers[]
+  ticketBuyers          TicketBuyer[]
+  verificationTokens    VerificationToken[]
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+
+  stripeCustomerId       String?              @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String?              @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String?              @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime?            @map(name: "stripe_current_period_end")
+  PasswordResetToken     PasswordResetToken[]
+
+  @@map(name: "buyers")
 }
 
 // Ticket types table
@@ -400,10 +425,23 @@ model PasswordResetToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   createdAt DateTime @default(now())
+  email     String
+  expires   DateTime
   expiry    DateTime
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buyerId   String
+  buyer     Buyer    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
 }
+
+// model PasswordResetToken {
+//   id String @id @default(cuid())
+//   email String
+//   token String @unique
+//   expires DateTime
+
+//   @@unique([email, token])
+// }
 
 model Passkey {
   id                   String    @id @default(cuid())
@@ -422,6 +460,64 @@ model Passkey {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String?
+  email      String
+  token      String   @unique
+  expires    DateTime
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  buyerId    String?
+  buyer      Buyer?   @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@unique([identifier, token, email])
+  @@map(name: "verification_tokens")
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+
+  buyerId String
+  buyer   Buyer  @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerId])
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  buyerId           String?
+  userId            Int?
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  buyer Buyer? @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([buyerId])
+  @@map(name: "accounts")
+}
+
 model AnonymousVerificationToken {
   id        String   @id @unique @default(cuid())
   token     String   @unique
@@ -429,17 +525,18 @@ model AnonymousVerificationToken {
   createdAt DateTime @default(now())
 }
 
-model VerificationToken {
-  id          Int      @id @default(autoincrement())
-  secondaryId String   @unique @default(cuid())
-  identifier  String
-  token       String   @unique
-  completed   Boolean  @default(false)
-  expires     DateTime
-  createdAt   DateTime @default(now())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+// model VerificationToken {
+//   id          Int      @id @default(autoincrement())
+//   secondaryId String   @unique @default(cuid())
+//   identifier  String
+//   token       String   @unique
+//   completed   Boolean  @default(false)
+//   expires     DateTime
+//   createdAt   DateTime @default(now())
+//   userId      Int
+//   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+// }
 
 enum WebhookTriggerEvents {
   DOCUMENT_CREATED
@@ -524,30 +621,6 @@ model Subscription {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            Int
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  // Some providers return created_at so we need to make it optional
-  created_at        Int?
-  // Stops next-auth from crashing when dealing with AzureAD
-  ext_expires_in    Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  password          String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
 }
 
 model Session {
