@@ -1,23 +1,29 @@
-import { TeamMemberRole } from '@prisma/client';
+import type { TeamMemberRole } from '@prisma/client';
 import type { Prisma, User } from '@prisma/client';
-import { SigningStatus } from '@prisma/client';
-import { DocumentVisibility } from '@prisma/client';
 import { DateTime } from 'luxon';
-import { match } from 'ts-pattern';
 
 import type { PeriodSelectorValue } from '@documenso/lib/server-only/document/find-documents';
 import { prisma } from '@documenso/prisma';
 import { isExtendedReleaseType } from '@documenso/prisma/guards/is-extended-releases-type';
 import { ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 
-export type GetStatsInput = {
+export type GetReleaseType = {
   user: User;
   team?: Omit<GetTeamCountsOption, 'createdAt'>;
+  teamId?: number;
   period?: PeriodSelectorValue;
   search?: string;
+  artistIds?: number[];
 };
 
-export const getReleaseType = async ({ user, period, search = '', ...options }: GetStatsInput) => {
+export const getReleaseType = async ({
+  user,
+  period,
+  artistIds,
+  search = '',
+  teamId,
+  ...options
+}: GetReleaseType) => {
   let createdAt: Prisma.ReleasesWhereInput['createdAt'];
 
   if (period) {
@@ -39,12 +45,17 @@ export const getReleaseType = async ({ user, period, search = '', ...options }: 
   //       search,
   //     })
   //   : getCounts({ user, createdAt, search }));
+
+  console.log('options.team?.teamId', options.team?.teamId);
   const [types] = await getCounts({
     user,
     createdAt,
     search,
-    teamId: options.team?.teamId,
+    artistIds,
+    teamId: teamId,
   });
+
+  console.log('types', types);
   const typeCounts: Record<ExtendedReleaseType, number> = {
     [ExtendedReleaseType.Album]: 0,
     [ExtendedReleaseType.EP]: 0,
@@ -100,13 +111,15 @@ type GetCountsOption = {
   search?: string;
   teamId?: number;
   folderId?: string | null;
+  artistIds?: number[];
 };
 
-const getCounts = async ({ user, createdAt, search, teamId }: GetCountsOption) => {
+const getCounts = async ({ user, artistIds, search, teamId }: GetCountsOption) => {
   const searchFilter: Prisma.ReleasesWhereInput = {
     OR: [{ lanzamiento: { contains: search, mode: 'insensitive' } }],
   };
 
+  console.log('teamId', teamId);
   return Promise.all([
     prisma.releases.groupBy({
       by: ['typeOfRelease'],
@@ -125,6 +138,18 @@ const getCounts = async ({ user, createdAt, search, teamId }: GetCountsOption) =
             typeOfRelease: ExtendedReleaseType.Album,
           },
         ],
+        ...(artistIds?.length
+          ? {
+              releasesArtists: {
+                some: {
+                  artistId: {
+                    in: artistIds,
+                  },
+                },
+              },
+            }
+          : {}),
+        // ...(teamId ? { teamId } : { userId: user.id, teamId: null }),
         AND: teamId
           ? [{ teamId: teamId }, ...(searchFilter ? [searchFilter] : [])]
           : [{ userId: user.id }, ...(search ? [searchFilter] : []), { teamId: null }],

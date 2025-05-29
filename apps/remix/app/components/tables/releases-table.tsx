@@ -76,6 +76,12 @@ export const ReleasesTable = ({
         accessorKey: 'artist',
         cell: ({ row }) => row.original.artist || '-',
       },
+
+      {
+        header: _(msg`Artists`),
+        accessorKey: 'releasesArtists',
+        cell: ({ row }) => row.original.artist || '-',
+      },
       {
         header: _(msg`Release Title`),
         accessorKey: 'lanzamiento',
@@ -115,7 +121,23 @@ export const ReleasesTable = ({
       {
         header: _(msg`Assets`),
         accessorKey: 'assets',
-        cell: ({ row }) => row.original.assets || '-',
+        cell: ({ row }) => {
+          if (row.original.assets === true) {
+            return (
+              <div className="w-fit rounded bg-green-500 p-1 text-white">
+                <CheckIcon size={16} />
+              </div>
+            );
+          } else if (row.original.assets === false) {
+            return (
+              <div className="w-fit rounded bg-red-500 p-1 text-white">
+                <XIcon size={16} />
+              </div>
+            );
+          } else {
+            return <span className="text-muted-foreground">-</span>;
+          }
+        },
       },
 
       {
@@ -256,7 +278,7 @@ export const ReleasesTable = ({
             );
           } else if (row.original.EPKUpdates === false) {
             return (
-              <div className="w-fit rounded bg-red-500 px-2 py-1 text-white">
+              <div className="w-fit rounded bg-red-500 p-1 text-white">
                 <XIcon size={16} />
               </div>
             );
@@ -277,9 +299,9 @@ export const ReleasesTable = ({
             );
           } else if (row.original.WebSiteUpdates === false) {
             return (
-              <span className="w-fit rounded bg-red-500 p-1 text-white">
+              <div className="w-fit rounded bg-red-500 p-1 text-white">
                 <XIcon size={16} />
-              </span>
+              </div>
             );
           } else {
             return <span className="text-muted-foreground">-</span>;
@@ -298,7 +320,7 @@ export const ReleasesTable = ({
             );
           } else if (row.original.Biography === false) {
             return (
-              <div className="w-fit rounded bg-red-500 px-2 py-1 text-white">
+              <div className="w-fit rounded bg-red-500 p-1 text-white">
                 <XIcon size={16} />
               </div>
             );

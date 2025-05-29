@@ -1,12 +1,6 @@
-import type { Prisma } from '@prisma/client';
-import { TeamMemberRole } from '@prisma/client';
-import { match } from 'ts-pattern';
-
 import { prisma } from '@documenso/prisma';
 
 import { AppError, AppErrorCode } from '../../errors/app-error';
-import { DocumentVisibility } from '../../types/document-visibility';
-import { getTeamById } from '../team/get-team';
 
 export type GetDocumentByIdOptions = {
   documentId: number;
@@ -14,13 +8,8 @@ export type GetDocumentByIdOptions = {
   teamId?: number;
 };
 
-export const getContractById = async ({ documentId, userId, teamId }: GetDocumentByIdOptions) => {
+export const getContractById = async ({ documentId }: GetDocumentByIdOptions) => {
   console.log('documentId', documentId);
-  const documentWhereInput = await getDocumentWhereInput({
-    documentId: documentId,
-    userId,
-    teamId,
-  });
 
   const document = await prisma.contract.findFirst({
     where: {
@@ -59,17 +48,3 @@ export type GetDocumentWhereInputOptions = {
  *
  * This will return a query that allows a user to get a document if they have valid access to it.
  */
-export const getDocumentWhereInput = async ({
-  documentId,
-  userId,
-  teamId,
-  overlapUserTeamScope = false,
-}: GetDocumentWhereInputOptions) => {
-  const documentWhereInput: Prisma.ContractWhereInput = {
-    documentId: documentId,
-  };
-
-  return {
-    ...documentWhereInput,
-  };
-};

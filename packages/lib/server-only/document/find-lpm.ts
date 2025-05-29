@@ -121,6 +121,7 @@ export const findLpm = async ({
   const whereClause: Prisma.lpmWhereInput = {
     AND: whereAndClause,
   };
+  console.log('artistIds en find lpm', artistIds);
 
   if (artistIds && artistIds.length > 0) {
     whereClause.lpmArtists = {

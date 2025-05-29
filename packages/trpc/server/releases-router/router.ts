@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { z } from 'zod';
 
 import { findRelease } from '@documenso/lib/server-only/document/find-releases';
-import { type GetStatsInput } from '@documenso/lib/server-only/document/get-priority';
+import { type GetReleaseType } from '@documenso/lib/server-only/document/get-release-type';
 import { getReleaseType } from '@documenso/lib/server-only/document/get-release-type';
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
@@ -33,7 +33,7 @@ export const releaseRouter = router({
         release: z.nativeEnum(Release).optional(),
         uploaded: z.string().optional(),
         streamingLink: z.string().optional(),
-        assets: z.string().optional(),
+        assets: z.boolean().optional(),
         canvas: z.boolean().optional(),
         cover: z.boolean().optional(),
         audioWAV: z.boolean().optional(),
@@ -81,6 +81,122 @@ export const releaseRouter = router({
       return releaseCreated;
     }),
 
+  createManyReleases: authenticatedProcedure
+    .input(
+      z.object({
+        releases: z.array(
+          z.object({
+            date: z.string().optional(),
+            artist: z.string().optional(),
+            lanzamiento: z.string().optional(),
+            typeOfRelease: z.nativeEnum(TypeOfRelease).optional(),
+            release: z.nativeEnum(Release).optional(),
+            uploaded: z.string().optional(),
+            streamingLink: z.string().optional(),
+            assets: z.boolean().optional(),
+            canvas: z.boolean().optional(),
+            cover: z.boolean().optional(),
+            audioWAV: z.boolean().optional(),
+            video: z.boolean().optional(),
+            banners: z.boolean().optional(),
+            pitch: z.boolean().optional(),
+            EPKUpdates: z.boolean().optional(),
+            WebSiteUpdates: z.boolean().optional(),
+            Biography: z.boolean().optional(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { user, teamId } = ctx;
+      const userId = user.id;
+      const { releases } = input;
+      console.log('Creating multiple releases:', releases.length);
+
+      // Verify permissions if it's a team task
+      if (teamId && ctx.teamId !== teamId) {
+        throw new Error('No tienes permisos para crear releases en este equipo');
+      }
+
+      // For large datasets, process in smaller chunks
+      const BATCH_SIZE = 25; // Process 25 records at a time
+      let totalCreated = 0;
+
+      // Process releases in batches to avoid transaction timeouts
+      for (let i = 0; i < releases.length; i += BATCH_SIZE) {
+        const batch = releases.slice(i, i + BATCH_SIZE);
+
+        // Process each batch in its own transaction
+        const result = await prisma.$transaction(
+          async (tx) => {
+            const createdReleases = [];
+
+            for (const file of batch) {
+              // Normalize artist string for consistent processing
+              const normalizedArtistString = (file.artist || '')
+                .replace(/\s+ft\.\s+/gi, ', ')
+                .replace(/\s+&\s+/g, ', ');
+
+              // Create arrays of artist data
+              const artistsData = normalizedArtistString
+                .split(',')
+                .filter((name) => name.trim() !== '')
+                .map((artistName) => ({
+                  artistName: artistName.trim(),
+                  user: { connect: { id: userId } },
+                  ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                  artist: {
+                    connectOrCreate: {
+                      where: { name: artistName.trim() },
+                      create: {
+                        name: artistName.trim(),
+                        user: { connect: { id: userId } },
+                        ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                      },
+                    },
+                  },
+                }));
+
+              // Create the release with associated artists
+              const release = await tx.releases.create({
+                data: {
+                  ...file,
+                  userId,
+                  ...(teamId ? { teamId } : {}),
+                  releasesArtists: { create: artistsData },
+                },
+              });
+
+              createdReleases.push(release);
+            }
+
+            return createdReleases;
+          },
+          { timeout: 60000 }, // 60 second timeout for each batch
+        );
+
+        totalCreated += result.length;
+        console.log(`Batch processed: ${i}-${i + batch.length}, created: ${result.length}`);
+      }
+
+      return totalCreated;
+    }),
+  findReleasesUniqueArtists: authenticatedProcedure.query(async ({ ctx }) => {
+    const { user, teamId } = ctx;
+    const userId = user.id;
+
+    const uniqueArtists = await prisma.releasesArtists.findMany({
+      where: {
+        ...(teamId ? { teamId } : { teamId: null, userId }),
+      },
+      distinct: ['artistName'],
+      orderBy: {
+        artistName: 'asc',
+      },
+    });
+
+    return uniqueArtists;
+  }),
   findTaskById: authenticatedProcedure
     .input(z.object({ taskId: z.string() }))
     .query(async ({ input }: { input: { taskId: string } }) => {
@@ -100,7 +216,7 @@ export const releaseRouter = router({
 
   // Agrega la siguiente mutación al router existente
 
-  convertDates: authenticatedProcedure.mutation(async ({ ctx }) => {
+  convertDates: authenticatedProcedure.mutation(async () => {
     // Spanish month mappings - incluye versiones con mayúsculas y minúsculas
     const spanishMonths: Record<string, number> = {
       enero: 0,
@@ -223,6 +339,7 @@ export const releaseRouter = router({
         orderByColumn: z
           .enum(['id', 'lanzamiento', 'typeOfRelease', 'createdAt', 'updatedAt'])
           .optional(),
+        artistIds: z.array(z.number()).optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -232,6 +349,8 @@ export const releaseRouter = router({
         page,
         perPage,
         // release,
+        artistIds,
+
         orderByColumn,
         orderByDirection,
         period,
@@ -250,22 +369,13 @@ export const releaseRouter = router({
       if (type && type !== ExtendedReleaseType.ALL) {
         where.typeOfRelease = type;
       }
-      const getStatOptions: GetStatsInput = {
+      const getStatOptions: GetReleaseType = {
         user,
         period,
         search: query,
+        artistIds,
+        teamId,
       };
-
-      // if (teamId) {
-      //   const team = await getTeamById({ userId: user.id, teamId });
-      //   getStatOptions.team = {
-      //     teamId: team.id,
-      //     teamEmail: team.teamEmail?.email,
-      //     currentTeamMemberRole: team.currentTeamMember?.role,
-      //     currentUserEmail: user.email,
-      //     userId: user.id,
-      //   };
-      // }
 
       let createdAt: Prisma.ReleasesWhereInput['createdAt'];
 
@@ -288,6 +398,7 @@ export const releaseRouter = router({
           query,
           page,
           perPage,
+          artistIds,
           userId,
           teamId,
           period,
@@ -319,7 +430,7 @@ export const releaseRouter = router({
         release: z.nativeEnum(Release).optional(),
         uploaded: z.string().optional(),
         streamingLink: z.string().optional(),
-        assets: z.string().optional(),
+        assets: z.boolean().optional(),
         canvas: z.boolean().optional(),
         cover: z.boolean().optional(),
         audioWAV: z.boolean().optional(),

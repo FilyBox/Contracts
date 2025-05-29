@@ -48,12 +48,12 @@ export interface DataTableProps<TData, TValue> {
   data: TData[];
   onEdit?: (data: TData) => void;
   onNavegate?: (data: TData) => void;
-
   onDelete?: (data: TData) => void;
   onMoveDocument?: (data: TData) => void;
   perPage?: number;
   currentPage?: number;
   totalPages?: number;
+  onRetry?: (data: TData) => void;
   onPaginationChange?: (_page: number, _perPage: number) => void;
   onClearFilters?: () => void;
   hasFilters?: boolean;
@@ -75,6 +75,7 @@ export function DataTable<TData, TValue>({
   data,
   error,
   onEdit,
+  onRetry,
   onDelete,
   onNavegate,
   perPage,
@@ -235,7 +236,8 @@ export function DataTable<TData, TValue>({
                                 </Tooltip>
                               </TooltipProvider>
                             </>
-                          ) : cell.column.id === 'lpmArtists' && cell.getValue() ? (
+                          ) : cell.column.id === 'lpmArtists' ||
+                            (cell.column.id === 'releasesArtists' && cell.getValue()) ? (
                             <>
                               {/* <TooltipProvider>
                                 <Tooltip>
@@ -300,6 +302,18 @@ export function DataTable<TData, TValue>({
                         inset
                       >
                         View
+                      </ContextMenuItem>
+                    )}
+
+                    {onRetry && (
+                      <ContextMenuItem
+                        onClick={() => {
+                          console.log('Row clicked:', row.original);
+                          onRetry(row.original);
+                        }}
+                        inset
+                      >
+                        Retry
                       </ContextMenuItem>
                     )}
 

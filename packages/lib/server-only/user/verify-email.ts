@@ -29,7 +29,7 @@ export const verifyEmail = async ({ token }: VerifyEmailProps) => {
   // check if the token is valid or expired
   const valid = verificationToken.expires > new Date();
 
-  if (!valid) {
+  if (!valid && verificationToken.completed === false) {
     const mostRecentToken = await prisma.verificationToken.findFirst({
       where: {
         userId: verificationToken.userId,

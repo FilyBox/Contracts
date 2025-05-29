@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro';
 import { useSearchParams } from 'react-router';
 import { z } from 'zod';
 
+import { type TLpm } from '@documenso/lib/types/lpm';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { parseToIntegerArray } from '@documenso/lib/utils/params';
@@ -56,6 +57,9 @@ export default function TablePage() {
     perPage: findDocumentSearchParams.perPage,
   });
 
+  const { data: artistData, isLoading: artistDataloading } =
+    trpc.lpm.findLpmUniqueArtists.useQuery();
+
   const createManyMusicMutation = trpc.lpm.createManyMusic.useMutation();
 
   const createLpmMutation = trpc.lpm.createLpm.useMutation();
@@ -66,7 +70,7 @@ export default function TablePage() {
 
   // type LpmData = (typeof data.music)[number];
   const [dataIntial, setData] = useState<lpm[]>([]);
-  const [editingUser, setEditingUser] = useState<lpm | null>(null);
+  const [editingUser, setEditingUser] = useState<TLpm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -92,82 +96,28 @@ export default function TablePage() {
     setIsSubmitting(true);
     try {
       const csvData = await parseCsvFile(csvFile);
+      const convertDateFormat = (dateString: string): Date | undefined => {
+        if (!dateString || dateString.trim() === '') return undefined;
 
-      // Mapear los campos del CSV a la estructura de la base de datos
-      // const validatedData = csvData.map((item) => ({
-      //   // Campos de producto
-      //   productId: item.ProductId || '',
-      //   productType: item.ProductType || '',
-      //   productTitle: item.ProductTitle || '',
-      //   productVersion: item.ProductVersion || undefined,
-      //   productDisplayArtist: item.ProductDisplayArtist || '',
-      //   parentLabel: item.ParentLabel || undefined,
-      //   label: item.Label || '',
-      //   originalReleaseDate: item.OriginalReleaseDate || undefined,
-      //   releaseDate: item.ReleaseDate || '',
-      //   upc: item.UPC || '',
-      //   catalog: item.Catalog || '',
-      //   productPriceTier: item.ProductPriceTier || undefined,
-      //   productGenre: item.ProductGenre || '',
-      //   submissionStatus: item.SubmissionStatus || '',
-      //   productCLine: item.ProductCLine || '',
-      //   productPLine: item.ProductPLine || '',
-      //   preOrderDate: item.PreOrderDate || undefined,
-      //   exclusives: item.Exclusives || undefined,
-      //   explicitLyrics: item.ExplicitLyrics || '',
-      //   productPlayLink: item.ProductPlayLink || undefined,
-      //   linerNotes: item.LinerNotes || undefined,
-      //   primaryMetadataLanguage: item.PrimaryMetadataLanguage || '',
-      //   compilation: item.Compilation || undefined,
-      //   pdfBooklet: item.PdfBooklet || undefined,
-      //   timedReleaseDate: item.TimedReleaseDate || undefined,
-      //   timedReleaseMusicServices: item.TimedReleaseMusicServices || undefined,
-      //   lastProcessDate: item.LastProcessDate || new Date().toISOString(),
-      //   importDate: item.ImportDate || new Date().toISOString(),
+        try {
+          // Asume formato MM/dd/yyyy
+          const [month, day, year] = dateString.split('/');
+          if (!month || !day || !year) return undefined;
 
-      //   // Campos administrativos
-      //   createdBy: item.CreatedBy || 'system',
-      //   lastModified: item.LastModified || new Date().toISOString(),
-      //   submittedAt: item.SubmittedAt || new Date().toISOString(),
-      //   submittedBy: item.SubmittedBy || undefined,
-      //   vevoChannel: item.VevoChannel || undefined,
+          // Crear fecha en formato ISO (yyyy-MM-dd)
+          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          const date = new Date(isoDate);
 
-      //   // Campos de pistas
-      //   trackType: item.TrackType || 'default',
-      //   trackId: item.TrackID || '',
-      //   trackVolume: item.TrackVolume === '1' ? true : undefined,
-      //   trackNumber: item.TrackNumber || '',
-      //   trackName: item.Track || '',
-      //   trackVersion: item.TrackVersion || undefined,
-      //   trackDisplayArtist: item.TrackDisplayArtist || item.Artista || '',
-      //   isrc: item.ISRC || '',
-      //   trackPriceTier: item.TrackPriceTier || undefined,
-      //   trackGenre: item.TrackGenre || '',
-      //   audioLanguage: item.AudioLanguage || '',
-      //   trackCLine: item.TrackCLine || '',
-      //   trackPLine: item.TrackPLine || '',
-      //   writersComposers: item.WritersComposers || '',
-      //   publishersCollectionSocieties: item.PublishersCollectionSocieties || '',
-      //   withholdMechanicals: item.WithholdMechanicals || '',
-      //   preOrderType: item.PreOrderType || undefined,
-      //   instantGratificationDate: item.InstantGratificationDate || '',
-      //   duration: item.Duration || '',
-      //   sampleStartTime: item.SampleStartTime || '',
-      //   explicitLyricsTrack: item.ExplicitLyricsTrack || '',
-      //   albumOnly: item.AlbumOnly || '',
-      //   lyrics: item.Lyrics || undefined,
-      //   additionalContributorsPerforming: item.AdditionalContributorsPerforming || undefined,
-      //   additionalContributorsNonPerforming: item.AdditionalContributorsNonPerforming || undefined,
-      //   producers: item.Producers || '',
-      //   continuousMix: item.ContinuousMix || '',
-      //   continuouslyMixedIndividualSong: item.ContinuouslyMixedIndividualSong || '',
-      //   trackPlayLink: item.TrackPlayLink || '',
+          // Verificar que la fecha es válida
+          if (isNaN(date.getTime())) return undefined;
 
-      //   // Campos adicionales de licencia
-      //   license: item.Licencia || '',
-      // }));
+          return date;
+        } catch (error) {
+          console.warn(`Error converting date: ${dateString}`, error);
+          return undefined;
+        }
+      };
       const validatedData = csvData.map((item) => ({
-        // Campos de producto
         productId: item['Product Id'] || '',
         productType: item['Product Type'] || '',
         productTitle: item['Product Title'] || '',
@@ -175,8 +125,8 @@ export default function TablePage() {
         productDisplayArtist: item['Product Display Artist'] || '',
         parentLabel: item['Parent Label'] || undefined,
         label: item['Label'] || '',
-        originalReleaseDate: item['Original Release Date'] || undefined,
-        releaseDate: item['Release Date'] || '',
+        originalReleaseDate: convertDateFormat(item['Original Release Date']) || new Date(),
+        releaseDate: convertDateFormat(item['Release Date']) || new Date(),
         upc: item['UPC'] || '',
         catalog: item['Catalog #'] || '',
         productPriceTier: item['Product Price Tier'] || undefined,
@@ -184,7 +134,7 @@ export default function TablePage() {
         submissionStatus: item['Submission Status'] || '',
         productCLine: item['Product C Line'] || '',
         productPLine: item['Product P Line'] || '',
-        preOrderDate: item['Pre-Order Date'] || undefined,
+        preOrderDate: convertDateFormat(item['Pre-Order Date']),
         exclusives: item['Exclusives'] || undefined,
         explicitLyrics: item['ExplicitLyrics'] || '',
         productPlayLink: item['Product Play Link'] || undefined,
@@ -192,15 +142,16 @@ export default function TablePage() {
         primaryMetadataLanguage: item['Primary Metadata Language'] || '',
         compilation: item['Compilation'] || undefined,
         pdfBooklet: item['PDF Booklet'] || undefined,
-        timedReleaseDate: item['Timed Release Date'] || undefined,
-        timedReleaseMusicServices: item['Timed Release Music Services'] || undefined,
-        lastProcessDate: item['Last Process Date'] || new Date().toISOString(),
-        importDate: item['Import Date'] || new Date().toISOString(),
+        timedReleaseDate: convertDateFormat(item['Timed Release Date']),
+        timedReleaseMusicServices:
+          convertDateFormat(item['Timed Release Music Services']) || undefined,
+        lastProcessDate: convertDateFormat(item['Last Process Date']) || new Date(),
+        importDate: convertDateFormat(item['Import Date']) || new Date(),
 
         // Campos administrativos
         createdBy: item['Created By'] || 'system',
-        lastModified: item['Last Modified'] || new Date().toISOString(),
-        submittedAt: item['Submitted At'] || new Date().toISOString(),
+        lastModified: convertDateFormat(item['Last Modified']) || new Date(),
+        submittedAt: convertDateFormat(item['Submitted At']) || new Date(),
         submittedBy: item['Submitted By'] || undefined,
         vevoChannel: item['Vevo Channel'] || undefined,
 
@@ -222,7 +173,8 @@ export default function TablePage() {
         publishersCollectionSocieties: item['Publishers/Collection Societies'] || '',
         withholdMechanicals: item['Withhold Mechanicals'] || '',
         preOrderType: item['Pre-Order Type'] || undefined,
-        instantGratificationDate: item['Instant Gratification Date'] || '',
+        instantGratificationDate:
+          convertDateFormat(item['Instant Gratification Date']) || new Date(),
         duration: item['Duration'] || '',
         sampleStartTime: item['Sample Start Time'] || '',
         explicitLyricsTrack: item['Explicit Lyrics'] || '',
@@ -251,7 +203,7 @@ export default function TablePage() {
 
       toast({
         description: `Se han creado
-         ${result.length} 
+         ${result} 
          registros exitosamente`,
       });
 
@@ -269,7 +221,9 @@ export default function TablePage() {
     }
   };
 
-  const handleCreate = async (newRecord: Omit<lpm, 'id'>) => {
+  const handleCreate = async (newRecord: Omit<TLpm, 'id'>) => {
+    console.log('New Record:', newRecord);
+
     setIsSubmitting(true);
     try {
       const { id } = await createLpmMutation.mutateAsync({
@@ -284,6 +238,7 @@ export default function TablePage() {
         originalReleaseDate: newRecord.originalReleaseDate ?? undefined,
         releaseDate: newRecord.releaseDate,
         upc: newRecord.upc,
+        artists: newRecord.lpmArtists ?? [],
         catalog: newRecord.catalog,
         productPriceTier: newRecord.productPriceTier ?? undefined,
         productGenre: newRecord.productGenre ?? '',
@@ -305,8 +260,8 @@ export default function TablePage() {
 
         // Required fields from schema
         createdBy: newRecord.createdBy ?? 'system',
-        lastModified: newRecord.lastModified ?? new Date().toISOString(),
-        submittedAt: newRecord.submittedAt ?? new Date().toISOString(),
+        lastModified: newRecord.lastModified ?? new Date(),
+        submittedAt: newRecord.submittedAt ?? new Date(),
         submittedBy: newRecord.submittedBy ?? undefined,
         vevoChannel: newRecord.vevoChannel ?? undefined,
 
@@ -328,7 +283,7 @@ export default function TablePage() {
         publishersCollectionSocieties: newRecord.publishersCollectionSocieties ?? '',
         withholdMechanicals: newRecord.withholdMechanicals ?? '',
         preOrderType: newRecord.preOrderType ?? undefined,
-        instantGratificationDate: newRecord.instantGratificationDate ?? '',
+        instantGratificationDate: newRecord.instantGratificationDate ?? new Date(),
         duration: newRecord.duration ?? '',
         sampleStartTime: newRecord.sampleStartTime ?? '',
         explicitLyricsTrack: newRecord.explicitLyricsTrack ?? '',
@@ -356,7 +311,7 @@ export default function TablePage() {
     setIsDialogOpen(false);
   };
 
-  const handleUpdate = async (updatedLpm: lpm) => {
+  const handleUpdate = async (updatedLpm: TLpm) => {
     console.log('Updated User:', updatedLpm);
     console.log('id', updatedLpm.id);
     setIsSubmitting(true);
@@ -370,16 +325,19 @@ export default function TablePage() {
         productDisplayArtist: updatedLpm.productDisplayArtist,
         parentLabel: updatedLpm.parentLabel ?? undefined,
         label: updatedLpm.label,
+        artists: updatedLpm.lpmArtists ?? [],
+
         originalReleaseDate: updatedLpm.originalReleaseDate ?? undefined,
         releaseDate: updatedLpm.releaseDate,
         upc: updatedLpm.upc,
+
         catalog: updatedLpm.catalog,
         productPriceTier: updatedLpm.productPriceTier ?? undefined,
         productGenre: updatedLpm.productGenre ?? '',
         submissionStatus: updatedLpm.submissionStatus,
         productCLine: updatedLpm.productCLine,
         productPLine: updatedLpm.productPLine,
-        preOrderDate: updatedLpm.preOrderDate ?? undefined,
+        preOrderDate: updatedLpm.preOrderDate ?? new Date(),
         exclusives: updatedLpm.exclusives ?? undefined,
         explicitLyrics: updatedLpm.explicitLyrics,
         productPlayLink: updatedLpm.productPlayLink ?? undefined,
@@ -387,15 +345,15 @@ export default function TablePage() {
         primaryMetadataLanguage: updatedLpm.primaryMetadataLanguage,
         compilation: updatedLpm.compilation ?? undefined,
         pdfBooklet: updatedLpm.pdfBooklet ?? undefined,
-        timedReleaseDate: updatedLpm.timedReleaseDate ?? undefined,
+        timedReleaseDate: updatedLpm.timedReleaseDate ?? new Date(),
         timedReleaseMusicServices: updatedLpm.timedReleaseMusicServices ?? undefined,
         lastProcessDate: updatedLpm.lastProcessDate,
         importDate: updatedLpm.importDate,
 
         // Required fields from schema
         createdBy: updatedLpm.createdBy ?? 'system',
-        lastModified: updatedLpm.lastModified ?? new Date().toISOString(),
-        submittedAt: updatedLpm.submittedAt ?? new Date().toISOString(),
+        lastModified: updatedLpm.lastModified ?? new Date(),
+        submittedAt: updatedLpm.submittedAt ?? new Date(),
         submittedBy: updatedLpm.submittedBy ?? undefined,
         vevoChannel: updatedLpm.vevoChannel ?? undefined,
 
@@ -417,7 +375,7 @@ export default function TablePage() {
         publishersCollectionSocieties: updatedLpm.publishersCollectionSocieties ?? '',
         withholdMechanicals: updatedLpm.withholdMechanicals ?? '',
         preOrderType: updatedLpm.preOrderType ?? undefined,
-        instantGratificationDate: updatedLpm.instantGratificationDate ?? '',
+        instantGratificationDate: updatedLpm.instantGratificationDate ?? new Date(),
         duration: updatedLpm.duration ?? '',
         sampleStartTime: updatedLpm.sampleStartTime ?? '',
         explicitLyricsTrack: updatedLpm.explicitLyricsTrack ?? '',
@@ -462,7 +420,7 @@ export default function TablePage() {
     }
   };
 
-  const handleEdit = (record: lpm) => {
+  const handleEdit = (record: TLpm) => {
     setEditingUser(record);
     setIsDialogOpen(true);
   };
@@ -494,7 +452,7 @@ export default function TablePage() {
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
             </Button>
           </div>
-          <TableArtistFilter />
+          <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
           <Button onClick={openCreateDialog}>Add Item</Button>
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
@@ -513,6 +471,7 @@ export default function TablePage() {
           </DialogHeader> */}
           <div>
             <MyForm
+              artistData={artistData}
               isSubmitting={isSubmitting}
               onSubmit={editingUser ? handleUpdate : handleCreate}
               initialData={editingUser}

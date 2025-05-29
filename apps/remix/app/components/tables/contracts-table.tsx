@@ -27,6 +27,8 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean;
   isLoadingError?: boolean;
   onAdd: () => void;
+  onRetry?: (data: DocumentsTableRow) => void;
+
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
   onNavegate?: (data: DocumentsTableRow) => void;
@@ -39,6 +41,7 @@ export const ContractsTable = ({
   data,
   isLoading,
   isLoadingError,
+  onRetry,
   onAdd,
   onEdit,
   onNavegate,
@@ -139,6 +142,7 @@ export const ContractsTable = ({
         columns={columns}
         onDelete={onDelete}
         onEdit={onEdit}
+        onRetry={onRetry}
         onNavegate={onNavegate}
         data={results.data}
         perPage={results.perPage}

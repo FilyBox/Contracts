@@ -88,6 +88,8 @@ export default function ContractsPage() {
     status: findDocumentSearchParams.status,
   });
 
+  const retryDocument = trpc.document.retryChatDocument.useMutation();
+
   const {
     data: documentsData,
     isLoading: isDocumentsLoading,
@@ -259,6 +261,32 @@ export default function ContractsPage() {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleRetry = async (row: Contract) => {
+    try {
+      const { documentId, id } = row;
+      if (!documentId || documentId === 0) {
+        toast({
+          variant: 'destructive',
+          description: 'El registro no tiene un documento asociado.',
+        });
+        return;
+      }
+      const result = await retryDocument.mutateAsync({
+        documentId: documentId,
+      });
+
+      toast({
+        description: 'Attempting to retry',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error',
+      });
+      console.error('Error:', error);
     }
   };
 
@@ -481,7 +509,7 @@ export default function ContractsPage() {
 
         <div className="flex w-full items-center justify-end gap-4">
           <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
-            <TabsList>
+            <TabsList className="items-center justify-start overflow-x-auto">
               {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
                 return (
                   <TabsTrigger
@@ -545,6 +573,7 @@ export default function ContractsPage() {
               totalPages: 1,
             }
           }
+          onRetry={handleRetry}
           isLoading={isLoading}
           isLoadingError={isLoadingError}
           onMoveDocument={(row: Contract) => {
