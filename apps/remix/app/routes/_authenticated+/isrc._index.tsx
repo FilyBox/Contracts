@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 
-import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { type IsrcSongs } from '@documenso/prisma/client';
 import { trpc } from '@documenso/trpc/react';
-import { Button } from '@documenso/ui/primitives/button';
 import { createColumnsIsrc } from '@documenso/ui/primitives/column-custom';
 import { DataTableCustom } from '@documenso/ui/primitives/data-table-custom';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
 import MyForm from '@documenso/ui/primitives/form-custom-isrc';
-import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+<<<<<<< HEAD
 type CsvColumnMapping = {
   csvColumn: string;
   field: keyof Omit<IsrcSongs, 'id'> | '';
 };
+=======
+// import { type IsrcSongsData } from '@documenso/ui/primitives/types';
+>>>>>>> parent of cc1e39c0... feat: import csv
 
 export default function TablePage() {
   const { data, isLoading, isLoadingError, refetch } = trpc.IsrcSongs.findIsrcSongs.useQuery();
   const createIsrcSongsMutation = trpc.IsrcSongs.createIsrcSongs.useMutation();
-  const createManyIsrcSongsMutation = trpc.IsrcSongs.createManyIsrcSongs.useMutation();
   const updateIsrcSongsMutation = trpc.IsrcSongs.updateIsrcSongsById.useMutation();
   const deleteIsrcSongsMutation = trpc.IsrcSongs.deleteIsrcSongsById.useMutation();
   const { toast } = useToast();
@@ -29,9 +29,7 @@ export default function TablePage() {
   const [editingUser, setEditingUser] = useState<IsrcSongs | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
   const columns = createColumnsIsrc();
-
   useEffect(() => {
     if (data) {
       console.log('Data:', data);
@@ -39,6 +37,7 @@ export default function TablePage() {
     }
   }, [data]);
 
+<<<<<<< HEAD
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setCsvFile(e.target.files[0]);
@@ -95,16 +94,21 @@ export default function TablePage() {
 
   const artist = trpc.artist.findArtists;
 
+=======
+>>>>>>> parent of cc1e39c0... feat: import csv
   const handleCreate = async (newRecord: Omit<IsrcSongs, 'id'>) => {
     setIsSubmitting(true);
     try {
       const { id } = await createIsrcSongsMutation.mutateAsync({
+        // Use properties from newRecord
         trackName: newRecord.trackName ?? '',
         artist: newRecord.artist ?? '',
         duration: newRecord.duration ?? '',
         title: newRecord.title ?? '',
         license: newRecord.license ?? '',
         date: newRecord.date ?? '',
+
+        // Required fields from schema
       });
       console.log('Created Record ID:', id);
       await refetch();
@@ -114,6 +118,10 @@ export default function TablePage() {
     } finally {
       setIsSubmitting(false);
     }
+    console.log('New Record:', newRecord);
+    const record = { ...newRecord, id: Number(dataIntial.length + 1) };
+    setData([...dataIntial, record]);
+    setIsDialogOpen(false);
   };
 
   const handleUpdate = async (updatedIsrcSongs: IsrcSongs) => {
@@ -185,12 +193,26 @@ export default function TablePage() {
             />
           </div>
         </DialogContent>
-        <div className="mb-4 flex items-center gap-2">
-          <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
-          <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
-            {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
-          </Button>
-        </div>
+        {/* <div className="flex gap-4 sm:flex-row sm:justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="gap-2" align="end">
+              <DropdownMenuItem className="m-1" asChild>
+                <ArtistCreateDialog />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <EventCreateDialog />
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <WrittersCreateDialog />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div> */}
       </Dialog>
       <DataTableCustom
         columns={columns}

@@ -30,7 +30,7 @@ export const SongCreateDialog = ({ onCreated }: SongCreateDialogProps) => {
   const { toast } = useToast();
   const { _ } = useLingui();
 
-  const { mutateAsync: createLpmSong } = trpc.Lpm.createLpm.useMutation();
+  const { mutateAsync: createLpmSong } = trpc.lpm.createLpm.useMutation();
 
   const [showDialog, setShowDialog] = useState(false);
   const [isCreating, setIsCreating] = useState(false);

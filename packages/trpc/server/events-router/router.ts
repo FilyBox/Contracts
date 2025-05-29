@@ -9,6 +9,10 @@ export type GetEventByIdOptions = {
   name: string;
   description?: string;
   image?: string;
+<<<<<<< HEAD
+=======
+  teamId?: number;
+>>>>>>> parent of cc1e39c0... feat: import csv
   venue?: string;
   artists: string[];
   beginning: Date;
@@ -25,6 +29,10 @@ export const eventRouter = router({
         name: z.string().min(1).optional(),
         description: z.string().optional(),
         image: z.string().optional(),
+<<<<<<< HEAD
+=======
+        teamId: z.number().optional(),
+>>>>>>> parent of cc1e39c0... feat: import csv
         venue: z.string().optional(),
         artists: z.array(z.string()).optional(),
         beginning: z.date().optional(),
@@ -42,6 +50,10 @@ export const eventRouter = router({
             name: input.name,
             description: input.description,
             image: input.image,
+<<<<<<< HEAD
+=======
+            teamId: input.teamId,
+>>>>>>> parent of cc1e39c0... feat: import csv
             venue: input.venue,
             artists: input.artists
               ? {
@@ -57,6 +69,7 @@ export const eventRouter = router({
         throw new Error('Error creating event');
       }
     }),
+<<<<<<< HEAD
 
   findEvent: authenticatedProcedure.query(async () => {
     const events = await prisma.event.findMany({
@@ -124,4 +137,6 @@ export const eventRouter = router({
         throw new Error('Error deleting event');
       }
     }),
+=======
+>>>>>>> parent of cc1e39c0... feat: import csv
 });

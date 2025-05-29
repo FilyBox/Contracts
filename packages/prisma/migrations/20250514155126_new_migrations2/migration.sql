@@ -10,79 +10,6 @@ CREATE TYPE "SongStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 -- CreateEnum
 CREATE TYPE "SongType" AS ENUM ('MASTER', 'MECHANICAL', 'PERFORMANCE', 'SYNCHRONIZATION');
 
--- CreateEnum
-CREATE TYPE "songRoles" AS ENUM ('WRITER', 'COMPOSER', 'ARRANGER', 'PRODUCER', 'MIXER', 'MASTERING_ENGINEER');
-
--- CreateTable
-CREATE TABLE "Lpm" (
-    "id" SERIAL NOT NULL,
-    "productId" TEXT NOT NULL,
-    "Product Type" VARCHAR NOT NULL,
-    "Product Title" VARCHAR NOT NULL,
-    "Product Version" VARCHAR,
-    "Product Display Artist" VARCHAR NOT NULL,
-    "Parent Label" VARCHAR,
-    "label" VARCHAR NOT NULL,
-    "Original Release Date" VARCHAR,
-    "Release Date" VARCHAR NOT NULL,
-    "UPC" VARCHAR NOT NULL,
-    "Catalog " VARCHAR NOT NULL,
-    "Product Price Tier" VARCHAR,
-    "Product Genre" VARCHAR NOT NULL,
-    "Submission Status" VARCHAR NOT NULL,
-    "Product C Line" VARCHAR NOT NULL,
-    "Product P Line" VARCHAR NOT NULL,
-    "PreOrder Date" VARCHAR,
-    "Exclusives" VARCHAR,
-    "ExplicitLyrics" VARCHAR NOT NULL,
-    "Product Play Link" VARCHAR,
-    "Liner Notes" VARCHAR,
-    "Primary Metadata Language" VARCHAR NOT NULL,
-    "Compilation" VARCHAR,
-    "PDF Booklet" VARCHAR,
-    "Timed Release Date" VARCHAR,
-    "Timed Release Music Services" VARCHAR,
-    "Last Process Date" VARCHAR NOT NULL,
-    "Import Date" VARCHAR NOT NULL,
-    "Created By" VARCHAR NOT NULL,
-    "Last Modified" VARCHAR NOT NULL,
-    "Submitted At" VARCHAR,
-    "Submitted By" VARCHAR,
-    "Vevo Channel" VARCHAR,
-    "TrackType" VARCHAR NOT NULL,
-    "Track Id" VARCHAR NOT NULL,
-    "Track Volume" BOOLEAN,
-    "Track Number" VARCHAR NOT NULL,
-    "Track Name" VARCHAR NOT NULL,
-    "Track Version" VARCHAR,
-    "Track Display Artist" VARCHAR NOT NULL,
-    "Isrc" VARCHAR NOT NULL,
-    "Track Price Tier" VARCHAR,
-    "Track Genre" VARCHAR NOT NULL,
-    "Audio Language" VARCHAR NOT NULL,
-    "Track C Line" VARCHAR NOT NULL,
-    "Track P Line" VARCHAR NOT NULL,
-    "WritersComposers" VARCHAR NOT NULL,
-    "PublishersCollection Societies" VARCHAR NOT NULL,
-    "Withhold Mechanicals" VARCHAR NOT NULL,
-    "PreOrder Type" VARCHAR,
-    "Instant Gratification Date" VARCHAR,
-    "Duration" VARCHAR NOT NULL,
-    "Sample Start Time" VARCHAR,
-    "Explicit Lyrics" VARCHAR NOT NULL,
-    "Album Only" VARCHAR NOT NULL,
-    "Lyrics" VARCHAR,
-    "writersId" INTEGER,
-    "AdditionalContributorsPerforming" VARCHAR,
-    "AdditionalContributorsNonPerforming" VARCHAR,
-    "Producers" VARCHAR,
-    "Continuous Mix" VARCHAR,
-    "Continuously Mixed Individual Song" VARCHAR,
-    "Track Play Link" VARCHAR,
-
-    CONSTRAINT "Lpm_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateTable
 CREATE TABLE "Songs" (
     "id" SERIAL NOT NULL,
@@ -104,47 +31,18 @@ CREATE TABLE "Songs" (
 );
 
 -- CreateTable
-CREATE TABLE "Writers" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "teamId" INTEGER,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "songroles" "songRoles"[] DEFAULT ARRAY['WRITER']::"songRoles"[],
-    "avatarImageId" TEXT,
-    "disabled" BOOLEAN DEFAULT false,
-    "url" TEXT,
-
-    CONSTRAINT "Writers_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Artist" (
     "id" SERIAL NOT NULL,
     "name" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "teamId" INTEGER,
+    "teamId" INTEGER NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "roles" "Role"[] DEFAULT ARRAY['USER']::"Role"[],
     "avatarImageId" TEXT,
-    "disabled" BOOLEAN DEFAULT false,
+    "disabled" BOOLEAN NOT NULL DEFAULT false,
     "url" TEXT,
 
     CONSTRAINT "Artist_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "IsrcSongs" (
-    "id" SERIAL NOT NULL,
-    "date" TEXT,
-    "isrc" TEXT,
-    "artist" TEXT,
-    "duration" TEXT,
-    "trackName" TEXT,
-    "title" TEXT,
-    "license" TEXT,
-
-    CONSTRAINT "IsrcSongs_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -163,6 +61,7 @@ CREATE TABLE "Event" (
     "name" VARCHAR(300) NOT NULL,
     "description" VARCHAR(200),
     "image" TEXT,
+    "teamId" INTEGER,
     "venue" VARCHAR(300),
     "beginning" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "end" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -315,20 +214,11 @@ CREATE TABLE "_ArtistToSongs" (
     "B" INTEGER NOT NULL
 );
 
--- CreateTable
-CREATE TABLE "_ArtistToIsrcSongs" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Songs_url_key" ON "Songs"("url");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Songs_uniqueIdentifier_key" ON "Songs"("uniqueIdentifier");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Writers_url_key" ON "Writers"("url");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Artist_url_key" ON "Artist"("url");
@@ -357,15 +247,6 @@ CREATE UNIQUE INDEX "_ArtistToSongs_AB_unique" ON "_ArtistToSongs"("A", "B");
 -- CreateIndex
 CREATE INDEX "_ArtistToSongs_B_index" ON "_ArtistToSongs"("B");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_ArtistToIsrcSongs_AB_unique" ON "_ArtistToIsrcSongs"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_ArtistToIsrcSongs_B_index" ON "_ArtistToIsrcSongs"("B");
-
--- AddForeignKey
-ALTER TABLE "Lpm" ADD CONSTRAINT "Lpm_writersId_fkey" FOREIGN KEY ("writersId") REFERENCES "Writers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
 -- AddForeignKey
 ALTER TABLE "Songs" ADD CONSTRAINT "Songs_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -374,6 +255,9 @@ ALTER TABLE "Artist" ADD CONSTRAINT "Artist_teamId_fkey" FOREIGN KEY ("teamId") 
 
 -- AddForeignKey
 ALTER TABLE "ArtistProfile" ADD CONSTRAINT "ArtistProfile_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Event" ADD CONSTRAINT "Event_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TicketType" ADD CONSTRAINT "TicketType_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -425,9 +309,3 @@ ALTER TABLE "_ArtistToSongs" ADD CONSTRAINT "_ArtistToSongs_A_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "_ArtistToSongs" ADD CONSTRAINT "_ArtistToSongs_B_fkey" FOREIGN KEY ("B") REFERENCES "Songs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ArtistToIsrcSongs" ADD CONSTRAINT "_ArtistToIsrcSongs_A_fkey" FOREIGN KEY ("A") REFERENCES "Artist"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ArtistToIsrcSongs" ADD CONSTRAINT "_ArtistToIsrcSongs_B_fkey" FOREIGN KEY ("B") REFERENCES "IsrcSongs"("id") ON DELETE CASCADE ON UPDATE CASCADE;

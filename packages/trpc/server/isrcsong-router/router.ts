@@ -43,6 +43,7 @@ export const IsrcSongsRouter = router({
       return isrcSong;
     }),
 
+<<<<<<< HEAD
   createManyIsrcSongs: authenticatedProcedure
     .input(
       z.object({
@@ -76,6 +77,8 @@ export const IsrcSongsRouter = router({
       return createdIsrcSongs;
     }),
 
+=======
+>>>>>>> parent of cc1e39c0... feat: import csv
   findIsrcSongs: authenticatedProcedure.query(async ({ input }) => {
     const isrcSongs = await prisma.isrcSongs.findMany({
       orderBy: {
