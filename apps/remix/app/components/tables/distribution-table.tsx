@@ -20,7 +20,21 @@ export type DocumentsTableProps = {
   isLoading?: boolean;
   isLoadingError?: boolean;
   onMoveDocument?: (documentId: number) => void;
+  onAdd: () => void;
+  onEdit?: (data: DocumentsTableRow) => void;
+  onDelete?: (data: DocumentsTableRow) => void;
 };
+
+interface DataTableProps<TData, TValue> {
+  data?: TFindDistributionInternalResponse;
+  isLoading?: boolean;
+  isLoadingError?: boolean;
+  onMoveDocument?: (documentId: number) => void;
+
+  onAdd?: () => void;
+  onEdit?: (data: DocumentsTableRow) => void;
+  onDelete?: (data: DocumentsTableRow) => void;
+}
 
 type DocumentsTableRow = TFindDistributionInternalResponse['data'][number];
 
@@ -29,7 +43,9 @@ export const DistributionTable = ({
   isLoading,
   isLoadingError,
   onMoveDocument,
-}: DocumentsTableProps) => {
+  onEdit,
+  onDelete,
+}: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
   const team = useOptionalCurrentTeam();
@@ -91,18 +107,37 @@ export const DistributionTable = ({
       },
       {
         header: _(msg`Territorio`),
-        accessorKey: 'territorio',
-        cell: ({ row }) => row.original.territorio || '-',
+        accessorKey: 'distributionStatementMusicPlatforms',
+        cell: ({ row }) => {
+          const platforms = row.original.distributionStatementMusicPlatforms;
+          if (!platforms || platforms.length === 0) return '-';
+
+          // If you want to display all platform names, join them with commas
+          return platforms[0]?.name;
+
+          // Or if you want to display just the first platform name:
+          // return platforms[0]?.name || '-';
+        },
       },
       {
         header: _(msg`Código del Territorio`),
         accessorKey: 'codigoDelTerritorio',
         cell: ({ row }) => row.original.codigoDelTerritorio || '-',
       },
+
       {
         header: _(msg`Nombre del Territorio`),
-        accessorKey: 'nombreDelTerritorio',
-        cell: ({ row }) => row.original.nombreDelTerritorio || '-',
+        accessorKey: 'distributionStatementTerritories',
+        cell: ({ row }) => {
+          const territories = row.original.distributionStatementTerritories;
+          if (!territories || territories.length === 0) return '-';
+
+          // If you want to display all platform names, join them with commas
+          return territories[0]?.name;
+
+          // Or if you want to display just the first platform name:
+          // return platforms[0]?.name || '-';
+        },
       },
       {
         header: _(msg`Tipo de Precio`),
@@ -122,29 +157,27 @@ export const DistributionTable = ({
       {
         header: _(msg`RTL`),
         accessorKey: 'rtl',
-        cell: ({ row }) => (row.original.rtl !== null ? row.original.rtl.toFixed(2) : '-'),
+        cell: ({ row }) => (row.original.rtl !== null ? row.original.rtl : '-'),
       },
       {
         header: _(msg`PPD`),
         accessorKey: 'ppd',
-        cell: ({ row }) => (row.original.ppd !== null ? row.original.ppd.toFixed(2) : '-'),
+        cell: ({ row }) => (row.original.ppd !== null ? row.original.ppd : '-'),
       },
       {
         header: _(msg`RBP`),
         accessorKey: 'rbp',
-        cell: ({ row }) => (row.original.rbp !== null ? row.original.rbp.toFixed(2) : '-'),
+        cell: ({ row }) => (row.original.rbp !== null ? row.original.rbp : '-'),
       },
       {
         header: _(msg`Tipo de Cambio`),
         accessorKey: 'tipoDeCambio',
-        cell: ({ row }) =>
-          row.original.tipoDeCambio !== null ? row.original.tipoDeCambio.toFixed(2) : '-',
+        cell: ({ row }) => (row.original.tipoDeCambio !== null ? row.original.tipoDeCambio : '-'),
       },
       {
         header: _(msg`Valor Recibido`),
         accessorKey: 'valorRecibido',
-        cell: ({ row }) =>
-          row.original.valorRecibido !== null ? row.original.valorRecibido.toFixed(2) : '-',
+        cell: ({ row }) => (row.original.valorRecibido !== null ? row.original.valorRecibido : '-'),
       },
       {
         header: _(msg`Regalías Artísticas`),
@@ -156,7 +189,7 @@ export const DistributionTable = ({
         header: _(msg`Costo Distribución`),
         accessorKey: 'costoDistribucion',
         cell: ({ row }) =>
-          row.original.costoDistribucion !== null ? row.original.costoDistribucion.toFixed(2) : '-',
+          row.original.costoDistribucion !== null ? row.original.costoDistribucion : '-',
       },
       {
         header: _(msg`Copyright`),
@@ -187,7 +220,7 @@ export const DistributionTable = ({
         header: _(msg`Ingresos Recibidos`),
         accessorKey: 'ingresosRecibidos',
         cell: ({ row }) =>
-          row.original.ingresosRecibidos !== null ? row.original.ingresosRecibidos.toFixed(2) : '-',
+          row.original.ingresosRecibidos !== null ? row.original.ingresosRecibidos : '-',
       },
       {
         header: _(msg`Fecha de Creación`),
@@ -223,6 +256,8 @@ export const DistributionTable = ({
   return (
     <div className="relative">
       <DataTable
+        onDelete={onDelete}
+        onEdit={onEdit}
         columns={columns}
         data={results.data}
         perPage={results.perPage}

@@ -24,76 +24,256 @@ export const distributionRouter = router({
   createDistribution: authenticatedProcedure
     .input(
       z.object({
-        title: z.string().min(1),
-        description: z.string().optional(),
-        type: z.nativeEnum(ExtendedReleaseType),
-        dueDate: z.date().optional(),
-        tags: z.array(z.string()).optional().default([]),
-        // userId: z.number(),
-        // teamId: z.number().optional(),
-        assignees: z
+        territories: z
           .array(
             z.object({
-              email: z.string(),
+              id: z.number(),
               name: z.string().nullable(),
             }),
           )
-          .optional()
-          .default([]),
-        projectId: z.number().optional(),
-        parentTaskId: z.number().optional(),
+          .optional(),
+        musicPlatform: z
+          .array(
+            z.object({
+              id: z.number(),
+              name: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        marketingOwner: z.string().optional(),
+        nombreDistribucion: z.string().optional(),
+        proyecto: z.string().optional(),
+        numeroDeCatalogo: z.string().optional(),
+        upc: z.string().optional(),
+        localProductNumber: z.string().optional(),
+        isrc: z.string().optional(),
+        tituloCatalogo: z.string().optional(),
+        mesReportado: z.number().int().optional(),
+        territorio: z.string().optional(),
+        codigoDelTerritorio: z.string().optional(),
+        nombreDelTerritorio: z.string().optional(),
+        tipoDePrecio: z.string().optional(),
+        tipoDeIngreso: z.string().optional(),
+        venta: z.number().optional(),
+        rtl: z.number().optional(),
+        ppd: z.number().optional(),
+        rbp: z.number().optional(),
+        tipoDeCambio: z.number().optional(),
+        valorRecibido: z.number().optional(),
+        regaliasArtisticas: z.number().optional(),
+        costoDistribucion: z.number().optional(),
+        copyright: z.number().optional(),
+        cuotaAdministracion: z.number().optional(),
+        costoCarga: z.number().optional(),
+        otrosCostos: z.number().optional(),
+        ingresosRecibidos: z.number().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const { user, teamId } = ctx;
-      // Desestructuración correcta que incluye projectId
-      const { projectId, parentTaskId, assignees, ...data } = input;
       const userId = user.id;
-      console.log('assignees', assignees);
-      // Verificar permisos si es tarea de equipo
-      if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para crear tareas en este equipo');
-      }
+      const { territories, musicPlatform, ...data } = input;
 
-      if (teamId) {
-        const team = await getTeamById({ userId, teamId });
-        if (!team) {
-          throw new Error('Team not found');
-        }
+      console.log('territories to create:', territories);
+      console.log('musicPlatform to create:', musicPlatform);
+      const allData = { ...data, userId, ...(teamId ? { teamId } : {}) };
 
-        const [users] = await Promise.all([
-          prisma.user.findMany({
-            where: { email: { in: assignees.map((assignee) => assignee.email) } },
-          }),
-        ]);
-        console.log('users in task', users);
-
-        const taskCreated = await prisma.task.create({
-          data: {
-            ...data,
-            status: 'PENDING',
-            userId,
-            teamId: team.id,
-            ...(projectId && { projectId }),
-            ...(parentTaskId && { parentTaskId }),
-          },
-        });
-
-        // Create a TaskAssignee entry for each user
-
-        return taskCreated;
-      }
-      const taskCreated = await prisma.task.create({
+      return await prisma.distributionStatement.create({
+        // data: {
+        //   ...cleanedInput,
+        //   userId,
+        //   ...(teamId ? { teamId } : {}), // Add teamId if it exists
+        // } as unknown as Prisma.lpmCreateInput,
         data: {
           ...data,
-          status: 'PENDING',
-          userId,
-          ...(projectId && { projectId }),
-          ...(parentTaskId && { parentTaskId }),
+          user: {
+            connect: { id: userId },
+          },
+          ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+          distributionStatementMusicPlatforms: {
+            create:
+              musicPlatform?.map((platform) => ({
+                name: platform.name?.trim() || '',
+                user: {
+                  connect: { id: userId },
+                },
+                ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                platform: {
+                  connectOrCreate: {
+                    where: { name: platform.name?.trim() || '' },
+                    create: {
+                      name: platform.name?.trim() || '',
+                      user: {
+                        connect: { id: userId },
+                      },
+                      ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    },
+                  },
+                },
+              })) || [],
+          },
+
+          distributionStatementTerritories: {
+            create:
+              territories?.map((territory) => ({
+                name: territory.name?.trim() || '',
+                user: {
+                  connect: { id: userId },
+                },
+                ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                territory: {
+                  connectOrCreate: {
+                    where: { name: territory.name?.trim() || '' },
+                    create: {
+                      name: territory.name?.trim() || '',
+                      user: {
+                        connect: { id: userId },
+                      },
+                      ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    },
+                  },
+                },
+              })) || [],
+          },
+        },
+      });
+    }),
+
+  updateDistributionById: authenticatedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        territories: z
+          .array(
+            z.object({
+              id: z.number(),
+              name: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        musicPlatform: z
+          .array(
+            z.object({
+              id: z.number(),
+              name: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        marketingOwner: z.string().optional(),
+        nombreDistribucion: z.string().optional(),
+        proyecto: z.string().optional(),
+        numeroDeCatalogo: z.string().optional(),
+        upc: z.string().optional(),
+        localProductNumber: z.string().optional(),
+        isrc: z.string().optional(),
+        tituloCatalogo: z.string().optional(),
+        mesReportado: z.number().int().optional(),
+        territorio: z.string().optional(),
+        codigoDelTerritorio: z.string().optional(),
+        nombreDelTerritorio: z.string().optional(),
+        tipoDePrecio: z.string().optional(),
+        tipoDeIngreso: z.string().optional(),
+        venta: z.number().optional(),
+        rtl: z.number().optional(),
+        ppd: z.number().optional(),
+        rbp: z.number().optional(),
+        tipoDeCambio: z.number().optional(),
+        valorRecibido: z.number().optional(),
+        regaliasArtisticas: z.number().optional(),
+        costoDistribucion: z.number().optional(),
+        copyright: z.number().optional(),
+        cuotaAdministracion: z.number().optional(),
+        costoCarga: z.number().optional(),
+        otrosCostos: z.number().optional(),
+        ingresosRecibidos: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, territories, musicPlatform, ...data } = input;
+      const { user, teamId } = ctx;
+      const userId = user.id;
+
+      console.log('Updating LPM with ID:', id);
+      console.log('updating music platforms:', musicPlatform);
+      const pepe = await prisma.distributionStatement.update({
+        where: { id },
+        data: {
+          ...data,
+          distributionStatementMusicPlatforms:
+            musicPlatform && musicPlatform.length > 0
+              ? {
+                  deleteMany: {}, // remove existing artists
+                  create: musicPlatform.map((platform) => ({
+                    name: platform.name?.trim() || '',
+                    user: {
+                      connect: { id: userId },
+                    },
+                    ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    platform: {
+                      connectOrCreate: {
+                        where: { name: platform.name?.trim() || '' },
+                        create: {
+                          name: platform.name?.trim() || '',
+                          user: {
+                            connect: { id: userId },
+                          },
+                          ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                        },
+                      },
+                    },
+                  })),
+                }
+              : {
+                  deleteMany: {}, // remove existing platforms if no new platforms provided
+                },
+          distributionStatementTerritories:
+            territories && territories.length > 0
+              ? {
+                  deleteMany: {}, // remove existing territories
+                  create: territories.map((territory) => ({
+                    name: territory.name?.trim() || '',
+                    user: {
+                      connect: { id: userId },
+                    },
+                    ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                    territory: {
+                      connectOrCreate: {
+                        where: { name: territory.name?.trim() || '' },
+                        create: {
+                          name: territory.name?.trim() || '',
+                          user: {
+                            connect: { id: userId },
+                          },
+                          ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                        },
+                      },
+                    },
+                  })),
+                }
+              : {
+                  deleteMany: {}, // remove existing territories if no new territories provided
+                },
+        },
+        include: {
+          distributionStatementMusicPlatforms: true,
         },
       });
 
-      return taskCreated;
+      console.log('pepe', pepe);
+
+      return pepe;
+    }),
+  deleteDistributionById: authenticatedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const { id } = input;
+      return await prisma.distributionStatement.delete({
+        where: { id },
+        include: {
+          distributionStatementMusicPlatforms: true,
+          distributionStatementTerritories: true,
+        },
+      });
     }),
 
   findDistributionId: authenticatedProcedure
@@ -124,6 +304,9 @@ export const distributionRouter = router({
         orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
         orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
         orderByColumn: z.enum(['id']).optional(),
+        artistIds: z.array(z.number()).optional(),
+        platformIds: z.array(z.number()).optional(),
+        territoryIds: z.array(z.number()).optional(),
       }),
     )
     .query(async ({ input, ctx }) => {
@@ -134,6 +317,8 @@ export const distributionRouter = router({
         orderByColumn = 'id',
         orderByDirection,
         period,
+        territoryIds,
+        platformIds,
         orderBy = 'createdAt',
       } = input;
       const { user, teamId } = ctx;
@@ -186,74 +371,186 @@ export const distributionRouter = router({
           period,
           userId,
           teamId,
+          territoryIds,
+          platformIds,
 
           orderBy: orderByColumn
             ? { column: orderByColumn, direction: orderByDirection }
             : undefined,
         }),
       ]);
-      // const releases = await prisma.releases.findMany({
-      //   where,
-
-      //   orderBy: {
-      //     [orderBy]: orderDirection,
-      //   },
-      // });
 
       return documents;
     }),
 
-  updateTask: authenticatedProcedure
+  findDistributionUniqueTerritories: authenticatedProcedure.query(async ({ ctx }) => {
+    const { user, teamId } = ctx;
+    const userId = user.id;
+
+    const uniqueTerritories = await prisma.distributionStatementTerritories.findMany({
+      where: {
+        ...(teamId ? { teamId } : { teamId: null, userId }),
+      },
+      distinct: ['name'],
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return uniqueTerritories;
+  }),
+
+  findDistributionUniquePlatform: authenticatedProcedure.query(async ({ ctx }) => {
+    const { user, teamId } = ctx;
+    const userId = user.id;
+
+    const uniquePlatforms = await prisma.distributionStatementMusicPlatforms.findMany({
+      where: {
+        ...(teamId ? { teamId } : { teamId: null, userId }),
+      },
+      distinct: ['name'],
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return uniquePlatforms;
+  }),
+
+  createManyDistribution: authenticatedProcedure
     .input(
       z.object({
-        taskId: z.number().min(1),
-        title: z.string().min(1),
-        description: z.string().optional(),
-        priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
-        dueDate: z.date().optional(),
-        tags: z.array(z.string()).optional().default([]),
-        userId: z.number(),
-        teamId: z.number().optional(),
-        projectId: z.number().optional(),
-        parentTaskId: z.number().optional(),
+        distributions: z.array(
+          z.object({
+            marketingOwner: z.string().optional(),
+            nombreDistribucion: z.string().optional(),
+            proyecto: z.string().optional(),
+            numeroDeCatalogo: z.string().optional(),
+            upc: z.string().optional(),
+            localProductNumber: z.string().optional(),
+            isrc: z.string().optional(),
+            tituloCatalogo: z.string().optional(),
+            mesReportado: z.number().int().optional(),
+            territorio: z.string().optional(),
+            codigoDelTerritorio: z.string().optional(),
+            nombreDelTerritorio: z.string().optional(),
+            tipoDePrecio: z.string().optional(),
+            tipoDeIngreso: z.string().optional(),
+            venta: z.number().optional(),
+            rtl: z.number().optional(),
+            ppd: z.number().optional(),
+            rbp: z.number().optional(),
+            tipoDeCambio: z.number().optional(),
+            valorRecibido: z.number().optional(),
+            regaliasArtisticas: z.number().optional(),
+            costoDistribucion: z.number().optional(),
+            copyright: z.number().optional(),
+            cuotaAdministracion: z.number().optional(),
+            costoCarga: z.number().optional(),
+            otrosCostos: z.number().optional(),
+            ingresosRecibidos: z.number().optional(),
+          }),
+        ),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { userId, teamId, projectId, parentTaskId, ...data } = input;
-
-      // Verificar permisos si es tarea de equipo
+      const { user, teamId } = ctx;
+      const userId = user.id;
+      const { distributions } = input;
+      console.log('Creating multiple distribution statements:', distributions.length);
+      console.log('tipo de cambio', distributions[0].tipoDeCambio);
+      console.log('nombre del territorio', distributions[0].nombreDelTerritorio);
+      console.log('codigo del territorio', distributions[0].codigoDelTerritorio);
+      // Verify permissions if it's a team operation
       if (teamId && ctx.teamId !== teamId) {
-        throw new Error('No tienes permisos para actualizar tareas en este equipo');
+        throw new Error('No tienes permisos para crear distribution statements en este equipo');
       }
 
-      return await prisma.task.update({
-        where: { id: Number(input.taskId) },
-        data: {
-          ...data,
-          ...(teamId && { team: { connect: { id: teamId } } }),
-          ...(projectId && { project: { connect: { id: projectId } } }),
-          ...(parentTaskId && { parentTask: { connect: { id: parentTaskId } } }),
-        },
-      });
-    }),
+      // For large datasets, process in smaller chunks
+      const BATCH_SIZE = 25; // Process 25 records at a time
+      let totalCreated = 0;
 
-  deleteTask: authenticatedProcedure
-    .input(z.object({ taskId: z.number().min(1) }))
-    .mutation(async ({ input }) => {
-      const { taskId } = input;
-      // Eliminar la tarea y sus subtareas
-      await prisma.task.deleteMany({
-        where: {
-          id: taskId,
-          OR: [
-            { parentTaskId: taskId }, // Subtareas
-            { id: taskId }, // Tarea principal
-          ],
-        },
-      });
-      return { success: true };
-    }),
+      // Process distributions in batches to avoid transaction timeouts
+      for (let i = 0; i < distributions.length; i += BATCH_SIZE) {
+        const batch = distributions.slice(i, i + BATCH_SIZE);
 
+        // Process each batch in its own transaction
+        const result = await prisma.$transaction(
+          async (tx) => {
+            const createdDistributions = [];
+
+            for (const distributionData of batch) {
+              // Create the distribution statement with related records
+              const distribution = await tx.distributionStatement.create({
+                data: {
+                  ...distributionData,
+                  userId,
+                  ...(teamId ? { teamId } : {}),
+                  // Create music platform relationship if territorio exists
+                  ...(distributionData.territorio && {
+                    distributionStatementMusicPlatforms: {
+                      create: {
+                        name: distributionData.territorio || '',
+                        user: {
+                          connect: { id: userId },
+                        },
+                        ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                        platform: {
+                          connectOrCreate: {
+                            where: { name: distributionData.territorio.trim() },
+                            create: {
+                              name: distributionData.territorio.trim(),
+                              user: {
+                                connect: { id: userId },
+                              },
+                              ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                            },
+                          },
+                        },
+                      },
+                    },
+                  }),
+                  // Create territory relationship if nombreDelTerritorio exists
+                  ...(distributionData.nombreDelTerritorio && {
+                    distributionStatementTerritories: {
+                      create: {
+                        name: distributionData.nombreDelTerritorio || '',
+                        user: {
+                          connect: { id: userId },
+                        },
+                        ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                        territory: {
+                          connectOrCreate: {
+                            where: { name: distributionData.nombreDelTerritorio.trim() },
+                            create: {
+                              name: distributionData.nombreDelTerritorio.trim(),
+                              user: {
+                                connect: { id: userId },
+                              },
+                              ...(teamId ? { team: { connect: { id: teamId } } } : {}),
+                            },
+                          },
+                        },
+                      },
+                    },
+                  }),
+                },
+              });
+
+              createdDistributions.push(distribution);
+            }
+
+            return createdDistributions;
+          },
+          { timeout: 60000 }, // 60 second timeout for each batch
+        );
+
+        totalCreated += result.length;
+        console.log(`Batch processed: ${i}-${i + batch.length}, created: ${result.length}`);
+      }
+
+      return totalCreated;
+    }),
   // uploadTemplate: authenticatedProcedure
 
   // uploadBulkSend: authenticatedProcedure

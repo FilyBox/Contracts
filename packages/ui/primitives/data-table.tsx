@@ -15,6 +15,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import type { ColumnFiltersState } from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 
 import { StackAvatarsArtistWithTooltip } from '../components/lpm/stack-avatars-artist-with-tooltip';
 import { Button } from './button';
@@ -270,6 +272,17 @@ export function DataTable<TData, TValue>({
                             </a>
                           ) : cell.column.id === 'lyrics' && typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
+                          ) : cell.column.id === 'releaseDate' ||
+                            cell.column.id === 'originalReleaseDate' ||
+                            cell.column.id === 'preOrderDate' ||
+                            cell.column.id === 'lastProcessDate' ||
+                            cell.column.id === 'timedReleaseDate' ||
+                            cell.column.id === 'timedReleaseMusicServices' ||
+                            cell.column.id === 'importDate' ||
+                            cell.column.id === 'instantGratificationDate' ||
+                            cell.column.id === 'submittedAt' ||
+                            cell.column.id === 'lastModified' ? (
+                            `${cell.getValue() ? format(cell.getValue() as Date, 'd MMM yyyy', { locale: es }) + '' : '-'}`
                           ) : cell.column.id === 'writersComposers' &&
                             typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`

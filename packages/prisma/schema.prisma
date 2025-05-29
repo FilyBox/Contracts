@@ -49,27 +49,32 @@ enum StatusSongAlbum {
 }
 
 model User {
-  id                       Int                        @id @default(autoincrement())
-  name                     String?
-  customerId               String?                    @unique
-  email                    String                     @unique
-  emailVerified            DateTime?
-  password                 String? // Todo: (RR7) Remove after RR7 migration.
-  source                   String?
-  signature                String?
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @default(now()) @updatedAt
-  lastSignedIn             DateTime                   @default(now())
-  roles                    Role[]                     @default([USER])
-  identityProvider         IdentityProvider           @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
-  avatarImageId            String?
-  disabled                 Boolean                    @default(false)
-  releases                 Releases[]
-  releasesArtists          releasesArtists[]
-  artists                  Artist[]
+  id                                  Int                                   @id @default(autoincrement())
+  name                                String?
+  customerId                          String?                               @unique
+  email                               String                                @unique
+  emailVerified                       DateTime?
+  password                            String? // Todo: (RR7) Remove after RR7 migration.
+  source                              String?
+  signature                           String?
+  createdAt                           DateTime                              @default(now())
+  updatedAt                           DateTime                              @default(now()) @updatedAt
+  lastSignedIn                        DateTime                              @default(now())
+  roles                               Role[]                                @default([USER])
+  identityProvider                    IdentityProvider                      @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
+  avatarImageId                       String?
+  disabled                            Boolean                               @default(false)
+  releases                            Releases[]
+  territories                         Territories[]
+  releasesArtists                     releasesArtists[]
+  artists                             Artist[]
+  distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
+  distributionStatementTerritories    DistributionStatementTerritories[]
+
   distributionStatement    DistributionStatement[]
   accounts                 Account[]
   sessions                 Session[]
+  musicPlatforms           MusicPlatforms[]
   documents                Document[]
   folders                  Folder[]
   contracts                Contract[]
@@ -326,39 +331,99 @@ model Contract {
   @@map("Contracts")
 }
 
+model Territories {
+  id                               Int                                @id @default(autoincrement())
+  name                             String?                            @unique
+  createdAt                        DateTime                           @default(now())
+  updatedAt                        DateTime                           @default(now()) @updatedAt
+  avatarImageId                    String?
+  disabled                         Boolean?                           @default(false)
+  userId                           Int?
+  teamId                           Int?
+  distributionStatementTerritories DistributionStatementTerritories[]
+  user                             User?                              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team                             Team?                              @relation(fields: [teamId], references: [id], onDelete: SetNull)
+}
+
+model DistributionStatementTerritories {
+  id                    Int                     @id @default(autoincrement())
+  territoryId           Int
+  name                  String
+  createdAt             DateTime                @default(now())
+  userId                Int?
+  teamId                Int?
+  distributionStatement DistributionStatement[]
+
+  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team      Team?       @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  territory Territories @relation(fields: [territoryId], references: [id])
+}
+
+model DistributionStatementMusicPlatforms {
+  id                    Int                     @id @default(autoincrement())
+  platformId            Int
+  name                  String
+  createdAt             DateTime                @default(now())
+  userId                Int?
+  teamId                Int?
+  distributionStatement DistributionStatement[]
+
+  user     User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team     Team?          @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  platform MusicPlatforms @relation(fields: [platformId], references: [id])
+}
+
+model MusicPlatforms {
+  id                                  Int                                   @id @default(autoincrement())
+  name                                String?                               @unique
+  createdAt                           DateTime                              @default(now())
+  updatedAt                           DateTime                              @default(now()) @updatedAt
+  avatarImageId                       String?
+  disabled                            Boolean?                              @default(false)
+  url                                 String?                               @unique
+  userId                              Int?
+  teamId                              Int?
+  distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+}
+
 model DistributionStatement {
-  id                  Int      @id @default(autoincrement())
-  marketingOwner      String?  @map("Marketing Owner")
-  nombreDistribucion  String?  @map("Nombre Distribucion")
-  proyecto            String?  @map("Projecto")
-  numeroDeCatalogo    String?  @map("Numero de Catalogo")
-  upc                 String?  @map("UPC")
-  localProductNumber  String?  @map("Local Product Number")
-  isrc                String?  @map("ISRC")
-  tituloCatalogo      String?  @map("Titulo catalogo")
-  mesReportado        Int?     @map("Mes Reportado")
-  territorio          String?  @map("Territorio")
-  codigoDelTerritorio String?  @map("Codigo del Territorio")
-  nombreDelTerritorio String?  @map("Nombre del Territorio")
-  tipoDePrecio        String?  @map("Tipo de Precio")
-  tipoDeIngreso       String?  @map("Tipo de Ingreso")
-  venta               Int?     @map("Venta")
-  rtl                 Float?   @map("RTL")
-  ppd                 Float?   @map("PPD")
-  rbp                 Float?   @map("RBP")
-  tipoDeCambio        Float?   @map("Tipo de Cambio:")
-  valorRecibido       Float?   @map("Valor Recibido")
-  regaliasArtisticas  Int?     @map("Regalias Artisticas")
-  costoDistribucion   Float?   @map("Costo Distribucion")
-  copyright           Int?     @map("Copyright")
-  cuotaAdministracion Int?     @map("Cuota Administracion")
-  costoCarga          Int?     @map("Costo Carga")
-  otrosCostos         Int?     @map("Otros Costos")
-  ingresosRecibidos   Float?   @map("Ingresos Recibidos")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @default(now()) @updatedAt
-  userId              Int?
-  teamId              Int?
+  id                                  Int                                   @id @default(autoincrement())
+  marketingOwner                      String?                               @map("Marketing Owner")
+  nombreDistribucion                  String?                               @map("Nombre Distribucion")
+  proyecto                            String?                               @map("Projecto")
+  numeroDeCatalogo                    String?                               @map("Numero de Catalogo")
+  upc                                 String?                               @map("UPC")
+  localProductNumber                  String?                               @map("Local Product Number")
+  isrc                                String?                               @map("ISRC")
+  tituloCatalogo                      String?                               @map("Titulo catalogo")
+  mesReportado                        Int?                                  @map("Mes Reportado")
+  territorio                          String?                               @map("Territorio")
+  codigoDelTerritorio                 String?                               @map("Codigo del Territorio")
+  nombreDelTerritorio                 String?                               @map("Nombre del Territorio")
+  tipoDePrecio                        String?                               @map("Tipo de Precio")
+  tipoDeIngreso                       String?                               @map("Tipo de Ingreso")
+  venta                               Float?                                @map("Venta")
+  rtl                                 Float?                                @map("RTL")
+  ppd                                 Float?                                @map("PPD")
+  rbp                                 Float?                                @map("RBP")
+  tipoDeCambio                        Float?                                @map("Tipo de Cambio:")
+  valorRecibido                       Float?                                @map("Valor Recibido")
+  regaliasArtisticas                  Float?                                @map("Regalias Artisticas")
+  costoDistribucion                   Float?                                @map("Costo Distribucion")
+  copyright                           Float?                                @map("Copyright")
+  cuotaAdministracion                 Float?                                @map("Cuota Administracion")
+  costoCarga                          Float?                                @map("Costo Carga")
+  otrosCostos                         Float?                                @map("Otros Costos")
+  ingresosRecibidos                   Float?                                @map("Ingresos Recibidos")
+  createdAt                           DateTime                              @default(now())
+  updatedAt                           DateTime                              @default(now()) @updatedAt
+  userId                              Int?
+  teamId                              Int?
+  distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
+  distributionStatementTerritories    DistributionStatementTerritories[]
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
@@ -1084,22 +1149,29 @@ model TeamGlobalSettings {
 }
 
 model Team {
-  id                       Int                        @id @default(autoincrement())
-  name                     String
-  url                      String                     @unique
-  createdAt                DateTime                   @default(now())
-  avatarImageId            String?
-  customerId               String?                    @unique
-  ownerUserId              Int
-  Event                    Event[]
-  members                  TeamMember[]
-  invites                  TeamMemberInvite[]
-  teamEmail                TeamEmail?
-  emailVerification        TeamEmailVerification?
-  transferVerification     TeamTransferVerification?
-  teamGlobalSettings       TeamGlobalSettings?
-  avatarImage              AvatarImage?               @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-  songs                    Songs[]
+  id                                  Int                                   @id @default(autoincrement())
+  name                                String
+  url                                 String                                @unique
+  createdAt                           DateTime                              @default(now())
+  avatarImageId                       String?
+  customerId                          String?                               @unique
+  ownerUserId                         Int
+  Event                               Event[]
+  members                             TeamMember[]
+  distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
+  distributionStatementTerritories    DistributionStatementTerritories[]
+
+  territories Territories[]
+
+  invites              TeamMemberInvite[]
+  teamEmail            TeamEmail?
+  emailVerification    TeamEmailVerification?
+  transferVerification TeamTransferVerification?
+  teamGlobalSettings   TeamGlobalSettings?
+  avatarImage          AvatarImage?              @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  songs                Songs[]
+  musicPlatforms       MusicPlatforms[]
+
   isrcSongs                IsrcSongs[]
   artists                  Artist[]
   profile                  TeamProfile?

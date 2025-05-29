@@ -28,7 +28,7 @@ import { FolderDeleteDialog } from '~/components/dialogs/folder-delete-dialog';
 import { FolderMoveDialog } from '~/components/dialogs/folder-move-dialog';
 import { FolderSettingsDialog } from '~/components/dialogs/folder-settings-dialog';
 import { ChatspaceDocumentUploadDropzone } from '~/components/general/chatspace/chatspace-document-upload';
-import { DocumentDropZoneWrapper } from '~/components/general/document/document-drop-zone-wrapper';
+import { DocumentDropZoneWrapper } from '~/components/general/document/chatspace-drop-zone-wrapper';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { DocumentStatus } from '~/components/general/document/document-status';
 import { FolderCard } from '~/components/general/folder/folder-card';
@@ -92,6 +92,7 @@ export default function DocumentsPage() {
     });
 
   const retryDocument = trpc.document.retryChatDocument.useMutation();
+
   const {
     data: foldersData,
     isLoading: isFoldersLoading,
