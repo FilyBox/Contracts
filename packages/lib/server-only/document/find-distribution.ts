@@ -38,7 +38,6 @@ export const findDistribution = async ({
 }: FindReleaseOptions) => {
   let team = null;
 
-  console.log('platformIds a', platformIds);
   if (teamId !== undefined) {
     team = await prisma.team.findFirstOrThrow({
       where: {

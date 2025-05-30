@@ -11,6 +11,7 @@ import { Link } from 'react-router';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindReleaseResponse } from '@documenso/trpc/server/releases-router/schema';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import type { DataTableColumnDef } from '@documenso/ui/primitives/data-table';
 import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
@@ -35,6 +36,9 @@ interface DataTableProps<TData, TValue> {
   onAdd: () => void;
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
+  onMultipleDelete: (ids: number[]) => void;
+  isMultipleDelete?: boolean;
+  setIsMultipleDelete?: (value: boolean) => void;
 }
 
 type DocumentsTableRow = TFindReleaseResponse['data'][number];
@@ -46,6 +50,9 @@ export const ReleasesTable = ({
   onAdd,
   onEdit,
   onDelete,
+  onMultipleDelete,
+  isMultipleDelete = false,
+  setIsMultipleDelete,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
@@ -56,6 +63,32 @@ export const ReleasesTable = ({
 
   const columns = useMemo(() => {
     return [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="translate-y-0.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="translate-y-0.5"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+      },
+
       {
         header: _(msg`Created`),
         accessorKey: 'createdAt',
@@ -364,6 +397,9 @@ export const ReleasesTable = ({
   return (
     <div className="relative">
       <DataTable
+        isMultipleDelete={isMultipleDelete}
+        setIsMultipleDelete={setIsMultipleDelete}
+        onMultipleDelete={onMultipleDelete}
         columns={columns}
         onDelete={onDelete}
         onEdit={onEdit}

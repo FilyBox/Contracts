@@ -65,6 +65,8 @@ export default function TablePage() {
   const createLpmMutation = trpc.lpm.createLpm.useMutation();
   const updateLpmMutation = trpc.lpm.updateLpmById.useMutation();
   const deleteLpmMutation = trpc.lpm.deleteLpmById.useMutation();
+  const deleteMultipleMutation = trpc.lpm.deleteMultipleByIds.useMutation();
+
   const { toast } = useToast();
   const team = useOptionalCurrentTeam();
 
@@ -73,6 +75,7 @@ export default function TablePage() {
   const [editingUser, setEditingUser] = useState<TLpm | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
 
   useEffect(() => {
     void refetch();
@@ -420,6 +423,26 @@ export default function TablePage() {
     }
   };
 
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index contracts:', ids);
+      await deleteMultipleMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
+    }
+  };
+
   const handleEdit = (record: TLpm) => {
     setEditingUser(record);
     setIsDialogOpen(true);
@@ -489,6 +512,9 @@ export default function TablePage() {
         <GeneralTableEmptyState status={'ALL'} />
       ) : (
         <LpmTable
+          onMultipleDelete={handleMultipleDelete}
+          isMultipleDelete={isMultipleDelete}
+          setIsMultipleDelete={setIsMultipleDelete}
           data={data}
           isLoading={isLoading}
           isLoadingError={isLoadingError}

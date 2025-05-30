@@ -21,7 +21,20 @@ export function exportTableToCSV<TData>(
       (row) =>
         headers
           .map((header) => {
-            const cellValue = row.getValue(header);
+            let cellValue = row.getValue(header);
+            if (
+              header === 'isrcArtists' ||
+              header === 'lpmArtists' ||
+              header === 'releasesArtists'
+            ) {
+              if (Array.isArray(cellValue)) {
+                cellValue = cellValue.map((artist) => artist.artistName).join(', ');
+              } else {
+                cellValue = '';
+              }
+            } else {
+              cellValue = row.getValue(header);
+            }
             return typeof cellValue === 'string' ? `"${cellValue.replace(/"/g, '""')}"` : cellValue;
           })
           .join(','),

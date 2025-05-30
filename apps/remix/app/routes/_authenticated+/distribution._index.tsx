@@ -79,12 +79,14 @@ export default function DistributionPage() {
   const createDistributionMutation = trpc.distribution.createDistribution.useMutation();
   const updateDistributionByIdMutation = trpc.distribution.updateDistributionById.useMutation();
   const deleteDistributionByIdMutation = trpc.distribution.deleteDistributionById.useMutation();
+  const deleteMultipleMutation = trpc.distribution.deleteMultipleByIds.useMutation();
 
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [dataIntial, setData] = useState<DistributionStatement[]>([]);
   const [editingUser, setEditingUser] = useState<TDistribution | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
 
   const openCreateDialog = () => {
     setEditingUser(null);
@@ -181,6 +183,27 @@ export default function DistributionPage() {
       console.error('Error deleting record:', error);
     }
   };
+
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index contracts:', ids);
+      await deleteMultipleMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
+    }
+  };
+
   const handleUpdate = async (updatedDistribution: TDistribution) => {
     console.log('Updated Distribution:', updatedDistribution);
     console.log('id', updatedDistribution.id);
@@ -446,6 +469,9 @@ export default function DistributionPage() {
             <GeneralTableEmptyState status={'ALL'} />
           ) : (
             <DistributionTable
+              onMultipleDelete={handleMultipleDelete}
+              setIsMultipleDelete={setIsMultipleDelete}
+              isMultipleDelete={isMultipleDelete}
               onEdit={handleEdit}
               onDelete={handleDelete}
               data={data}

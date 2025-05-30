@@ -471,53 +471,14 @@ export const releaseRouter = router({
       return { success: true };
     }),
 
-  // uploadTemplate: authenticatedProcedure
+  deleteMultipleByIds: authenticatedProcedure
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ input }) => {
+      const { ids } = input;
+      const deleted = await prisma.releases.deleteMany({
+        where: { id: { in: ids } },
+      });
 
-  // uploadBulkSend: authenticatedProcedure
-  //   .input(
-  //     z.object({
-  //       taskId: z.number(),
-  //       teamId: z.number().optional(),
-  //       csv: z.string().min(1),
-  //       sendImmediately: z.boolean(),
-  //     }),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const { taskId, teamId, csv, sendImmediately } = input;
-  //     const { user } = ctx;
-
-  //     if (csv.length > 4 * 1024 * 1024) {
-  //       throw new TRPCError({
-  //         code: 'BAD_REQUEST',
-  //         message: 'File size exceeds 4MB limit',
-  //       });
-  //     }
-
-  //     const task = await getTemplateById({
-  //       id: taskId,
-  //       teamId,
-  //       userId: user.id,
-  //     });
-
-  //     if (!task) {
-  //       throw new TRPCError({
-  //         code: 'NOT_FOUND',
-  //         message: 'Template not found',
-  //       });
-  //     }
-
-  //     await jobs.triggerJob({
-  //       name: 'internal.bulk-send-template',
-  //       payload: {
-  //         userId: user.id,
-  //         teamId,
-  //         taskId,
-  //         csvContent: csv,
-  //         sendImmediately,
-  //         requestMetadata: ctx.metadata.requestMetadata,
-  //       },
-  //     });
-
-  //     return { success: true };
-  //   }),
+      return deleted;
+    }),
 });

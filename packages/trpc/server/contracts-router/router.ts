@@ -160,7 +160,6 @@ export const contractsRouter = router({
         period,
         // orderBy = 'createdAt',
       } = input;
-      console.log('perPage and page', perPage, page);
       const { user, teamId } = ctx;
       const userId = user.id;
       const getStatOptions: GetContractsInput = {

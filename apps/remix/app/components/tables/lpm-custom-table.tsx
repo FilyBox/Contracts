@@ -1,25 +1,17 @@
-import { useMemo, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { useLingui } from '@lingui/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { Loader } from 'lucide-react';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindLpmResponse } from '@documenso/trpc/server/lpm-router/schema';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
 
 import { DataTableSkeleton } from '~/components/tables/data-table-skeleton';
 import { useOptionalCurrentTeam } from '~/providers/team';
-
-// export type DocumentsTableProps = {
-//   data?: TFindReleaseResponse;
-//   isLoading?: boolean;
-//   isLoadingError?: boolean;
-//   onMoveDocument?: (documentId: number) => void;
-//     onAdd: () => void;
-//   onEdit: (data: TData) => void;
-//   onDelete: (data: TData) => void;
-// };
 
 interface DataTableProps<TData, TValue> {
   data?: TFindLpmResponse;
@@ -28,6 +20,9 @@ interface DataTableProps<TData, TValue> {
   onAdd: () => void;
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
+  onMultipleDelete: (ids: number[]) => void;
+  isMultipleDelete?: boolean;
+  setIsMultipleDelete?: (value: boolean) => void;
 }
 
 type DocumentsTableRow = TFindLpmResponse['data'][number];
@@ -39,6 +34,9 @@ export const LpmTable = ({
   onAdd,
   onEdit,
   onDelete,
+  isMultipleDelete = false,
+  setIsMultipleDelete,
+  onMultipleDelete,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
@@ -46,8 +44,34 @@ export const LpmTable = ({
   const [isPending, startTransition] = useTransition();
 
   const updateSearchParams = useUpdateSearchParams();
-  const columns = useMemo(() => {
-    return [
+
+  const createColumns = (): ColumnDef<DocumentsTableRow>[] => {
+    const columns: ColumnDef<DocumentsTableRow>[] = [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="translate-y-0.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="translate-y-0.5"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+      },
       {
         accessorKey: 'id',
         header: 'ID',
@@ -366,7 +390,10 @@ export const LpmTable = ({
         enableHiding: true,
       },
     ];
-  }, [team]);
+    return columns;
+  };
+
+  const columns = createColumns();
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
