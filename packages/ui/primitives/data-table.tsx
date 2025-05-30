@@ -15,6 +15,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import type { ColumnFiltersState } from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 
 import { StackAvatarsArtistWithTooltip } from '../components/lpm/stack-avatars-artist-with-tooltip';
 import { Button } from './button';
@@ -88,6 +90,21 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   children,
 }: DataTableProps<TData, TValue>) {
+  const dateColumnIds = [
+    'releaseDate',
+    'originalReleaseDate',
+    'createdAt',
+    'date',
+    'preOrderDate',
+    'lastProcessDate',
+    'timedReleaseDate',
+    'timedReleaseMusicServices',
+    'importDate',
+    'instantGratificationDate',
+    'submittedAt',
+    'lastModified',
+  ];
+
   const pagination = useMemo<PaginationState>(() => {
     if (currentPage !== undefined && perPage !== undefined) {
       return {
@@ -236,7 +253,8 @@ export function DataTable<TData, TValue>({
                                 </Tooltip>
                               </TooltipProvider>
                             </>
-                          ) : cell.column.id === 'lpmArtists' ||
+                          ) : (cell.column.id === 'lpmArtists' && cell.getValue()) ||
+                            (cell.column.id === 'isrcArtists' && cell.getValue()) ||
                             (cell.column.id === 'releasesArtists' && cell.getValue()) ? (
                             <>
                               {/* <TooltipProvider>
@@ -270,6 +288,8 @@ export function DataTable<TData, TValue>({
                             </a>
                           ) : cell.column.id === 'lyrics' && typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
+                          ) : dateColumnIds.includes(cell.column.id) ? (
+                            `${cell.getValue() ? format(cell.getValue() as Date, 'd MMM yyyy', { locale: es }) : '-'}`
                           ) : cell.column.id === 'writersComposers' &&
                             typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`

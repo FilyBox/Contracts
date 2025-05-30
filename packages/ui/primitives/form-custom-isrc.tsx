@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react';
+import React from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+import { type TIsrcSongs } from '@documenso/lib/types/isrc';
 import { type IsrcSongs } from '@documenso/prisma/client';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { PopoverArtists } from '../components/popover-artists';
 import { cn } from '../lib/utils';
+import { Avatar, AvatarFallback } from './avatar';
 import { Button } from './button';
-import { Calendar } from './calendar';
+import { Calendar } from './calendar-year-picker';
 import { Card, CardContent } from './card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './form';
 import { Input } from './input';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { ScrollArea } from './scroll-area';
-import { Select, SelectContent, SelectItem } from './select';
 
 const formSchema = z.object({
   id: z.number(),
@@ -27,18 +29,31 @@ const formSchema = z.object({
   duration: z.string().optional(),
   title: z.string().optional(),
   license: z.string().optional(),
-  date: z.string().optional(),
+  isrc: z.string().optional(),
+  date: z.date().optional(),
 });
+
+type artistData = {
+  teamId: number | null;
+  id: number;
+  userId: number | null;
+  createdAt: Date;
+  artistId: number;
+  artistName: string;
+}[];
+
 interface MyFormProps {
   onSubmit: (data: IsrcSongs) => void;
   initialData: IsrcSongs | null;
   isSubmitting: boolean;
+  artistData?: artistData;
 }
 
 // Tipo para los pasos del formulario
 
-export default function MyForm({ onSubmit, initialData }: MyFormProps) {
+export default function MyForm({ onSubmit, initialData, artistData }: MyFormProps) {
   const { toast } = useToast();
+  const [selectedArtists, setSelectedArtists] = React.useState<artistData>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,6 +74,13 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
           // Skip the id field
           // @ts-expect-error - We know these fields exist in our form schema
           form.setValue(key, initialData[key]);
+          if (key === 'isrcArtists') {
+            // Use type assertion to tell TypeScript that artists property exists
+            const artistsData = (initialData as unknown as { isrcArtists: artistData })
+              ?.isrcArtists;
+            console.log('Setting artists:', key, artistsData);
+            setSelectedArtists(artistsData);
+          }
         }
       });
     }
@@ -69,8 +91,17 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
       setIsLoading(true);
       const dataToSubmit = initialData?.id ? { ...values, id: initialData.id } : values;
       console.log('Form submitted:', dataToSubmit);
+      const dataToSend = {
+        ...dataToSubmit,
+
+        IsrcArtists: selectedArtists.map((artist) => ({
+          id: artist.artistId,
+          artistName: artist.artistName || '',
+        })),
+      };
+      console.log('Form submitted:', dataToSend);
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      await onSubmit(dataToSubmit as unknown as IsrcSongs);
+      await onSubmit(dataToSend as unknown as TIsrcSongs);
       console.log('Form submitted successfully', values);
       toast({
         description: 'Data submitted successfully',
@@ -117,26 +148,12 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                   {/* Sección 1: Información básica del producto */}
                   <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-12 md:col-span-6">
-                      {/* <FormField
-                                            control={form.control}
-                                            name="date"
-                                            render={({ field }) => (
-                                              <FormItem>
-                                                <FormLabel>Date</FormLabel>
-                                                <FormControl>
-                                                  <Input type="date" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                              </FormItem>
-                                            )}
-                                          /> */}
-
                       <FormField
                         control={form.control}
                         name="date"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Date</FormLabel>
+                            <FormLabel>Release Date</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
                                 <FormControl>
@@ -148,13 +165,17 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                     )}
                                   >
                                     {field.value ? (
-                                      format(
-                                        // Only try to format if field.value is a non-empty string
-                                        field.value && field.value.trim() !== ''
-                                          ? new Date(field.value + 'T00:00:00')
-                                          : new Date(),
-                                        'dd/MM/yyyy',
-                                      )
+                                      (() => {
+                                        try {
+                                          // Handle different date formats safely
+                                          const date = new Date(field.value);
+                                          return isNaN(date.getTime())
+                                            ? 'Select date'
+                                            : format(date, 'dd/MM/yyyy');
+                                        } catch (error) {
+                                          return 'Select date';
+                                        }
+                                      })()
                                     ) : (
                                       <span>Pick a date</span>
                                     )}
@@ -167,16 +188,18 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                                   mode="single"
                                   selected={(() => {
                                     try {
-                                      return field.value && field.value.trim() !== ''
-                                        ? new Date(field.value + 'T00:00:00')
+                                      // Safely parse the date
+                                      const date = field.value
+                                        ? field.value instanceof Date
+                                          ? field.value
+                                          : new Date(field.value)
                                         : undefined;
+                                      return date && !isNaN(date.getTime()) ? date : undefined;
                                     } catch (error) {
                                       return undefined;
                                     }
                                   })()}
-                                  onSelect={(date) =>
-                                    field.onChange(date ? date.toISOString().split('T')[0] : '')
-                                  }
+                                  onSelect={(date) => field.onChange(date)} // Enviar Date directamente
                                   disabled={(date) => date < new Date('1900-01-01')}
                                   initialFocus
                                 />
@@ -188,6 +211,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         )}
                       />
                     </div>
+
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
@@ -203,8 +227,47 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         )}
                       />
                     </div>
+                    <div className="col-span-12">
+                      {artistData && artistData.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                          <p>Artistas</p>
+                          <Popover modal={true}>
+                            <PopoverTrigger asChild className="w-fit">
+                              <Button className="min-h-9 min-w-9">
+                                <PlusIcon width="25" height="25" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="z-9999 w-fit">
+                              <PopoverArtists
+                                selectedArtists={selectedArtists}
+                                setSelectedArtists={setSelectedArtists}
+                                userArray={artistData}
+                              />
+                            </PopoverContent>
+                          </Popover>
 
-                    <div className="col-span-12 md:col-span-6">
+                          {selectedArtists.length > 0 ? (
+                            <div className="flex -space-x-2 overflow-hidden">
+                              {selectedArtists.map((user) => (
+                                <Avatar
+                                  key={user.id}
+                                  className="border-background inline-block border-2"
+                                >
+                                  {user.artistName && (
+                                    <AvatarFallback>{user.artistName[0]}</AvatarFallback>
+                                  )}
+                                </Avatar>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground h-10 text-sm">
+                              Select artists to add to this thread.
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {/* <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
                         name="artist"
@@ -227,8 +290,7 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                           </FormItem>
                         )}
                       />
-                    </div>
-
+                    </div> */}
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
@@ -244,7 +306,6 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         )}
                       />
                     </div>
-
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
@@ -260,7 +321,6 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                         )}
                       />
                     </div>
-
                     <div className="col-span-12 md:col-span-6">
                       <FormField
                         control={form.control}
@@ -270,6 +330,21 @@ export default function MyForm({ onSubmit, initialData }: MyFormProps) {
                             <FormLabel>Licencia</FormLabel>
                             <FormControl>
                               <Input placeholder="Licencia" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="col-span-12 md:col-span-6">
+                      <FormField
+                        control={form.control}
+                        name="isrc"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>ISRC</FormLabel>
+                            <FormControl>
+                              <Input placeholder="ISRC" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

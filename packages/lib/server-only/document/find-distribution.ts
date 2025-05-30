@@ -1,44 +1,44 @@
-import type { DistributionStatement, Prisma, Team, TeamEmail } from '@prisma/client';
-import { RecipientRole, SigningStatus } from '@prisma/client';
+import type { Prisma, Releases } from '@prisma/client';
 import { DateTime } from 'luxon';
-import { match } from 'ts-pattern';
 
 import { prisma } from '@documenso/prisma';
-import { ExtendedDocumentStatus } from '@documenso/prisma/types/extended-document-status';
-import { ExtendedRelease, ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 
 import { type FindResultResponse } from '../../types/search-params';
 
 export type PeriodSelectorValue = '' | '7d' | '14d' | '30d';
 
-export type FindDistributionOptions = {
+export type FindReleaseOptions = {
   userId: number;
   teamId?: number;
   page?: number;
   perPage?: number;
   orderBy?: {
-    column: keyof Omit<DistributionStatement, 'nombreDistribucion'>;
+    column: keyof Omit<Releases, 'release'>;
     direction: 'asc' | 'desc';
   };
+  where?: Prisma.DistributionStatementWhereInput;
   period?: PeriodSelectorValue;
   query?: string;
+  platformIds?: number[];
+  territoryIds?: number[];
 };
 
 export const findDistribution = async ({
   userId,
   teamId,
+
   page = 1,
   perPage = 10,
+  where,
   orderBy,
   period,
-
-  query = '',
-}: FindDistributionOptions) => {
-  const orderByColumn = orderBy?.column ?? 'id';
-  const orderByDirection = orderBy?.direction ?? 'asc';
-
+  platformIds,
+  territoryIds,
+  query,
+}: FindReleaseOptions) => {
   let team = null;
 
+  console.log('platformIds a', platformIds);
   if (teamId !== undefined) {
     team = await prisma.team.findFirstOrThrow({
       where: {
@@ -63,8 +63,17 @@ export const findDistribution = async ({
     });
   }
 
+  const orderByColumn = orderBy?.column ?? 'id';
+  const orderByDirection = orderBy?.direction ?? 'asc';
+
   const searchFilter: Prisma.DistributionStatementWhereInput = {
-    OR: [{ proyecto: { contains: query, mode: 'insensitive' } }],
+    OR: [
+      { proyecto: { contains: query, mode: 'insensitive' } },
+      { isrc: { contains: query, mode: 'insensitive' } },
+      { tituloCatalogo: { contains: query, mode: 'insensitive' } },
+      { proyecto: { contains: query, mode: 'insensitive' } },
+      { tipoDeIngreso: { contains: query, mode: 'insensitive' } },
+    ],
   };
 
   let Filter: Prisma.DistributionStatementWhereInput = {
@@ -104,6 +113,7 @@ export const findDistribution = async ({
         OR: [
           {
             userId,
+            teamId: null,
           },
         ],
       },
@@ -111,21 +121,41 @@ export const findDistribution = async ({
   }
 
   const whereAndClause: Prisma.DistributionStatementWhereInput['AND'] = [
-    { ...Filter },
+    // { ...filters },
     { ...searchFilter },
+    { ...Filter },
+    { ...where },
   ];
 
   const whereClause: Prisma.DistributionStatementWhereInput = {
     AND: whereAndClause,
   };
 
+  if (platformIds && platformIds.length > 0) {
+    whereClause.distributionStatementMusicPlatforms = {
+      some: {
+        platformId: {
+          in: platformIds,
+        },
+      },
+    };
+  }
+
+  if (territoryIds && territoryIds.length > 0) {
+    whereClause.distributionStatementTerritories = {
+      some: {
+        territoryId: {
+          in: territoryIds,
+        },
+      },
+    };
+  }
+
   if (period) {
     const daysAgo = parseInt(period.replace(/d$/, ''), 10);
-
     const startOfPeriod = DateTime.now().minus({ days: daysAgo }).startOf('day');
-
     whereClause.createdAt = {
-      gte: startOfPeriod.toJSDate(),
+      gte: startOfPeriod.toISO(),
     };
   }
 
@@ -134,8 +164,12 @@ export const findDistribution = async ({
       where: whereClause,
       skip: Math.max(page - 1, 0) * perPage,
       take: perPage,
+      include: {
+        distributionStatementMusicPlatforms: true,
+        distributionStatementTerritories: true,
+      },
       orderBy: {
-        [orderByColumn]: 'asc',
+        [orderByColumn]: orderByDirection,
       },
     }),
     prisma.distributionStatement.count({
@@ -150,37 +184,6 @@ export const findDistribution = async ({
     perPage,
     totalPages: Math.ceil(count / perPage),
   } satisfies FindResultResponse<typeof data>;
-};
-
-const findReleasesTypeFilter = (type: ExtendedReleaseType) => {
-  return match<ExtendedReleaseType, Prisma.ReleasesWhereInput>(type)
-    .with(ExtendedReleaseType.ALL, () => ({
-      OR: [],
-    }))
-    .with(ExtendedReleaseType.Album, () => ({
-      typeOfRelease: ExtendedReleaseType.Album,
-    }))
-    .with(ExtendedReleaseType.EP, () => ({
-      typeOfRelease: ExtendedReleaseType.EP,
-    }))
-    .with(ExtendedReleaseType.Sencillo, () => ({
-      typeOfRelease: ExtendedReleaseType.Sencillo,
-    }))
-    .exhaustive();
-};
-
-const findReleasesFilter = (release: ExtendedRelease) => {
-  return match<ExtendedRelease, Prisma.ReleasesWhereInput>(release)
-    .with(ExtendedRelease.ALL, () => ({
-      OR: [],
-    }))
-    .with(ExtendedRelease.Focus, () => ({
-      release: ExtendedRelease.Focus,
-    }))
-    .with(ExtendedRelease.Soft, () => ({
-      release: ExtendedRelease.Soft,
-    }))
-    .exhaustive();
 };
 
 /**
@@ -212,234 +215,3 @@ const findReleasesFilter = (release: ExtendedRelease) => {
  * @param team The team to find the documents for.
  * @returns A filter which can be applied to the Prisma Document schema.
  */
-const findTeamDocumentsFilter = (
-  status: ExtendedDocumentStatus,
-  team: Team & { teamEmail: TeamEmail | null },
-  visibilityFilters: Prisma.DocumentWhereInput[],
-  folderId?: string,
-) => {
-  const teamEmail = team.teamEmail?.email ?? null;
-
-  return match<ExtendedDocumentStatus, Prisma.DocumentWhereInput | null>(status)
-    .with(ExtendedDocumentStatus.ALL, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        // Filter to display all documents that belong to the team.
-        OR: [
-          {
-            teamId: team.id,
-            folderId: folderId,
-            OR: visibilityFilters,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        // Filter to display all documents received by the team email that are not draft.
-        filter.OR.push({
-          status: {
-            not: ExtendedDocumentStatus.DRAFT,
-          },
-          recipients: {
-            some: {
-              email: teamEmail,
-            },
-          },
-          OR: visibilityFilters,
-          folderId: folderId,
-        });
-
-        // Filter to display all documents that have been sent by the team email.
-        filter.OR.push({
-          user: {
-            email: teamEmail,
-          },
-          OR: visibilityFilters,
-          folderId: folderId,
-        });
-      }
-
-      return filter;
-    })
-    .with(ExtendedDocumentStatus.INBOX, () => {
-      // Return a filter that will return nothing.
-      if (!teamEmail) {
-        return null;
-      }
-
-      return {
-        status: {
-          not: ExtendedDocumentStatus.DRAFT,
-        },
-        recipients: {
-          some: {
-            email: teamEmail,
-            signingStatus: SigningStatus.NOT_SIGNED,
-            role: {
-              not: RecipientRole.CC,
-            },
-          },
-        },
-        OR: visibilityFilters,
-        folderId: folderId,
-      };
-    })
-    .with(ExtendedDocumentStatus.DRAFT, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        OR: [
-          {
-            teamId: team.id,
-            status: ExtendedDocumentStatus.DRAFT,
-            OR: visibilityFilters,
-            folderId: folderId,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        filter.OR.push({
-          status: ExtendedDocumentStatus.DRAFT,
-          user: {
-            email: teamEmail,
-          },
-          OR: visibilityFilters,
-          folderId: folderId,
-        });
-      }
-
-      return filter;
-    })
-
-    .with(ExtendedDocumentStatus.ERROR, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        OR: [
-          {
-            teamId: team.id,
-            status: ExtendedDocumentStatus.ERROR,
-            OR: visibilityFilters,
-            folderId: folderId,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        filter.OR.push({
-          status: ExtendedDocumentStatus.ERROR,
-          user: {
-            email: teamEmail,
-          },
-          OR: visibilityFilters,
-          folderId: folderId,
-        });
-      }
-
-      return filter;
-    })
-    .with(ExtendedDocumentStatus.PENDING, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        OR: [
-          {
-            teamId: team.id,
-            status: ExtendedDocumentStatus.PENDING,
-            OR: visibilityFilters,
-            folderId: folderId,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        filter.OR.push({
-          status: ExtendedDocumentStatus.PENDING,
-          OR: [
-            {
-              recipients: {
-                some: {
-                  email: teamEmail,
-                  signingStatus: SigningStatus.SIGNED,
-                  role: {
-                    not: RecipientRole.CC,
-                  },
-                },
-              },
-              OR: visibilityFilters,
-              folderId: folderId,
-            },
-            {
-              user: {
-                email: teamEmail,
-              },
-              OR: visibilityFilters,
-              folderId: folderId,
-            },
-          ],
-        });
-      }
-
-      return filter;
-    })
-    .with(ExtendedDocumentStatus.COMPLETED, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        status: ExtendedDocumentStatus.COMPLETED,
-        OR: [
-          {
-            teamId: team.id,
-            OR: visibilityFilters,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        filter.OR.push(
-          {
-            recipients: {
-              some: {
-                email: teamEmail,
-              },
-            },
-            OR: visibilityFilters,
-          },
-          {
-            user: {
-              email: teamEmail,
-            },
-            OR: visibilityFilters,
-          },
-        );
-      }
-
-      return filter;
-    })
-    .with(ExtendedDocumentStatus.REJECTED, () => {
-      const filter: Prisma.DocumentWhereInput = {
-        status: ExtendedDocumentStatus.REJECTED,
-        OR: [
-          {
-            teamId: team.id,
-            OR: visibilityFilters,
-          },
-        ],
-      };
-
-      if (teamEmail && filter.OR) {
-        filter.OR.push(
-          {
-            recipients: {
-              some: {
-                email: teamEmail,
-                signingStatus: SigningStatus.REJECTED,
-              },
-            },
-            OR: visibilityFilters,
-          },
-          {
-            user: {
-              email: teamEmail,
-            },
-            OR: visibilityFilters,
-          },
-        );
-      }
-
-      return filter;
-    })
-    .exhaustive();
-};

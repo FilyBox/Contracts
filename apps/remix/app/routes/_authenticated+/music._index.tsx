@@ -431,33 +431,38 @@ export default function TablePage() {
   };
   return (
     <div className="mx-auto flex max-w-screen-xl flex-col gap-y-8 px-4 md:px-8">
-      <div className="flex flex-row items-center">
-        {team && (
-          <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
-            {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
-            <AvatarFallback className="text-muted-foreground text-xs">
-              {team.name.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-        )}
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
+        <div className="flex flex-row items-center">
+          {team && (
+            <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
+              {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
+              <AvatarFallback className="text-muted-foreground text-xs">
+                {team.name.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+          )}
 
-        <h1 className="w-40 truncate text-2xl font-semibold md:text-3xl">
-          <Trans>Music</Trans>
-        </h1>
+          <h2 className="text-4xl font-semibold">
+            <Trans>Music</Trans>
+          </h2>
+        </div>
+        <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <div className="flex w-full items-center justify-between gap-x-2 sm:w-80">
+              <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
+              <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
+                {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
+              </Button>
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-between gap-x-2 sm:w-48">
+              <DocumentSearch initialValue={findDocumentSearchParams.query} />
+            </div>
+            <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
 
-        <div className="flex w-full items-center justify-end gap-4">
-          <div className="mb-4 flex items-center gap-2">
-            <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
-            <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
-              {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
-            </Button>
+            <Button onClick={openCreateDialog}>Add Item</Button>
+
+            <ArtistCreateDialog />
           </div>
-          <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
-          <Button onClick={openCreateDialog}>Add Item</Button>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
-            <DocumentSearch initialValue={findDocumentSearchParams.query} />
-          </div>
-          <ArtistCreateDialog />
         </div>
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

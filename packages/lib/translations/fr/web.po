@@ -471,6 +471,10 @@ msgstr "<0>Aucun</0> - Nous générerons des liens que vous pourrez envoyer aux 
 msgid "<0>Note</0> - If you use Links in combination with direct templates, you will need to manually send the links to the remaining recipients."
 msgstr "<0>Remarque</0> - Si vous utilisez des liens en combinaison avec des modèles directs, vous devrez envoyer manuellement les liens aux destinataires restants."
 
+#: apps/remix/app/components/tables/distribution-table-musicplatform-filter.tsx
+msgid "<0>Platforms:</0> All"
+msgstr ""
+
 #: packages/ui/components/recipient/recipient-action-auth-select.tsx
 #: packages/ui/components/document/document-global-auth-action-select.tsx
 msgid "<0>Require 2FA</0> - The recipient must have an account and 2FA enabled via their settings"
@@ -488,6 +492,10 @@ msgstr "<0>Clé d'accès requise</0> - Le destinataire doit avoir un compte et u
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
 msgid "<0>Sender:</0> All"
 msgstr "<0>Expéditeur :</0> Tous"
+
+#: apps/remix/app/components/tables/distribution-table-territoriesName-filter.tsx
+msgid "<0>Territories:</0> All"
+msgstr ""
 
 #: packages/ui/components/document/document-signature-settings-tooltip.tsx
 msgid "<0>Typed</0> - A signature that is typed using a keyboard."
@@ -1164,6 +1172,7 @@ msgstr "Une erreur est survenue lors de la mise à jour de votre profil."
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 msgid "An error occurred while uploading your document."
 msgstr "Une erreur est survenue lors de l'importation de votre document."
@@ -2796,6 +2805,7 @@ msgstr "Importation de documents désactivé en raison de factures impayées"
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 msgid "Document uploaded"
 msgstr "Document importé"
@@ -2913,6 +2923,7 @@ msgid "Drag and drop or click to upload"
 msgstr ""
 
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 msgid "Drag and drop your PDF file here"
 msgstr ""
 
@@ -3195,6 +3206,7 @@ msgstr ""
 #: apps/remix/app/components/general/document/document-edit-form.tsx
 #: apps/remix/app/components/general/document/document-edit-form.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 #: apps/remix/app/components/dialogs/webhook-create-dialog.tsx
 #: apps/remix/app/components/dialogs/template-use-dialog.tsx
@@ -3355,6 +3367,7 @@ msgstr ""
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-upload.tsx
 msgid "File cannot be larger than {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB"
@@ -5197,6 +5210,8 @@ msgstr "Sauvegarder le modèle"
 #: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
 #: apps/remix/app/components/tables/documents-table-uploader-filter.tsx
 #: apps/remix/app/components/tables/documents-table-sender-filter.tsx
+#: apps/remix/app/components/tables/distribution-table-territoriesName-filter.tsx
+#: apps/remix/app/components/tables/distribution-table-musicplatform-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Search"
@@ -7065,6 +7080,7 @@ msgid "Upgrade"
 msgstr "Améliorer"
 
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 msgid "Upgrade your plan to upload more documents"
 msgstr ""
 
@@ -7097,6 +7113,7 @@ msgid "Upload custom document"
 msgstr "Importer un document personnalisé"
 
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-upload.tsx
 #: packages/ui/primitives/document-upload.tsx
 msgid "Upload Document"
@@ -7142,6 +7159,7 @@ msgid "uploader"
 msgstr ""
 
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 msgid "Uploading document..."
 msgstr ""
 
@@ -7863,6 +7881,7 @@ msgstr "Vous ne pouvez pas importer de documents pour le moment."
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 msgid "You cannot upload encrypted PDFs"
 msgstr "Vous ne pouvez pas importer de PDF cryptés"
@@ -7956,6 +7975,7 @@ msgstr "Vous avez atteint la limite maximale de {0} modèles directs. <0>Mettez 
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 msgid "You have reached your document limit for this month. Please upgrade your plan."
 msgstr "Vous avez atteint votre limite de documents pour ce mois. Veuillez passer à l'abonnement supérieur."
@@ -8106,6 +8126,7 @@ msgstr "Vos modèles de signature directe"
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 #: apps/remix/app/components/embed/authoring/configure-document-upload.tsx
 msgid "Your document failed to upload."
@@ -8137,6 +8158,7 @@ msgstr "Votre document a été dupliqué avec succès."
 
 #: apps/remix/app/components/general/document/document-upload.tsx
 #: apps/remix/app/components/general/document/document-drop-zone-wrapper.tsx
+#: apps/remix/app/components/general/document/chatspace-drop-zone-wrapper.tsx
 #: apps/remix/app/components/general/chatspace/chatspace-document-upload.tsx
 msgid "Your document has been uploaded successfully."
 msgstr "Votre document a été importé avec succès."

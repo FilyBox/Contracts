@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 
 import { DistributionStatementSchema } from '@documenso/prisma/generated/zod/modelSchema/DistributionStatementSchema';
 import { TeamSchema } from '@documenso/prisma/generated/zod/modelSchema/TeamSchema';
@@ -9,6 +9,25 @@ import { UserSchema } from '@documenso/prisma/generated/zod/modelSchema/UserSche
  *
  * Mainly used for returning a single document from the API.
  */
+
+const ZMusicPlatformSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  platformId: z.number(),
+  createdAt: z.date(),
+  teamId: z.number().nullable(),
+  userId: z.number().nullable(),
+});
+
+const ZTerritorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  territoryId: z.number(),
+  createdAt: z.date(),
+  teamId: z.number().nullable(),
+  userId: z.number().nullable(),
+});
+
 export const ZDistributionSchema = DistributionStatementSchema.pick({
   id: true,
   codigoDelTerritorio: true,
@@ -42,6 +61,9 @@ export const ZDistributionSchema = DistributionStatementSchema.pick({
   valorRecibido: true,
   venta: true,
   createdAt: true,
+}).extend({
+  distributionStatementMusicPlatforms: z.array(ZMusicPlatformSchema).optional(),
+  distributionStatementTerritories: z.array(ZTerritorySchema).optional(),
 });
 
 export type TDistribution = z.infer<typeof ZDistributionSchema>;

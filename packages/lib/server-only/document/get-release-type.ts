@@ -46,7 +46,6 @@ export const getReleaseType = async ({
   //     })
   //   : getCounts({ user, createdAt, search }));
 
-  console.log('options.team?.teamId', options.team?.teamId);
   const [types] = await getCounts({
     user,
     createdAt,
@@ -55,7 +54,6 @@ export const getReleaseType = async ({
     teamId: teamId,
   });
 
-  console.log('types', types);
   const typeCounts: Record<ExtendedReleaseType, number> = {
     [ExtendedReleaseType.Album]: 0,
     [ExtendedReleaseType.EP]: 0,

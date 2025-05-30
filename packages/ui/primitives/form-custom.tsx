@@ -117,14 +117,6 @@ type artistData = {
   artistName: string;
 }[];
 
-type artistSingleData = {
-  teamId: number | null;
-  id: number;
-  userId: number | null;
-  createdAt: Date;
-  artistId: number;
-  artistName: string;
-};
 interface MyFormProps {
   onSubmit: (data: lpm) => void;
   initialData: lpm | null;
