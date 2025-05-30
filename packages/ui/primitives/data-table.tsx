@@ -17,8 +17,10 @@ import {
 import type { ColumnFiltersState } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
+import { Download, Trash2 } from 'lucide-react';
 
 import { StackAvatarsArtistWithTooltip } from '../components/lpm/stack-avatars-artist-with-tooltip';
+import { exportTableToCSV } from '../lib/export';
 import { Button } from './button';
 import {
   ContextMenu,
@@ -26,6 +28,11 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from './context-menu';
+import {
+  DataTableActionBar,
+  DataTableActionBarAction,
+  DataTableActionBarSelection,
+} from './data-table-action-bar';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,13 +51,20 @@ type enhancedAssignees = {
   artistName: string | null;
   id: number;
 };
+
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
+  actionBar?: React.ReactNode;
+
   columnVisibility?: VisibilityState;
   data: TData[];
   onEdit?: (data: TData) => void;
   onNavegate?: (data: TData) => void;
   onDelete?: (data: TData) => void;
+
+  onMultipleDelete?: (ids: number[]) => void;
+  isMultipleDelete?: boolean;
+  setIsMultipleDelete?: (value: boolean) => void;
   onMoveDocument?: (data: TData) => void;
   perPage?: number;
   currentPage?: number;
@@ -75,6 +89,10 @@ export function DataTable<TData, TValue>({
   columns,
   columnVisibility,
   data,
+  actionBar,
+  onMultipleDelete,
+  isMultipleDelete = false,
+  setIsMultipleDelete,
   error,
   onEdit,
   onRetry,
@@ -104,6 +122,18 @@ export function DataTable<TData, TValue>({
     'submittedAt',
     'lastModified',
   ];
+  console.log('isMultipleDelete', isMultipleDelete);
+  const actions = ['update-status', 'update-priority', 'export', 'delete'] as const;
+
+  type Action = (typeof actions)[number];
+
+  const [currentAction, setCurrentAction] = React.useState<Action | null>(null);
+  const [isPending, startTransition] = React.useTransition();
+
+  const getIsActionPending = React.useCallback(
+    (action: Action) => isMultipleDelete && currentAction === action,
+    [isMultipleDelete, currentAction],
+  );
 
   const pagination = useMemo<PaginationState>(() => {
     if (currentPage !== undefined && perPage !== undefined) {
@@ -143,6 +173,11 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setLocalColumnVisibility,
 
+    defaultColumn: {
+      columns,
+      enableColumnFilter: false,
+    },
+
     state: {
       pagination: manualPagination ? pagination : undefined,
       columnVisibility: localColumnVisibility,
@@ -152,6 +187,24 @@ export function DataTable<TData, TValue>({
     pageCount: totalPages,
     onPaginationChange: onTablePaginationChange,
   });
+
+  const rows = table.getFilteredSelectedRowModel().rows;
+
+  const onhandleMultipleDelete = () => {
+    const ids = rows.map((row) => (row.original as { id: unknown }).id);
+    setIsMultipleDelete?.(true);
+    onMultipleDelete?.(ids as number[]);
+  };
+
+  const onTaskExport = React.useCallback(() => {
+    setCurrentAction('export');
+    startTransition(() => {
+      exportTableToCSV(table, {
+        excludeColumns: ['select', 'actions'],
+        onlySelected: true,
+      });
+    });
+  }, [table]);
 
   return (
     <>
@@ -304,7 +357,6 @@ export function DataTable<TData, TValue>({
                     {onEdit && (
                       <ContextMenuItem
                         onClick={() => {
-                          console.log('Row clicked:', row.original);
                           onEdit(row.original);
                         }}
                         inset
@@ -316,7 +368,6 @@ export function DataTable<TData, TValue>({
                     {onNavegate && (
                       <ContextMenuItem
                         onClick={() => {
-                          console.log('Row clicked:', row.original);
                           onNavegate(row.original);
                         }}
                         inset
@@ -328,7 +379,6 @@ export function DataTable<TData, TValue>({
                     {onRetry && (
                       <ContextMenuItem
                         onClick={() => {
-                          console.log('Row clicked:', row.original);
                           onRetry(row.original);
                         }}
                         inset
@@ -340,7 +390,6 @@ export function DataTable<TData, TValue>({
                     {onMoveDocument && (
                       <ContextMenuItem
                         onClick={() => {
-                          console.log('Row clicked:', row.original);
                           onMoveDocument(row.original);
                         }}
                         inset
@@ -352,7 +401,6 @@ export function DataTable<TData, TValue>({
                     {onDelete && (
                       <ContextMenuItem
                         onClick={() => {
-                          console.log('Row clicked:', row.original);
                           onDelete(row.original);
                         }}
                         inset
@@ -407,8 +455,33 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
 
+        {actionBar && table.getFilteredSelectedRowModel().rows.length > 0 && actionBar}
+      </div>
+      <DataTableActionBar
+        table={table}
+        visible={table.getFilteredSelectedRowModel().rows.length > 0}
+      >
+        <DataTableActionBarSelection table={table} />
+
+        <div>pepe</div>
+        <DataTableActionBarAction
+          size="icon"
+          tooltip="Export tasks"
+          isPending={getIsActionPending('export')}
+          onClick={onTaskExport}
+        >
+          <Download />
+        </DataTableActionBarAction>
+        <DataTableActionBarAction
+          size="icon"
+          tooltip="Delete"
+          isPending={isMultipleDelete}
+          onClick={onhandleMultipleDelete}
+        >
+          <Trash2 />
+        </DataTableActionBarAction>
+      </DataTableActionBar>
       {children && <div className="mt-8 w-full">{children(table)}</div>}
     </>
   );

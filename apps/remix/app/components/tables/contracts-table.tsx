@@ -1,10 +1,12 @@
-import { useMemo, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { useLingui } from '@lingui/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { Loader } from 'lucide-react';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindContractsResponse } from '@documenso/trpc/server/contracts-router/schema';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
 
@@ -30,6 +32,9 @@ interface DataTableProps<TData, TValue> {
   onRetry?: (data: DocumentsTableRow) => void;
 
   onEdit?: (data: DocumentsTableRow) => void;
+  onMultipleDelete: (ids: number[]) => void;
+  isMultipleDelete?: boolean;
+  setIsMultipleDelete?: (value: boolean) => void;
   onDelete?: (data: DocumentsTableRow) => void;
   onNavegate?: (data: DocumentsTableRow) => void;
   onMoveDocument?: (data: DocumentsTableRow) => void;
@@ -44,18 +49,53 @@ export const ContractsTable = ({
   onRetry,
   onAdd,
   onEdit,
+  isMultipleDelete = false,
+  setIsMultipleDelete,
   onNavegate,
+  onMultipleDelete,
   onDelete,
   onMoveDocument,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
+  // if (onEdit) {
+  //   console.warn('onEdit dei');
+  // }
+  // if (onDelete) {
+  //   console.warn('onDelete dei');
+  // }
   const team = useOptionalCurrentTeam();
   const [isPending, startTransition] = useTransition();
 
   const updateSearchParams = useUpdateSearchParams();
-  const columns = useMemo(() => {
-    return [
+
+  const createColumns = (): ColumnDef<DocumentsTableRow>[] => {
+    const columns: ColumnDef<DocumentsTableRow>[] = [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="translate-y-0.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="translate-y-0.5"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+      },
       {
         accessorKey: 'id',
         header: 'ID',
@@ -118,7 +158,14 @@ export const ContractsTable = ({
         enableHiding: true,
       },
     ];
-  }, [team]);
+    return columns;
+  };
+
+  interface ColumnActions {
+    onEdit?: (data: DocumentsTableRow) => void;
+    onDelete?: (id: number) => void;
+  }
+  const columns = createColumns();
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -139,12 +186,15 @@ export const ContractsTable = ({
   return (
     <div className="relative">
       <DataTable
+        setIsMultipleDelete={setIsMultipleDelete}
+        isMultipleDelete={isMultipleDelete}
         columns={columns}
         onDelete={onDelete}
         onEdit={onEdit}
         onRetry={onRetry}
         onNavegate={onNavegate}
         data={results.data}
+        onMultipleDelete={onMultipleDelete}
         perPage={results.perPage}
         currentPage={results.currentPage}
         totalPages={results.totalPages}

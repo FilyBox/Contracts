@@ -119,6 +119,7 @@ export default function ContractsPage() {
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
   const updateContractsMutation = trpc.contracts.updateContractsById.useMutation();
   const deleteContractsMutation = trpc.contracts.deleteContractsById.useMutation();
+  const deleteMultipleContractsMutation = trpc.contracts.deleteMultipleContractsByIds.useMutation();
   const { toast } = useToast();
 
   // type ContractsData = (typeof data.contracts)[number];
@@ -369,6 +370,24 @@ export default function ContractsPage() {
     }
   };
 
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index:', ids);
+      await deleteMultipleContractsMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    }
+  };
+
   const handleEdit = (record: Contract) => {
     setEditingUser(record);
     setIsDialogOpen(true);
@@ -493,55 +512,60 @@ export default function ContractsPage() {
           </div>
         </>
       )}
-      <div className="flex flex-row items-center pt-1">
-        {team && (
-          <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
-            {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
-            <AvatarFallback className="text-muted-foreground text-xs">
-              {team.name.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
-        )}
 
-        <h2 className="text-4xl font-semibold">
-          <Trans>Contracts</Trans>
-        </h2>
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-x-4 gap-y-8">
+        <div className="flex flex-row items-center">
+          {team && (
+            <Avatar className="dark:border-border mr-3 h-12 w-12 border-2 border-solid border-white">
+              {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
+              <AvatarFallback className="text-muted-foreground text-xs">
+                {team.name.slice(0, 1)}
+              </AvatarFallback>
+            </Avatar>
+          )}
 
-        <div className="flex w-full items-center justify-end gap-4">
-          <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
-            <TabsList className="items-center justify-start overflow-x-auto">
-              {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
-                return (
-                  <TabsTrigger
-                    key={value}
-                    className="hover:text-foreground min-w-[60px]"
-                    value={value}
-                    asChild
-                  >
-                    <Link
-                      to={getTabHref(value as keyof typeof ExtendedContractStatus)}
-                      preventScrollReset
+          <h2 className="text-4xl font-semibold">
+            <Trans>Contracts</Trans>
+          </h2>
+        </div>
+
+        <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
+              <TabsList>
+                {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
+                  return (
+                    <TabsTrigger
+                      key={value}
+                      className="hover:text-foreground min-w-[60px]"
+                      value={value}
+                      asChild
                     >
-                      <ContractsStatus status={value as ExtendedContractStatus} />
+                      <Link
+                        to={getTabHref(value as keyof typeof ExtendedContractStatus)}
+                        preventScrollReset
+                      >
+                        <ContractsStatus status={value as ExtendedContractStatus} />
 
-                      {value !== 'ALL' && (
-                        <span className="ml-1 inline-block opacity-50">
-                          {status[value as ExtendedContractStatus]}
-                        </span>
-                      )}
-                    </Link>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
-          {/* <CreateFolderDialogContract /> */}
-          <Button onClick={openCreateDialog}>Add Item</Button>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
-            <DocumentSearch initialValue={findDocumentSearchParams.query} />
+                        {value !== 'ALL' && (
+                          <span className="ml-1 inline-block opacity-50">
+                            {status[value as ExtendedContractStatus]}
+                          </span>
+                        )}
+                      </Link>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </Tabs>
+            <Button onClick={openCreateDialog}>Add Item</Button>
+            <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+              <DocumentSearch initialValue={findDocumentSearchParams.query} />
+            </div>
           </div>
         </div>
       </div>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-2xl">
           <div>
@@ -573,6 +597,7 @@ export default function ContractsPage() {
               totalPages: 1,
             }
           }
+          onMultipleDelete={handleMultipleDelete}
           onRetry={handleRetry}
           isLoading={isLoading}
           isLoadingError={isLoadingError}

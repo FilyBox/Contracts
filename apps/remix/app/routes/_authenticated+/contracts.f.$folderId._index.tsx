@@ -66,7 +66,7 @@ export default function ContractsPage() {
   const [folderToDelete, setFolderToDelete] = useState<TFolderWithSubfolders | null>(null);
   const [isSettingsFolderOpen, setIsSettingsFolderOpen] = useState(false);
   const [folderToSettings, setFolderToSettings] = useState<TFolderWithSubfolders | null>(null);
-
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
   const { folderId } = useParams();
   const [dataIntial, setData] = useState<Contract[]>([]);
   const [editingUser, setEditingUser] = useState<Contract | null>(null);
@@ -113,6 +113,7 @@ export default function ContractsPage() {
   const createManyContractsMutation = trpc.contracts.createManyContracts.useMutation();
   const updateContractsMutation = trpc.contracts.updateContractsById.useMutation();
   const deleteContractsMutation = trpc.contracts.deleteContractsById.useMutation();
+  const deleteMultipleContractsMutation = trpc.contracts.deleteMultipleContractsByIds.useMutation();
 
   const getTabHref = (value: keyof typeof ExtendedContractStatus) => {
     const params = new URLSearchParams(searchParams);
@@ -339,6 +340,26 @@ export default function ContractsPage() {
     }
   };
 
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index contracts:', ids);
+      await deleteMultipleContractsMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
+    }
+  };
+
   const handleEdit = (record: Contract) => {
     setEditingUser(record);
     setIsDialogOpen(true);
@@ -546,6 +567,9 @@ export default function ContractsPage() {
                   totalPages: 1,
                 }
               }
+              isMultipleDelete={isMultipleDelete}
+              setIsMultipleDelete={setIsMultipleDelete}
+              onMultipleDelete={handleMultipleDelete}
               isLoading={isLoading}
               isLoadingError={isLoadingError}
               onAdd={openCreateDialog}
