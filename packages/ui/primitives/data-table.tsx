@@ -464,7 +464,6 @@ export function DataTable<TData, TValue>({
       >
         <DataTableActionBarSelection table={table} />
 
-        <div>pepe</div>
         <DataTableActionBarAction
           size="icon"
           tooltip="Export tasks"

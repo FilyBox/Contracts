@@ -128,6 +128,7 @@ export default function ContractsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
 
   const getTabHref = (value: keyof typeof ExtendedContractStatus) => {
     const params = new URLSearchParams(searchParams);
@@ -372,7 +373,7 @@ export default function ContractsPage() {
 
   const handleMultipleDelete = async (ids: number[]) => {
     try {
-      console.log('Deleting records with IDs in index:', ids);
+      console.log('Deleting records with IDs in index contracts:', ids);
       await deleteMultipleContractsMutation.mutateAsync({ ids: ids });
 
       toast({
@@ -385,6 +386,8 @@ export default function ContractsPage() {
         description: 'Error deleting data',
       });
       console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
     }
   };
 
@@ -600,6 +603,7 @@ export default function ContractsPage() {
           onMultipleDelete={handleMultipleDelete}
           onRetry={handleRetry}
           isLoading={isLoading}
+          isMultipleDelete={isMultipleDelete}
           isLoadingError={isLoadingError}
           onMoveDocument={(row: Contract) => {
             setDocumentToMove(row.id);

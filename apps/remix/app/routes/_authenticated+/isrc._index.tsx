@@ -70,6 +70,7 @@ export default function IsrcPage() {
   const createManyIsrcSongsMutation = trpc.isrcSongs.createManyIsrcSongs.useMutation();
   const updateIsrcSongsMutation = trpc.isrcSongs.updateIsrcSongsById.useMutation();
   const deleteIsrcSongsMutation = trpc.isrcSongs.deleteIsrcSongsById.useMutation();
+  const deleteMultipleMutation = trpc.isrcSongs.deleteMultipleByIds.useMutation();
   const { toast } = useToast();
 
   // type IsrcSongsData = (typeof data.isrcSongs)[number];
@@ -78,6 +79,8 @@ export default function IsrcPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
+
   const columns = createColumnsIsrc();
 
   useEffect(() => {
@@ -229,6 +232,25 @@ export default function IsrcPage() {
     }
   };
 
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index contracts:', ids);
+      await deleteMultipleMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
+    }
+  };
   const handleEdit = (record: IsrcSongs) => {
     setEditingUser(record);
     setIsDialogOpen(true);
@@ -289,6 +311,9 @@ export default function IsrcPage() {
       ) : (
         <IsrcTable
           data={data}
+          onMultipleDelete={handleMultipleDelete}
+          setIsMultipleDelete={setIsMultipleDelete}
+          isMultipleDelete={isMultipleDelete}
           isLoading={isLoading}
           isLoadingError={isLoadingError}
           onAdd={openCreateDialog}
