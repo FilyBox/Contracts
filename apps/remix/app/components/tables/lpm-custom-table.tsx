@@ -7,9 +7,8 @@ import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-upda
 import type { TFindLpmResponse } from '@documenso/trpc/server/lpm-router/schema';
 import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
-import { Skeleton } from '@documenso/ui/primitives/skeleton';
-import { TableCell } from '@documenso/ui/primitives/table';
 
+import { DataTableSkeleton } from '~/components/tables/data-table-skeleton';
 import { useOptionalCurrentTeam } from '~/providers/team';
 
 // export type DocumentsTableProps = {
@@ -407,25 +406,11 @@ export const LpmTable = ({
           enable: isLoading || false,
           rows: 5,
           component: (
-            <>
-              <TableCell>
-                <Skeleton className="h-4 w-40 rounded-full" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20 rounded-full" />
-              </TableCell>
-              <TableCell className="py-4">
-                <div className="flex w-full flex-row items-center">
-                  <Skeleton className="h-10 w-10 flex-shrink-0 rounded-full" />
-                </div>
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-4 w-20 rounded-full" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-10 w-24 rounded" />
-              </TableCell>
-            </>
+            <DataTableSkeleton
+              columnCount={columns.length}
+              cellWidths={['10rem', '30rem', '10rem', '10rem', '6rem', '6rem', '6rem']}
+              shrinkZero
+            />
           ),
         }}
       >

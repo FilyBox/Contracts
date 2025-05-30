@@ -19,11 +19,13 @@ export type FindReleaseOptions = {
   where?: Prisma.IsrcSongsWhereInput;
   period?: PeriodSelectorValue;
   query?: string;
+  artistIds?: number[];
 };
 
 export const findIsrc = async ({
   userId,
   teamId,
+  artistIds,
 
   page = 1,
   perPage = 10,
@@ -58,7 +60,6 @@ export const findIsrc = async ({
       },
     });
   }
-
   const orderByColumn = orderBy?.column ?? 'id';
   const orderByDirection = orderBy?.direction ?? 'asc';
 
@@ -145,6 +146,15 @@ export const findIsrc = async ({
   const whereClause: Prisma.IsrcSongsWhereInput = {
     AND: whereAndClause,
   };
+  if (artistIds && artistIds.length > 0) {
+    whereClause.isrcArtists = {
+      some: {
+        artistId: {
+          in: artistIds,
+        },
+      },
+    };
+  }
 
   if (period) {
     const daysAgo = parseInt(period.replace(/d$/, ''), 10);
@@ -161,6 +171,9 @@ export const findIsrc = async ({
       take: perPage,
       orderBy: {
         [orderByColumn]: orderByDirection,
+      },
+      include: {
+        isrcArtists: true,
       },
     }),
     prisma.isrcSongs.count({

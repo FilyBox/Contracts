@@ -70,42 +70,42 @@ model User {
   artists                             Artist[]
   distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
   distributionStatementTerritories    DistributionStatementTerritories[]
-
-  distributionStatement    DistributionStatement[]
-  accounts                 Account[]
-  sessions                 Session[]
-  musicPlatforms           MusicPlatforms[]
-  documents                Document[]
-  folders                  Folder[]
-  contracts                Contract[]
-  subscriptions            Subscription[]
-  passwordResetTokens      PasswordResetToken[]
-  ownedTeams               Team[]
-  ownedPendingTeams        TeamPending[]
-  teamMembers              TeamMember[]
-  twoFactorSecret          String?
-  twoFactorEnabled         Boolean                    @default(false)
-  twoFactorBackupCodes     String?
-  url                      String?                    @unique
-  lpm                      lpm[]
-  iscrSongs                IsrcSongs[]
-  profile                  UserProfile?
-  verificationTokens       VerificationToken[]
-  apiTokens                ApiToken[]
-  templates                Template[]
-  taskAssignees            TaskAssignee[]
-  taskComments             TaskComment[]
-  taskAttachments          TaskAttachment[]
-  taskSubtasks             Task[]
-  securityAuditLogs        UserSecurityAuditLog[]
-  webhooks                 Webhook[]
-  siteSettings             SiteSettings[]
-  passkeys                 Passkey[]
-  Chat                     Chat[]
-  lpmProductDisplayArtists lpmProductDisplayArtists[]
-  avatarImage              AvatarImage?               @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
-  ChatDocuments            ChatDocument[]
-  Suggestion               Suggestion[]
+  isrcArtists                         IsrcArtists[]
+  distributionStatement               DistributionStatement[]
+  accounts                            Account[]
+  sessions                            Session[]
+  musicPlatforms                      MusicPlatforms[]
+  documents                           Document[]
+  folders                             Folder[]
+  contracts                           Contract[]
+  subscriptions                       Subscription[]
+  passwordResetTokens                 PasswordResetToken[]
+  ownedTeams                          Team[]
+  ownedPendingTeams                   TeamPending[]
+  teamMembers                         TeamMember[]
+  twoFactorSecret                     String?
+  twoFactorEnabled                    Boolean                               @default(false)
+  twoFactorBackupCodes                String?
+  url                                 String?                               @unique
+  lpm                                 lpm[]
+  iscrSongs                           IsrcSongs[]
+  profile                             UserProfile?
+  verificationTokens                  VerificationToken[]
+  apiTokens                           ApiToken[]
+  templates                           Template[]
+  taskAssignees                       TaskAssignee[]
+  taskComments                        TaskComment[]
+  taskAttachments                     TaskAttachment[]
+  taskSubtasks                        Task[]
+  securityAuditLogs                   UserSecurityAuditLog[]
+  webhooks                            Webhook[]
+  siteSettings                        SiteSettings[]
+  passkeys                            Passkey[]
+  Chat                                Chat[]
+  lpmProductDisplayArtists            lpmProductDisplayArtists[]
+  avatarImage                         AvatarImage?                          @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  ChatDocuments                       ChatDocument[]
+  Suggestion                          Suggestion[]
 
   @@index([email])
 }
@@ -158,6 +158,7 @@ model Artist {
   event             Event[]
   url               String?                    @unique
   ArtistProfile     ArtistProfile?
+  isrcArtists       IsrcArtists[]
   releasesArtists   releasesArtists[]
   lpmProductArtists lpmProductDisplayArtists[]
   songs             Songs[]
@@ -460,9 +461,23 @@ model Releases {
   updatedAt       DateTime          @default(now())
 }
 
+model IsrcArtists {
+  id         Int         @id @default(autoincrement())
+  artistId   Int
+  artistName String
+  isrcSongs  IsrcSongs[]
+  createdAt  DateTime    @default(now())
+  userId     Int?
+  teamId     Int?
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
 model IsrcSongs {
-  id        Int     @id @default(autoincrement())
-  date      String?
+  id        Int       @id @default(autoincrement())
+  date      DateTime?
   isrc      String?
   artist    String?
   duration  String?
@@ -471,6 +486,10 @@ model IsrcSongs {
   license   String?
   userId    Int?
   teamId    Int?
+
+  isrcArtists IsrcArtists[]
+
+  createdAt DateTime @default(now())
 
   user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   team     Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
@@ -1162,6 +1181,7 @@ model Team {
   distributionStatementTerritories    DistributionStatementTerritories[]
 
   territories Territories[]
+  isrcArtists IsrcArtists[]
 
   invites              TeamMemberInvite[]
   teamEmail            TeamEmail?

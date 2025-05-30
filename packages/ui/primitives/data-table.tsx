@@ -90,6 +90,21 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   children,
 }: DataTableProps<TData, TValue>) {
+  const dateColumnIds = [
+    'releaseDate',
+    'originalReleaseDate',
+    'createdAt',
+    'date',
+    'preOrderDate',
+    'lastProcessDate',
+    'timedReleaseDate',
+    'timedReleaseMusicServices',
+    'importDate',
+    'instantGratificationDate',
+    'submittedAt',
+    'lastModified',
+  ];
+
   const pagination = useMemo<PaginationState>(() => {
     if (currentPage !== undefined && perPage !== undefined) {
       return {
@@ -238,7 +253,8 @@ export function DataTable<TData, TValue>({
                                 </Tooltip>
                               </TooltipProvider>
                             </>
-                          ) : cell.column.id === 'lpmArtists' ||
+                          ) : (cell.column.id === 'lpmArtists' && cell.getValue()) ||
+                            (cell.column.id === 'isrcArtists' && cell.getValue()) ||
                             (cell.column.id === 'releasesArtists' && cell.getValue()) ? (
                             <>
                               {/* <TooltipProvider>
@@ -272,17 +288,8 @@ export function DataTable<TData, TValue>({
                             </a>
                           ) : cell.column.id === 'lyrics' && typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
-                          ) : cell.column.id === 'releaseDate' ||
-                            cell.column.id === 'originalReleaseDate' ||
-                            cell.column.id === 'preOrderDate' ||
-                            cell.column.id === 'lastProcessDate' ||
-                            cell.column.id === 'timedReleaseDate' ||
-                            cell.column.id === 'timedReleaseMusicServices' ||
-                            cell.column.id === 'importDate' ||
-                            cell.column.id === 'instantGratificationDate' ||
-                            cell.column.id === 'submittedAt' ||
-                            cell.column.id === 'lastModified' ? (
-                            `${cell.getValue() ? format(cell.getValue() as Date, 'd MMM yyyy', { locale: es }) + '' : '-'}`
+                          ) : dateColumnIds.includes(cell.column.id) ? (
+                            `${cell.getValue() ? format(cell.getValue() as Date, 'd MMM yyyy', { locale: es }) : '-'}`
                           ) : cell.column.id === 'writersComposers' &&
                             typeof cell.getValue() === 'string' ? (
                             `${(cell.getValue() as string).substring(0, 50)}${(cell.getValue() as string).length > 50 ? '...' : ''}`
