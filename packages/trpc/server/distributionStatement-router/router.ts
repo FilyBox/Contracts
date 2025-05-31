@@ -5,11 +5,9 @@ import { z } from 'zod';
 
 import { findDistribution } from '@documenso/lib/server-only/document/find-distribution';
 import { type GetStatsInput } from '@documenso/lib/server-only/document/get-priority';
-import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 // import { jobs } from '@documenso/lib/jobs/client';
 // import { getTemplateById } from '@documenso/lib/server-only/template/get-template-by-id';
 import { prisma } from '@documenso/prisma';
-import { ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 
 import { authenticatedProcedure, router } from '../trpc';
 
@@ -274,6 +272,17 @@ export const distributionRouter = router({
           distributionStatementTerritories: true,
         },
       });
+    }),
+
+  deleteMultipleByIds: authenticatedProcedure
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ input }) => {
+      const { ids } = input;
+      const deleted = await prisma.distributionStatement.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return deleted;
     }),
 
   findDistributionId: authenticatedProcedure

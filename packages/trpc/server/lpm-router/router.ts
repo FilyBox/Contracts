@@ -1,5 +1,4 @@
 // If you need Prisma types, import them directly from "@prisma/client"
-import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { findLpm } from '@documenso/lib/server-only/document/find-lpm';
@@ -536,5 +535,16 @@ export const lpmRouter = router({
       return await prisma.lpm.delete({
         where: { id },
       });
+    }),
+
+  deleteMultipleByIds: authenticatedProcedure
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ input }) => {
+      const { ids } = input;
+      const deleted = await prisma.lpm.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return deleted;
     }),
 });

@@ -1,13 +1,14 @@
-import { useMemo, useTransition } from 'react';
+import { useTransition } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { Loader } from 'lucide-react';
 import { DateTime } from 'luxon';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindDistributionInternalResponse } from '@documenso/trpc/server/distributionStatement-router/schema';
-import type { DataTableColumnDef } from '@documenso/ui/primitives/data-table';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import { DataTable } from '@documenso/ui/primitives/data-table';
 import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
 
@@ -34,6 +35,9 @@ interface DataTableProps<TData, TValue> {
   onAdd?: () => void;
   onEdit?: (data: DocumentsTableRow) => void;
   onDelete?: (data: DocumentsTableRow) => void;
+  onMultipleDelete: (ids: number[]) => void;
+  isMultipleDelete?: boolean;
+  setIsMultipleDelete?: (value: boolean) => void;
 }
 
 type DocumentsTableRow = TFindDistributionInternalResponse['data'][number];
@@ -45,6 +49,9 @@ export const DistributionTable = ({
   onMoveDocument,
   onEdit,
   onDelete,
+  onMultipleDelete,
+  isMultipleDelete = false,
+  setIsMultipleDelete,
 }: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
   const { _, i18n } = useLingui();
 
@@ -53,8 +60,33 @@ export const DistributionTable = ({
 
   const updateSearchParams = useUpdateSearchParams();
 
-  const columns = useMemo(() => {
-    return [
+  const createColumns = (): ColumnDef<DocumentsTableRow>[] => {
+    const columns: ColumnDef<DocumentsTableRow>[] = [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="translate-y-0.5"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="translate-y-0.5"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+      },
       {
         header: _(msg`ID`),
         accessorKey: 'id',
@@ -234,8 +266,10 @@ export const DistributionTable = ({
         cell: ({ row }) =>
           i18n.date(row.original.updatedAt, { ...DateTime.DATETIME_SHORT, hourCycle: 'h12' }),
       },
-    ] satisfies DataTableColumnDef<DocumentsTableRow>[];
-  }, [team, i18n, onMoveDocument]);
+    ];
+    return columns;
+  };
+  const columns = createColumns();
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -256,6 +290,8 @@ export const DistributionTable = ({
   return (
     <div className="relative">
       <DataTable
+        setIsMultipleDelete={setIsMultipleDelete}
+        isMultipleDelete={isMultipleDelete}
         onDelete={onDelete}
         onEdit={onEdit}
         columns={columns}

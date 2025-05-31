@@ -119,6 +119,7 @@ export default function TasksPage() {
   const updateMutation = trpc.release.updateRelease.useMutation();
   const deleteMutation = trpc.release.deleteRelease.useMutation();
   const convertDatesMutation = trpc.release.convertDates.useMutation();
+  const deleteMultipleMutation = trpc.release.deleteMultipleByIds.useMutation();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dataIntial, setData] = useState<TFindReleaseResponse | null>(null);
@@ -126,6 +127,7 @@ export default function TasksPage() {
   const { toast } = useToast();
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMultipleDelete, setIsMultipleDelete] = useState(false);
 
   const [type, setType] = useState<TFindReleaseInternalResponse['type']>({
     [ExtendedReleaseType.Album]: 0,
@@ -137,13 +139,6 @@ export default function TasksPage() {
   useEffect(() => {
     if (data?.releases) {
       setData(data.releases);
-      // setData({
-      //   ...data.releases,
-      //   data: data.releases.data.map((record) => ({
-      //     ...record,
-      //     date: record.date ? new Date(record.date) : undefined,
-      //   })),
-      // });
     }
   }, [data]);
 
@@ -349,26 +344,6 @@ export default function TasksPage() {
     setIsDialogOpen(false);
   };
 
-  // const handleConvertDates = async () => {
-  //   try {
-  //     const result = await convertDatesMutation.mutateAsync();
-  //     toast({
-  //       title: 'Date Format Conversion',
-  //       description: `Successfully converted ${result.successCount} dates. Failed: ${result.failCount}`,
-  //     });
-
-  //     // Refresh the data
-  //     await refetch();
-  //   } catch (error) {
-  //     toast({
-  //       variant: 'destructive',
-  //       title: 'Error',
-  //       description: 'Failed to convert dates',
-  //     });
-  //     console.error('Error converting dates:', error);
-  //   }
-  // };
-
   const handleUpdate = async (updated: Releases) => {
     console.log('Updated User:', updated);
     console.log('id', updated.id);
@@ -440,6 +415,26 @@ export default function TasksPage() {
       console.error('Error deleting record:', error);
     } finally {
       await refetch();
+    }
+  };
+
+  const handleMultipleDelete = async (ids: number[]) => {
+    try {
+      console.log('Deleting records with IDs in index contracts:', ids);
+      await deleteMultipleMutation.mutateAsync({ ids: ids });
+
+      toast({
+        description: `${ids.length} deleted successfully`,
+      });
+      await refetch();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Error deleting data',
+      });
+      console.error('Error deleting record:', error);
+    } finally {
+      setIsMultipleDelete(false);
     }
   };
 
@@ -585,6 +580,9 @@ export default function TasksPage() {
           ) : (
             // <p>sin data</p>
             <ReleasesTable
+              onMultipleDelete={handleMultipleDelete}
+              isMultipleDelete={isMultipleDelete}
+              setIsMultipleDelete={setIsMultipleDelete}
               data={data?.releases}
               isLoading={isLoading}
               isLoadingError={isLoadingError}

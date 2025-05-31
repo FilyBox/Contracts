@@ -317,4 +317,15 @@ export const IsrcSongsRouter = router({
 
       return deletedIsrcSong;
     }),
+
+  deleteMultipleByIds: authenticatedProcedure
+    .input(z.object({ ids: z.array(z.number()) }))
+    .mutation(async ({ input }) => {
+      const { ids } = input;
+      const deleted = await prisma.isrcSongs.deleteMany({
+        where: { id: { in: ids } },
+      });
+
+      return deleted;
+    }),
 });
