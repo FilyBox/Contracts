@@ -39,8 +39,8 @@ const formSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }),
   fileName: z.string().optional().nullable(),
   artists: z.string().optional().nullable(),
-  startDate: z.string().optional().nullable(),
-  endDate: z.string().optional().nullable(),
+  startDate: z.date().optional().nullable(),
+  endDate: z.date().optional().nullable(),
   isPossibleToExpand: z.nativeEnum(ExpansionPossibility),
   possibleExtensionTime: z.string().optional().nullable(),
   status: z.nativeEnum(ContractStatus),
@@ -104,8 +104,6 @@ export default function ContractForm({
       title: '',
       fileName: '',
       artists: '',
-      startDate: '',
-      endDate: '',
       folderId: folderId,
       isPossibleToExpand: ExpansionPossibility.NO_ESPECIFICADO,
       possibleExtensionTime: '',
@@ -306,6 +304,70 @@ export default function ContractForm({
                         name="startDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
+                            <FormLabel>Original Release Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'w-[240px] pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      (() => {
+                                        try {
+                                          console.log('Field value:', field.value);
+                                          // Handle different date formats safely
+                                          const date = new Date(field.value);
+                                          return isNaN(date.getTime())
+                                            ? 'Select date'
+                                            : format(date, 'dd/MM/yyyy');
+                                        } catch (error) {
+                                          return 'Select date';
+                                        }
+                                      })()
+                                    ) : (
+                                      // format(
+                                      //   // Only try to format if field.value is a non-empty string
+                                      //   field.value && field.value.trim() !== ''
+                                      //     ? new Date(field.value + 'T00:00:00')
+                                      //     : new Date(),
+                                      //   'dd/MM/yyyy',
+                                      // )
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={(() => {
+                                    try {
+                                      return field.value ? new Date(field.value) : undefined;
+                                    } catch (error) {
+                                      return undefined;
+                                    }
+                                  })()}
+                                  onSelect={(date) => field.onChange(date)}
+                                  disabled={(date) => date < new Date('1900-01-01')}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {/* <FormField
+                        control={form.control}
+                        name="startDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
                             <FormLabel>Fecha de Inicio</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
@@ -341,11 +403,75 @@ export default function ContractForm({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      /> */}
                     </div>
 
                     <div className="col-span-12 md:col-span-6">
                       <FormField
+                        control={form.control}
+                        name="endDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Original Release Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'w-[240px] pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground',
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      (() => {
+                                        try {
+                                          console.log('Field value:', field.value);
+                                          // Handle different date formats safely
+                                          const date = new Date(field.value);
+                                          return isNaN(date.getTime())
+                                            ? 'Select date'
+                                            : format(date, 'dd/MM/yyyy');
+                                        } catch (error) {
+                                          return 'Select date';
+                                        }
+                                      })()
+                                    ) : (
+                                      // format(
+                                      //   // Only try to format if field.value is a non-empty string
+                                      //   field.value && field.value.trim() !== ''
+                                      //     ? new Date(field.value + 'T00:00:00')
+                                      //     : new Date(),
+                                      //   'dd/MM/yyyy',
+                                      // )
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="z-9999 w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={(() => {
+                                    try {
+                                      return field.value ? new Date(field.value) : undefined;
+                                    } catch (error) {
+                                      return undefined;
+                                    }
+                                  })()}
+                                  onSelect={(date) => field.onChange(date)}
+                                  disabled={(date) => date < new Date('1900-01-01')}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {/* <FormField
                         control={form.control}
                         name="endDate"
                         render={({ field }) => (
@@ -385,7 +511,7 @@ export default function ContractForm({
                             <FormMessage />
                           </FormItem>
                         )}
-                      />
+                      /> */}
                     </div>
 
                     <div className="col-span-12 md:col-span-6">

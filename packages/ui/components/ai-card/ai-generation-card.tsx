@@ -1,3 +1,7 @@
+import * as React from 'react';
+
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { type Contract } from '@documenso/prisma/client';
@@ -24,33 +28,6 @@ export default function Component({
       transition: { duration: 0.8 },
     },
   };
-
-  // const dotsVariants = {
-  //   animate: {
-  //     y: [0, -8, 0],
-  //     transition: {
-  //       repeat: Number.POSITIVE_INFINITY,
-  //       duration: 0.6,
-  //       ease: 'easeInOut',
-  //     },
-  //   },
-  // };
-
-  // const iconVariants = {
-  //   generating: {
-  //     rotate: 360,
-  //     scale: [1, 1.2, 1],
-  //     transition: {
-  //       rotate: { repeat: Number.POSITIVE_INFINITY, duration: 2, ease: 'linear' },
-  //       scale: { repeat: Number.POSITIVE_INFINITY, duration: 1, ease: 'easeInOut' },
-  //     },
-  //   },
-  //   completed: {
-  //     rotate: 0,
-  //     scale: 1,
-  //     transition: { duration: 0.5 },
-  //   },
-  // };
 
   const contentVariants = {
     hidden: {
@@ -166,14 +143,18 @@ export default function Component({
                         {contract?.startDate && (
                           <div className="flex flex-col">
                             <span className="text-sm font-medium text-gray-500">Start Date</span>
-                            <span className="text-base">{contract.startDate}</span>
+                            <span className="text-base">
+                              {format(contract.startDate as Date, 'd MMM yyyy', { locale: es })}
+                            </span>
                           </div>
                         )}
 
                         {contract?.endDate && (
                           <div className="flex flex-col">
                             <span className="text-sm font-medium text-gray-500">End Date</span>
-                            <span className="text-base">{contract.endDate}</span>
+                            <span className="text-base">
+                              {format(contract.endDate as Date, 'd MMM yyyy', { locale: es })}
+                            </span>
                           </div>
                         )}
                       </motion.div>

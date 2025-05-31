@@ -196,6 +196,37 @@ export default function ContractsPage() {
   const handleCsvUpload = async () => {
     if (!csvFile) return;
 
+    const convertDateFormat = (dateString: string): Date | undefined => {
+      if (!dateString || dateString.trim() === '') return undefined;
+
+      try {
+        // Asume formato MM/dd/yyyy
+        let [month, day, year] = dateString.split('/');
+        if (!month || !day || !year) return undefined;
+
+        // if ( day > '31' || year.length !== 4) {
+        //   console.warn(`Invalid date format: ${dateString}`);
+        //   return undefined;
+        // }
+
+        if (month > day) {
+          [month, day] = [day, month];
+        }
+
+        // Crear fecha en formato ISO (yyyy-MM-dd)
+        const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const date = new Date(isoDate);
+
+        // Verificar que la fecha es válida
+        if (isNaN(date.getTime())) return undefined;
+
+        return date;
+      } catch (error) {
+        console.warn(`Error converting date: ${dateString}`, error);
+        return undefined;
+      }
+    };
+
     setIsSubmitting(true);
     try {
       const csvData = await parseCsvFile(csvFile);
@@ -216,14 +247,13 @@ export default function ContractsPage() {
           title: item.title || '',
           fileName: item.fileName || undefined,
           artists: item.artists || '',
-          startDate: item.startDate || '',
-          endDate: item.endDate || '',
+          startDate: convertDateFormat(item.startDate) || new Date(),
+          endDate: convertDateFormat(item.endDate) || new Date(),
           isPossibleToExpand,
           possibleExtensionTime: item.possibleExtensionTime || undefined,
           status,
           documentId: parseInt(item.documentId || '0'),
           summary: item.summary || undefined,
-          folderId: folderId || undefined,
         };
       });
 
@@ -262,11 +292,10 @@ export default function ContractsPage() {
     try {
       const { id } = await createContractsMutation.mutateAsync({
         title: newRecord.title ?? '',
-        folderId: folderId,
         fileName: newRecord.fileName ?? '',
         artists: newRecord.artists ?? '',
-        startDate: newRecord.startDate ?? '',
-        endDate: newRecord.endDate ?? '',
+        startDate: newRecord.startDate ?? new Date(),
+        endDate: newRecord.endDate ?? new Date(),
         isPossibleToExpand: newRecord.isPossibleToExpand ?? '',
         possibleExtensionTime: newRecord.possibleExtensionTime ?? '',
         status: newRecord.status ?? 'NO_ESPECIFICADO',
@@ -299,8 +328,8 @@ export default function ContractsPage() {
         title: updatedContracts.title ?? '',
         artists: updatedContracts.artists ?? '',
         fileName: updatedContracts.fileName ?? undefined,
-        startDate: updatedContracts.startDate ?? '',
-        endDate: updatedContracts.endDate ?? '',
+        startDate: updatedContracts.startDate ?? new Date(),
+        endDate: updatedContracts.endDate ?? new Date(),
         isPossibleToExpand: updatedContracts.isPossibleToExpand ?? undefined,
         possibleExtensionTime: updatedContracts.possibleExtensionTime ?? undefined,
         status: updatedContracts.status ?? undefined,
