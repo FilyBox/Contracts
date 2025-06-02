@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 
 import type { Table } from '@tanstack/react-table';
@@ -28,7 +26,7 @@ function DataTableActionBar<TData>({
 }: DataTableActionBarProps<TData>) {
   const [mounted, setMounted] = React.useState(false);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     setMounted(true);
   }, []);
 

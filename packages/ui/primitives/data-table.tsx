@@ -124,7 +124,6 @@ export function DataTable<TData, TValue>({
     'startDate',
     'endDate',
   ];
-  console.log('isMultipleDelete', isMultipleDelete);
   const actions = ['update-status', 'update-priority', 'export', 'delete'] as const;
 
   type Action = (typeof actions)[number];

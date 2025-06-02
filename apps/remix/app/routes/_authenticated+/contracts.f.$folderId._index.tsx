@@ -68,6 +68,7 @@ export default function ContractsPage() {
   const [folderToSettings, setFolderToSettings] = useState<TFolderWithSubfolders | null>(null);
   const [isMultipleDelete, setIsMultipleDelete] = useState(false);
   const { folderId } = useParams();
+
   const [dataIntial, setData] = useState<Contract[]>([]);
   const [editingUser, setEditingUser] = useState<Contract | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -293,6 +294,7 @@ export default function ContractsPage() {
       const { id } = await createContractsMutation.mutateAsync({
         title: newRecord.title ?? '',
         fileName: newRecord.fileName ?? '',
+        folderId: folderId,
         artists: newRecord.artists ?? '',
         startDate: newRecord.startDate ?? new Date(),
         endDate: newRecord.endDate ?? new Date(),

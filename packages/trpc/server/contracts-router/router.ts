@@ -58,7 +58,6 @@ export const contractsRouter = router({
         folderId,
         summary,
       } = input;
-
       const contract = await prisma.contract.create({
         data: {
           title,
