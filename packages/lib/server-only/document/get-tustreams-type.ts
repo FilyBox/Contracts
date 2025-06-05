@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import { prisma } from '@documenso/prisma';
 
-import type { PeriodSelectorValue } from './find-tustreams';
+import type { PeriodSelectorValue } from './find-tuStreams';
 
 export const isExtendedTuStreamsType = (value: unknown): value is ExtendedTuStreamsType => {
   if (typeof value !== 'string') {

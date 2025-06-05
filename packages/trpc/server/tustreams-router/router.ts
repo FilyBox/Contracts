@@ -4,13 +4,21 @@ import { TypeOfTuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 
-import { findTuStreams } from '@documenso/lib/server-only/document/find-tustreams';
+import { findTuStreams } from '@documenso/lib/server-only/document/find-tuStreams';
 import { type GetTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
 import { getTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
 import { prisma } from '@documenso/prisma';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import { authenticatedProcedure, router } from '../trpc';
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 export type GetTuStreamsByIdOptions = {
   id: number;
