@@ -8,8 +8,6 @@ type BrandingContextValue = {
   brandingHidePoweredBy: boolean;
 };
 
-const BrandingContext = createContext<BrandingContextValue | undefined>(undefined);
-
 const defaultBrandingContextValue: BrandingContextValue = {
   brandingEnabled: false,
   brandingUrl: '',
@@ -17,6 +15,9 @@ const defaultBrandingContextValue: BrandingContextValue = {
   brandingCompanyDetails: '',
   brandingHidePoweredBy: false,
 };
+const BrandingContext = createContext<BrandingContextValue | undefined>(
+  defaultBrandingContextValue,
+);
 
 export const BrandingProvider = (props: {
   branding?: BrandingContextValue;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { useRealtimeRun } from '@trigger.dev/react-hooks';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale/es';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Sparkles, XCircleIcon } from 'lucide-react';
 
@@ -311,14 +313,18 @@ export default function Component({
                                 <span className="text-sm font-medium text-gray-500">
                                   Start Date
                                 </span>
-                                <span className="text-base">{contract.startDate}</span>
+                                <span className="text-base">
+                                  {format(contract.startDate as Date, 'd MMM yyyy', { locale: es })}
+                                </span>
                               </div>
                             )}
 
                             {contract?.endDate && (
                               <div className="flex flex-col">
                                 <span className="text-sm font-medium text-gray-500">End Date</span>
-                                <span className="text-base">{contract.endDate}</span>
+                                <span className="text-base">
+                                  {format(contract.endDate as Date, 'd MMM yyyy', { locale: es })}
+                                </span>
                               </div>
                             )}
                           </motion.div>
@@ -670,14 +676,22 @@ export default function Component({
                                 <span className="text-sm font-medium text-gray-500">
                                   Start Date
                                 </span>
-                                <span className="text-base">{contractDetails.startDate}</span>
+                                <span className="text-base">
+                                  {format(contractDetails.startDate as Date, 'd MMM yyyy', {
+                                    locale: es,
+                                  })}
+                                </span>
                               </div>
                             )}
 
                             {contractDetails?.endDate && (
                               <div className="flex flex-col">
                                 <span className="text-sm font-medium text-gray-500">End Date</span>
-                                <span className="text-base">{contractDetails.endDate}</span>
+                                <span className="text-base">
+                                  {format(contractDetails.endDate as Date, 'd MMM yyyy', {
+                                    locale: es,
+                                  })}
+                                </span>
                               </div>
                             )}
                           </motion.div>

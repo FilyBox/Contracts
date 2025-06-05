@@ -29,8 +29,8 @@ export const contractsRouter = router({
         title: z.string(),
         fileName: z.string().optional(),
         artists: z.string(),
-        startDate: z.string(),
-        endDate: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
         folderId: z.string().optional(),
         isPossibleToExpand: z
           .nativeEnum(ExpansionPossibility)
@@ -58,7 +58,6 @@ export const contractsRouter = router({
         folderId,
         summary,
       } = input;
-
       const contract = await prisma.contract.create({
         data: {
           title,
@@ -87,8 +86,8 @@ export const contractsRouter = router({
             title: z.string(),
             fileName: z.string().optional(),
             artists: z.string(),
-            startDate: z.string(),
-            endDate: z.string(),
+            startDate: z.date(),
+            endDate: z.date(),
             folderId: z.string().optional(),
 
             isPossibleToExpand: z
@@ -206,8 +205,8 @@ export const contractsRouter = router({
         title: z.string(),
         fileName: z.string().optional(),
         artists: z.string(),
-        startDate: z.string(),
-        endDate: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
         isPossibleToExpand: z
           .nativeEnum(ExpansionPossibility)
           .optional()

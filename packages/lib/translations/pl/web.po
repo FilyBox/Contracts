@@ -1445,10 +1445,6 @@ msgstr ""
 msgid "Basic details"
 msgstr "Podstawowe szczegóły"
 
-#: packages/email/template-components/template-confirmation-email.tsx
-msgid "Before you get started, please confirm your email address by clicking the button below:"
-msgstr "Zanim zaczniesz, proszę potwierdź swój adres e-mail, klikając przycisk poniżej:"
-
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.billing.tsx
 #: apps/remix/app/routes/_authenticated+/settings+/billing.tsx
 #: apps/remix/app/components/general/settings-nav-mobile.tsx
@@ -1915,7 +1911,6 @@ msgid "Confirm Deletion"
 msgstr "Potwierdź usunięcie"
 
 #: apps/remix/app/routes/_unauthenticated+/unverified-account.tsx
-#: packages/email/template-components/template-confirmation-email.tsx
 msgid "Confirm email"
 msgstr "Potwierdź adres e-mail"
 
@@ -4639,10 +4634,6 @@ msgstr ""
 msgid "Please confirm your email"
 msgstr "Proszę potwierdzić swój email"
 
-#: packages/email/templates/confirm-email.tsx
-msgid "Please confirm your email address"
-msgstr "Proszę potwierdzić swój adres email"
-
 #: apps/remix/app/components/dialogs/document-delete-dialog.tsx
 msgid "Please contact support if you would like to revert this action."
 msgstr "Proszę skontaktować się z pomocą techniczną, jeśli chcesz cofnąć tę akcję."
@@ -6524,10 +6515,6 @@ msgstr "Ten dokument został stworzony przez Ciebie lub członka zespołu przy u
 msgid "This document was created using a direct link."
 msgstr "Ten dokument został stworzony przy użyciu bezpośredniego linku."
 
-#: packages/email/template-components/template-footer.tsx
-msgid "This document was sent using <0>LPM.</0>"
-msgstr ""
-
 #: packages/email/template-components/template-document-rejection-confirmed.tsx
 msgid "This email confirms that you have rejected the document <0>\"{documentName}\"</0> sent by {documentOwnerName}."
 msgstr "Ten email potwierdza, że odrzuciłeś dokument <0>\"{documentName}\"</0> wysłany przez {documentOwnerName}."
@@ -7706,10 +7693,6 @@ msgstr "Witaj"
 msgid "Welcome back, we are lucky to have you."
 msgstr "Witamy z powrotem, mamy szczęście, że mamy cię."
 
-#: packages/email/template-components/template-confirmation-email.tsx
-msgid "Welcome!"
-msgstr ""
-
 #: apps/remix/app/routes/_recipient+/sign.$token+/waiting.tsx
 msgid "Were you trying to edit this document instead?"
 msgstr "Czy próbowałeś raczej edytować ten dokument?"
@@ -7820,10 +7803,6 @@ msgstr "Nie masz uprawnień, aby wyłączyć tego użytkownika."
 #: apps/remix/app/components/dialogs/admin-user-enable-dialog.tsx
 msgid "You are not authorized to enable this user."
 msgstr "Nie masz uprawnień, aby włączyć tego użytkownika."
-
-#: packages/email/template-components/template-confirmation-email.tsx
-msgid "You can also copy and paste this link into your browser: {confirmationLink} (link expires in 1 hour)"
-msgstr "Możesz także skopiować i wkleić ten link do przeglądarki: {confirmationLink} (link wygasa za 1 godzinę)"
 
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 msgid "You can choose to enable or disable your profile for public view."
