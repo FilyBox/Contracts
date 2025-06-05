@@ -74,11 +74,11 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
     try {
       const artist = await createArtist({
         name: artistData.name,
-        role: artistData.role,
+        // role: artistData.role,
         // event: artistData.event,
         // song: artistData.song,
         url: artistData.url,
-        disabled: artistData.disabled,
+        // disabled: artistData.disabled,
       });
       console.log('Artist created:', artist);
 
@@ -91,6 +91,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
       setShowArtistCreateDialog(false);
       setIsCreatingArtist(false);
     } catch (error) {
+      console.error('Error creating artist:', error);
       toast({
         title: _(msg`Failed to create artist`),
         description: _(msg`Please try again later.`),
