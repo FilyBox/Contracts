@@ -3,7 +3,7 @@ import type { Prisma, User } from '@prisma/client';
 import { DateTime } from 'luxon';
 
 import { prisma } from '@documenso/prisma';
-import { isExtendedTuStreamsType } from '@documenso/prisma/guards/is-extended-tuStreams-type';
+import { isExtendedTuStreamsType } from '@documenso/prisma/guards/is-extended-tustreams-type';
 import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import type { PeriodSelectorValue } from './find-tustreams';
