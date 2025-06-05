@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
+import { TypeOfTuStreams } from '@prisma/client';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
 import { z } from 'zod';
@@ -13,7 +14,6 @@ import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formTuStreamsPath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { type tuStreams } from '@documenso/prisma/client';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 import { trpc } from '@documenso/trpc/react';
 import {
   type TFindTuStreamsInternalResponse,
@@ -41,6 +41,15 @@ import { TableArtistFilter } from '~/components/tables/lpm-table-artist-filter';
 import { TuStreamsTable } from '~/components/tables/tustreams-table';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 export type TasksPageViewProps = {
   team?: Team;
@@ -93,6 +102,11 @@ export default function TuStreamsPage() {
 
     return result.data;
   }, [searchParams]);
+
+  // const findDocumentSearchParams = useMemo(
+  //   () => ZSearchParamsSchema.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+  //   [searchParams],
+  // );
 
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
