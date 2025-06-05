@@ -123,6 +123,7 @@ export default function TuStreamsPage() {
 
   const { data: artistData, isLoading: artistDataloading } =
     trpc.tuStreams.findTuStreamsUniqueArtists.useQuery();
+
   const { data: allArtistData, isLoading: artistLoading } = trpc.tuStreams.findArtists.useQuery();
 
   const createManyTuStreamsMutation = trpc.tuStreams.createManyTuStreams.useMutation();
@@ -303,6 +304,7 @@ export default function TuStreamsPage() {
       toast({
         description: 'TuStreams record added successfully',
       });
+      setIsDialogOpen(false);
     } catch (error) {
       toast({
         variant: 'destructive',

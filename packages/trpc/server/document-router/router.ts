@@ -746,11 +746,16 @@ export const documentRouter = router({
       const { question, folderId } = input;
       try {
         const query = await generateQuery(question, userId, teamId, folderId);
-        const companies = await runGenerateSQLQuery(query);
-        const generation = await generateChartConfig(companies, question);
+        console.log('AI Connection query:', { query });
 
+        const companies = await runGenerateSQLQuery(query);
+        console.log('AI Connection companies:', { companies });
+
+        const generation = await generateChartConfig(companies, question);
+        console.log('AI Connection generation:', { generation });
         return { query, companies, generation };
       } catch (e) {
+        console.log('AI Connection error:', e);
         return { query: '', companies: [], generation: undefined };
       }
     }),
