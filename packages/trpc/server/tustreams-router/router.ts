@@ -2,14 +2,13 @@
 import type { Prisma } from '@prisma/client';
 import { TypeOfTuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
-import { promise, z } from 'zod';
+import { z } from 'zod';
 
 import { findTuStreams } from '@documenso/lib/server-only/document/find-tuStreams';
 import { type GetTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
 import { getTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
-import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 import { prisma } from '@documenso/prisma';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import { authenticatedProcedure, router } from '../trpc';
 
@@ -410,7 +409,7 @@ export const tuStreamsRouter = router({
       const { ids } = input;
 
       const updateMany = await Promise.all(
-        ids.map((id) =>
+        ids.map(async (id) =>
           prisma.tuStreams.update({
             where: { id },
             data: {

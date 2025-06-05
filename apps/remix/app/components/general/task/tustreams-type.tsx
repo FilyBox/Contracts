@@ -6,7 +6,7 @@ import { useLingui } from '@lingui/react';
 import { Flag } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react/dist/lucide-react';
 
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import type { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 import { cn } from '@documenso/ui/lib/utils';
 
 type FriendlyStatus = {
@@ -55,7 +55,7 @@ export type TaskProps = HTMLAttributes<HTMLSpanElement> & {
 
 export const TuStreamsType = ({ className, type, inheritColor, ...props }: TaskProps) => {
   const { _ } = useLingui();
-  let typeLabel = type;
+  const typeLabel = type;
 
   const { label, icon: Icon, color } = FRIENDLY_STATUS_MAP[type];
 

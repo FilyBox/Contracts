@@ -1,4 +1,4 @@
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import { ExtendedTuStreamsType } from '../types/extended-tustreams-type';
 
 export const isExtendedTuStreamsType = (value: unknown): value is ExtendedTuStreamsType => {
   if (typeof value !== 'string') {

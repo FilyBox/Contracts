@@ -1,9 +1,9 @@
-import type { Prisma, Team, TeamEmail, tuStreams } from '@prisma/client';
+import type { Prisma, tuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { match } from 'ts-pattern';
 
 import { prisma } from '@documenso/prisma';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import { type FindResultResponse } from '../../types/search-params';
 
@@ -74,7 +74,7 @@ export const findTuStreams = async ({
     ],
   };
 
-  let filters: Prisma.tuStreamsWhereInput | null = findTuStreamsTypeFilter(type);
+  const filters: Prisma.tuStreamsWhereInput | null = findTuStreamsTypeFilter(type);
 
   if (filters === null) {
     return {

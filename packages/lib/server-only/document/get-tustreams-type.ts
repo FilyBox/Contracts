@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import type { PeriodSelectorValue } from '@documenso/lib/server-only/document/find-tuStreams';
 import { prisma } from '@documenso/prisma';
 import { isExtendedTuStreamsType } from '@documenso/prisma/guards/is-extended-tuStreams-type';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 export type GetTuStreamsType = {
   user: User;
