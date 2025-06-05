@@ -13,13 +13,13 @@ import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formTuStreamsPath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { type tuStreams } from '@documenso/prisma/client';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tuStreams-type';
+import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 import { trpc } from '@documenso/trpc/react';
 import {
   type TFindTuStreamsInternalResponse,
   type TFindTuStreamsResponse,
   ZFindTuStreamsInternalRequestSchema,
-} from '@documenso/trpc/server/tuStreams-router/schema';
+} from '@documenso/trpc/server/tustreams-router/schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import {
@@ -30,7 +30,6 @@ import {
   DialogTitle,
 } from '@documenso/ui/primitives/dialog';
 import FormTuStreams from '@documenso/ui/primitives/form-tustreams';
-import { Input } from '@documenso/ui/primitives/input';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
@@ -61,7 +60,7 @@ const ZSearchParamsSchema = ZFindTuStreamsInternalRequestSchema.pick({
 }).extend({
   artistIds: z.string().transform(parseToIntegerArray).optional().catch([]),
 });
-export default function tuStreamsPage() {
+export default function TuStreamsPage() {
   const [searchParams] = useSearchParams();
 
   const findDocumentSearchParams = useMemo(() => {
