@@ -309,6 +309,7 @@ export function DataTable<TData, TValue>({
                             </>
                           ) : (cell.column.id === 'lpmArtists' && cell.getValue()) ||
                             (cell.column.id === 'isrcArtists' && cell.getValue()) ||
+                            (cell.column.id === 'tuStreamsArtists' && cell.getValue()) ||
                             (cell.column.id === 'releasesArtists' && cell.getValue()) ? (
                             <>
                               {/* <TooltipProvider>

@@ -42,6 +42,10 @@ const navigationLinks = [
     label: msg`ISRC`,
   },
   {
+    href: '/tuStreams',
+    label: msg`TuStreams`,
+  },
+  {
     href: '/contracts',
     label: msg`Contracts`,
   },
@@ -109,14 +113,14 @@ export const AppNavDesktopTeams = ({
         onClick={() => setIsCommandMenuOpen(true)}
       >
         <div className="flex items-center">
-          <Search className="mr-2 h-5 w-5" />
-          <Trans>Search</Trans>
+          <Search className="h-5 w-5" />
+          {/* <Trans>Search</Trans> */}
         </div>
 
         <div>
-          <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
+          {/* <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
             {modifierKey}+K
-          </div>
+          </div> */}
         </div>
       </Button>
     </div>

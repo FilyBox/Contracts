@@ -22,7 +22,7 @@ export const artistRouter = router({
   createArtist: authenticatedProcedure
     .input(
       z.object({
-        name: z.string().min(1).optional(),
+        name: z.string().min(1),
         role: z.nativeEnum(Role).array().optional(),
         // event: z.array(z.string()).optional(),
         url: z.string().optional(),

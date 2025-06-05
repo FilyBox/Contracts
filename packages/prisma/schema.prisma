@@ -49,22 +49,25 @@ enum StatusSongAlbum {
 }
 
 model User {
-  id                                  Int                                   @id @default(autoincrement())
-  name                                String?
-  customerId                          String?                               @unique
-  email                               String                                @unique
-  emailVerified                       DateTime?
-  password                            String? // Todo: (RR7) Remove after RR7 migration.
-  source                              String?
-  signature                           String?
-  createdAt                           DateTime                              @default(now())
-  updatedAt                           DateTime                              @default(now()) @updatedAt
-  lastSignedIn                        DateTime                              @default(now())
-  roles                               Role[]                                @default([USER])
-  identityProvider                    IdentityProvider                      @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
-  avatarImageId                       String?
-  disabled                            Boolean                               @default(false)
-  releases                            Releases[]
+  id               Int                @id @default(autoincrement())
+  name             String?
+  customerId       String?            @unique
+  email            String             @unique
+  emailVerified    DateTime?
+  password         String? // Todo: (RR7) Remove after RR7 migration.
+  source           String?
+  signature        String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now()) @updatedAt
+  lastSignedIn     DateTime           @default(now())
+  roles            Role[]             @default([USER])
+  identityProvider IdentityProvider   @default(DOCUMENSO) // Todo: (RR7) Remove after RR7 migration.
+  avatarImageId    String?
+  disabled         Boolean            @default(false)
+  releases         Releases[]
+  tuStreams        tuStreams[]
+  tuStreamsArtists tuStreamsArtists[]
+
   territories                         Territories[]
   releasesArtists                     releasesArtists[]
   artists                             Artist[]
@@ -149,7 +152,7 @@ model releasesArtists {
 
 model Artist {
   id                Int                        @id @default(autoincrement())
-  name              String?                    @unique
+  name              String                     @unique
   createdAt         DateTime                   @default(now())
   updatedAt         DateTime                   @default(now()) @updatedAt
   roles             Role[]                     @default([USER])
@@ -166,6 +169,8 @@ model Artist {
   lpm               lpm[]
   userId            Int?
   teamId            Int?
+  tuStreams         tuStreams[]
+  tuStreamsArtists  tuStreamsArtists[]
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
@@ -494,6 +499,46 @@ model IsrcSongs {
   user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   team     Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
   memebers Artist[]
+}
+
+model tuStreamsArtists {
+  id         Int         @id @default(autoincrement())
+  artistId   Int
+  artistName String
+  tuStreams  tuStreams[]
+  createdAt  DateTime    @default(now())
+  userId     Int?
+  teamId     Int?
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
+enum TypeOfTuStreams {
+  Sencillo
+  Album
+  Single
+  EP
+}
+
+model tuStreams {
+  id     Int              @id @default(autoincrement())
+  title  String?
+  UPC    String?
+  artist String?
+  type   TypeOfTuStreams?
+  total  Float?
+  date   DateTime?
+
+  userId Int?
+  teamId Int?
+
+  tuStreamsArtists tuStreamsArtists[]
+  createdAt        DateTime           @default(now())
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team             Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  memebers         Artist[]
 }
 
 model TeamProfile {
@@ -1179,6 +1224,8 @@ model Team {
   members                             TeamMember[]
   distributionStatementMusicPlatforms DistributionStatementMusicPlatforms[]
   distributionStatementTerritories    DistributionStatementTerritories[]
+  tuStreams                           tuStreams[]
+  tuStreamsArtists                    tuStreamsArtists[]
 
   territories Territories[]
   isrcArtists IsrcArtists[]

@@ -899,11 +899,15 @@ msgstr "After signing a document electronically, you will be provided the opport
 msgid "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 msgstr "After submission, a document will be automatically generated and added to your documents page. You will also receive a notification via email."
 
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+#: apps/remix/app/components/general/task/tustreams-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 msgid "Album"
 msgstr "Album"
 
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+#: apps/remix/app/components/general/task/tustreams-type.tsx
 #: apps/remix/app/components/general/task/task-status.tsx
 #: apps/remix/app/components/general/task/task-priority.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
@@ -1172,6 +1176,12 @@ msgstr "An error occurred while updating your profile."
 msgid "An error occurred while uploading your document."
 msgstr "An error occurred while uploading your document."
 
+#: apps/remix/app/components/dialogs/advanced-filte-dialog.tsx
+#: apps/remix/app/components/dialogs/advanced-filte-dialog.tsx
+#: apps/remix/app/components/dialogs/advanced-filte-dialog.tsx
+msgid "An error occurred. Please try again."
+msgstr "An error occurred. Please try again."
+
 #: apps/remix/app/components/general/generic-error-layout.tsx
 msgid "An unexpected error occurred."
 msgstr "An unexpected error occurred."
@@ -1306,6 +1316,7 @@ msgstr "Are you sure you wish to delete this team?"
 msgid "Are you sure?"
 msgstr "Are you sure?"
 
+#: apps/remix/app/components/tables/tustreams-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Artist"
@@ -2177,6 +2188,7 @@ msgid "Create your account and start using state-of-the-art document signing. Op
 msgstr "Create your account and start using state-of-the-art document signing. Open and beautiful signing is within your grasp."
 
 #: apps/remix/app/routes/_authenticated+/admin+/documents._index.tsx
+#: apps/remix/app/components/tables/tustreams-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/settings-security-passkey-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
@@ -3146,6 +3158,8 @@ msgstr "Enter your name"
 msgid "Enter your text here"
 msgstr "Enter your text here"
 
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+#: apps/remix/app/components/general/task/tustreams-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 msgid "EP"
@@ -5199,7 +5213,6 @@ msgstr "Save Template"
 #: apps/remix/app/components/tables/distribution-table-territoriesName-filter.tsx
 #: apps/remix/app/components/tables/distribution-table-musicplatform-filter.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
-#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Search"
 msgstr "Search"
 
@@ -5284,6 +5297,8 @@ msgstr "Select default option"
 msgid "Select passkey"
 msgstr "Select passkey"
 
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+#: apps/remix/app/components/general/task/tustreams-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 #: apps/remix/app/components/general/task/release-type.tsx
 msgid "Sencillo"
@@ -5625,6 +5640,11 @@ msgstr "Signups are disabled."
 #: apps/remix/app/routes/_profile+/p.$url.tsx
 msgid "Since {0}"
 msgstr "Since {0}"
+
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+#: apps/remix/app/components/general/task/tustreams-type.tsx
+msgid "Single"
+msgstr "Single"
 
 #: apps/remix/app/routes/_authenticated+/admin+/site-settings.tsx
 msgid "Site Banner"
@@ -6664,6 +6684,7 @@ msgid "Tipo de Precio"
 msgstr "Tipo de Precio"
 
 #: apps/remix/app/routes/_authenticated+/admin+/documents._index.tsx
+#: apps/remix/app/components/tables/tustreams-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/documents-chatspace-table.tsx
@@ -6779,6 +6800,10 @@ msgstr "Token has expired. Please try again."
 msgid "Token name"
 msgstr "Token name"
 
+#: apps/remix/app/components/tables/tustreams-table.tsx
+msgid "Total"
+msgstr "Total"
+
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Total Documents"
 msgstr "Total Documents"
@@ -6823,6 +6848,11 @@ msgstr "Transfer the ownership of the team to another team member."
 msgid "Triggers"
 msgstr "Triggers"
 
+#: apps/remix/app/routes/_authenticated+/tuStreams._index .tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "TuStreams"
+msgstr "TuStreams"
+
 #: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
 msgid "Two factor authentication"
 msgstr "Two factor authentication"
@@ -6851,6 +6881,7 @@ msgstr "Two-factor authentication has been disabled for your account. You will n
 msgid "Two-Factor Re-Authentication"
 msgstr "Two-Factor Re-Authentication"
 
+#: apps/remix/app/components/tables/tustreams-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/lpm-table.tsx
@@ -6976,6 +7007,7 @@ msgstr "Unknown"
 msgid "Unpaid"
 msgstr "Unpaid"
 
+#: apps/remix/app/components/tables/tustreams-table.tsx
 #: apps/remix/app/components/tables/distribution-table.tsx
 msgid "UPC"
 msgstr "UPC"
