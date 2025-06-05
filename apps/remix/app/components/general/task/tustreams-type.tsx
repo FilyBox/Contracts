@@ -3,10 +3,10 @@ import type { HTMLAttributes } from 'react';
 import type { MessageDescriptor } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
+import { TypeOfTuStreams } from '@prisma/client';
 import { Flag } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react/dist/lucide-react';
 
-import type { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 import { cn } from '@documenso/ui/lib/utils';
 
 type FriendlyStatus = {
@@ -15,6 +15,15 @@ type FriendlyStatus = {
   icon?: LucideIcon;
   color: string;
 };
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 export const FRIENDLY_STATUS_MAP: Record<ExtendedTuStreamsType, FriendlyStatus> = {
   Sencillo: {

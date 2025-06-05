@@ -1,12 +1,30 @@
 import type { TeamMemberRole } from '@prisma/client';
 import type { Prisma, User } from '@prisma/client';
+import { TypeOfTuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
 
 import { prisma } from '@documenso/prisma';
-import { isExtendedTuStreamsType } from '@documenso/prisma/guards/is-extended-tustreams-type';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import type { PeriodSelectorValue } from './find-tustreams';
+
+export const isExtendedTuStreamsType = (value: unknown): value is ExtendedTuStreamsType => {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  // We're using the assertion for a type-guard so it's safe to ignore the eslint warning
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return Object.values(ExtendedTuStreamsType).includes(value as ExtendedTuStreamsType);
+};
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 export type GetTuStreamsType = {
   user: User;

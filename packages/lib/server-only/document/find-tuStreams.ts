@@ -1,11 +1,20 @@
 import type { Prisma, tuStreams } from '@prisma/client';
+import { TypeOfTuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { match } from 'ts-pattern';
 
 import { prisma } from '@documenso/prisma';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
 
 import { type FindResultResponse } from '../../types/search-params';
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 export type PeriodSelectorValue = '' | '7d' | '14d' | '30d';
 

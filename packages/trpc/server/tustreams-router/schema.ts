@@ -3,7 +3,15 @@ import { z } from 'zod';
 
 import { ZFindResultResponse, ZFindSearchParamsSchema } from '@documenso/lib/types/search-params';
 import { ZtuStreamsSchema } from '@documenso/lib/types/tustreams';
-import { ExtendedTuStreamsType } from '@documenso/prisma/types/extended-tustreams-type';
+
+export const ExtendedTuStreamsType = {
+  ...TypeOfTuStreams,
+
+  ALL: 'ALL',
+} as const;
+
+export type ExtendedTuStreamsType =
+  (typeof ExtendedTuStreamsType)[keyof typeof ExtendedTuStreamsType];
 
 /**
  * Required for empty responses since we currently can't 201 requests for our openapi setup.
