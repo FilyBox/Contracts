@@ -6851,7 +6851,7 @@ msgstr "Transférer la propriété de l'équipe à un autre membre de l'équipe.
 msgid "Triggers"
 msgstr "Déclencheurs"
 
-#: apps/remix/app/routes/_authenticated+/tuStreams._index .tsx
+#: apps/remix/app/routes/_authenticated+/tustreams._index.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "TuStreams"
 msgstr ""

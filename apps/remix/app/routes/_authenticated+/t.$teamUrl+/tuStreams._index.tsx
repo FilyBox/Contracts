@@ -1,4 +1,4 @@
-import TuStreamsPage, { meta } from '~/routes/_authenticated+/tuStreams._index ';
+import TuStreamsPage, { meta } from '~/routes/_authenticated+/tustreams._index';
 
 export { meta };
 

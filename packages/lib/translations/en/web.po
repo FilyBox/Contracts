@@ -6848,7 +6848,7 @@ msgstr "Transfer the ownership of the team to another team member."
 msgid "Triggers"
 msgstr "Triggers"
 
-#: apps/remix/app/routes/_authenticated+/tuStreams._index .tsx
+#: apps/remix/app/routes/_authenticated+/tustreams._index.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "TuStreams"
 msgstr "TuStreams"

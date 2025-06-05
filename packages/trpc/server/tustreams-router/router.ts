@@ -4,7 +4,7 @@ import { TypeOfTuStreams } from '@prisma/client';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 
-import { findTuStreams } from '@documenso/lib/server-only/document/find-tuStreams';
+import { findTuStreams } from '@documenso/lib/server-only/document/find-tustreams';
 import { type GetTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
 import { getTuStreamsType } from '@documenso/lib/server-only/document/get-tustreams-type';
 import { prisma } from '@documenso/prisma';
