@@ -33,6 +33,7 @@ import FormTuStreams from '@documenso/ui/primitives/form-tustreams';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
 import { TuStreamsType } from '~/components/general/task/tustreams-type';
@@ -504,6 +505,9 @@ export default function TuStreamsPage() {
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <Button onClick={openCreateDialog}>Create TuStream</Button>
           </div>
+
+          <ArtistCreateDialog />
+
           {/* <div className="flex w-auto flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <Button
               onClick={handleConvertDates}
