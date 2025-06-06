@@ -33,6 +33,10 @@ export const formReleasePath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/releases` : '/releases';
 };
 
+export const formTuStreamsPath = (teamUrl?: string) => {
+  return teamUrl ? `/t/${teamUrl}/tuStreams` : '/tuStreams';
+};
+
 export const formMusicPath = (teamUrl?: string) => {
   return teamUrl ? `/t/${teamUrl}/music` : '/music';
 };

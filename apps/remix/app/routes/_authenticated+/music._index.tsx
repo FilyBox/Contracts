@@ -466,7 +466,7 @@ export default function TablePage() {
           )}
 
           <h2 className="text-4xl font-semibold">
-            <Trans>Music</Trans>
+            <Trans>Virgin</Trans>
           </h2>
         </div>
         <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">

@@ -18,6 +18,7 @@ import { taskRouter } from './task-router/router';
 import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
 import { router } from './trpc';
+import { tuStreamsRouter } from './tustreams-router/router';
 import { webhookRouter } from './webhook-router/router';
 
 export const appRouter = router({
@@ -27,6 +28,7 @@ export const appRouter = router({
   distribution: distributionRouter,
   document: documentRouter,
   field: fieldRouter,
+  tuStreams: tuStreamsRouter,
   artist: artistRouter,
   folder: folderRouter,
   recipient: recipientRouter,

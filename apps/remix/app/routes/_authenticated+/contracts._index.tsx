@@ -24,6 +24,7 @@ import ContractForm from '@documenso/ui/primitives/form-contracts';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { AdvancedFilterDialog } from '~/components/dialogs/advanced-filte-dialog';
 import { CreateFolderDialogContract } from '~/components/dialogs/folder-create-dialog-contracts';
 import { FolderDeleteDialog } from '~/components/dialogs/folder-delete-dialog';
 import { FolderMoveDialog } from '~/components/dialogs/folder-move-dialog';
@@ -121,8 +122,6 @@ export default function ContractsPage() {
   const deleteContractsMutation = trpc.contracts.deleteContractsById.useMutation();
   const deleteMultipleContractsMutation = trpc.contracts.deleteMultipleContractsByIds.useMutation();
   const { toast } = useToast();
-
-  // type ContractsData = (typeof data.contracts)[number];
   const [dataIntial, setData] = useState<Contract[]>([]);
   const [editingUser, setEditingUser] = useState<Contract | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -592,7 +591,9 @@ export default function ContractsPage() {
                 })}
               </TabsList>
             </Tabs>
+
             <Button onClick={openCreateDialog}>Add Item</Button>
+            <AdvancedFilterDialog />
             <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
               <DocumentSearch initialValue={findDocumentSearchParams.query} />
             </div>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { FilePlus, Loader } from 'lucide-react';
+import { FilePlus } from 'lucide-react';
 
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import { trpc } from '@documenso/trpc/react';
@@ -71,16 +71,16 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
   const onCreateArtist = async () => {
     if (isCreatingArtist || !user.id) return;
     setIsCreatingArtist(true);
-
     try {
-      await createArtist({
+      const artist = await createArtist({
         name: artistData.name,
-        role: artistData.role,
+        // role: artistData.role,
         // event: artistData.event,
         // song: artistData.song,
         url: artistData.url,
-        disabled: artistData.disabled,
+        // disabled: artistData.disabled,
       });
+      console.log('Artist created:', artist);
 
       toast({
         title: _(msg`Artist created successfully`),
@@ -91,6 +91,7 @@ export const ArtistCreateDialog = ({ teamId: _teamId }: ArtistCreateDialogProps)
       setShowArtistCreateDialog(false);
       setIsCreatingArtist(false);
     } catch (error) {
+      console.error('Error creating artist:', error);
       toast({
         title: _(msg`Failed to create artist`),
         description: _(msg`Please try again later.`),
