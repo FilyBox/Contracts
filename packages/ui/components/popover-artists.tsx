@@ -30,7 +30,7 @@ interface PopoverMembersProps {
   selectedArtists: artistData;
   setSelectedArtists: React.Dispatch<React.SetStateAction<artistData>>;
   userArray: readonly {
-    readonly artistName: string | null;
+    readonly artistName: string;
     readonly id: number;
     readonly artistId: number;
   }[];

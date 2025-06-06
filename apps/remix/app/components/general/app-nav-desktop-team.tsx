@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
-import { Trans } from '@lingui/react/macro';
 import { Search } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router';
 
-import { isAdmin } from '@documenso/lib/utils/is-admin';
 import { getRootHref } from '@documenso/lib/utils/params';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
@@ -27,7 +25,11 @@ const navigationLinks = [
   },
   {
     href: '/music',
-    label: msg`Music`,
+    label: msg`Virgin`,
+  },
+  {
+    href: '/tuStreams',
+    label: msg`TuStreams`,
   },
   {
     href: '/releases',
@@ -41,6 +43,7 @@ const navigationLinks = [
     href: '/isrc',
     label: msg`ISRC`,
   },
+
   {
     href: '/contracts',
     label: msg`Contracts`,
@@ -109,14 +112,14 @@ export const AppNavDesktopTeams = ({
         onClick={() => setIsCommandMenuOpen(true)}
       >
         <div className="flex items-center">
-          <Search className="mr-2 h-5 w-5" />
-          <Trans>Search</Trans>
+          <Search className="h-5 w-5" />
+          {/* <Trans>Search</Trans> */}
         </div>
 
         <div>
-          <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
+          {/* <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
             {modifierKey}+K
-          </div>
+          </div> */}
         </div>
       </Button>
     </div>

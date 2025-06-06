@@ -40,7 +40,11 @@ export const AppNavMobileTeam = ({ isMenuOpen, onMenuOpenChange }: AppNavMobileP
     },
     {
       href: `/music`,
-      text: msg`Music`,
+      text: msg`Virgin`,
+    },
+    {
+      href: `/tuStreams`,
+      text: msg`TuStreams`,
     },
     {
       href: '/releases',

@@ -22,7 +22,7 @@ export const artistRouter = router({
   createArtist: authenticatedProcedure
     .input(
       z.object({
-        name: z.string().min(1).optional(),
+        name: z.string().min(1),
         role: z.nativeEnum(Role).array().optional(),
         // event: z.array(z.string()).optional(),
         url: z.string().optional(),
@@ -31,10 +31,9 @@ export const artistRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      if (!input.name) {
-        throw new Error('El nombre del artista es obligatorio');
-      }
-      const data = input;
+      const { ...data } = input;
+      console.log('Creating artist with data:', data);
+
       const { teamId, user } = ctx;
       const userId = user.id;
       const artistInfo = {

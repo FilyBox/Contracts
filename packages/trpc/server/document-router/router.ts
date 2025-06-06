@@ -31,9 +31,15 @@ import { sendDocument } from '@documenso/lib/server-only/document/send-document'
 import { getTeamById } from '@documenso/lib/server-only/team/get-team';
 import { getContractInfoTask, getExtractBodyContractTask } from '@documenso/lib/trigger';
 import {
+  generateChartConfig,
+  generateQuery,
+  runGenerateSQLQuery,
+} from '@documenso/lib/universal/ai/queries-proccessing';
+import {
   getPresignGetUrl,
   getPresignPostUrl,
 } from '@documenso/lib/universal/upload/server-actions';
+// import {  } from "@documenso/lib/universal/ai/queries-proccessing"
 import { isDocumentCompleted } from '@documenso/lib/utils/document';
 import { prisma } from '@documenso/prisma';
 
@@ -732,6 +738,27 @@ export const documentRouter = router({
       return { publicAccessToken: newPulicAccessToken, id: newId };
     }),
 
+  aiConnection: authenticatedProcedure
+    .input(z.object({ question: z.string(), folderId: z.number().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { teamId, user } = ctx;
+      const userId = user.id;
+      const { question, folderId } = input;
+      try {
+        const query = await generateQuery(question, userId, teamId, folderId);
+        console.log('AI Connection query:', { query });
+
+        const companies = await runGenerateSQLQuery(query);
+        console.log('AI Connection companies:', { companies });
+
+        const generation = await generateChartConfig(companies, question);
+        console.log('AI Connection generation:', { generation });
+        return { query, companies, generation };
+      } catch (e) {
+        console.log('AI Connection error:', e);
+        return { query: '', companies: [], generation: undefined };
+      }
+    }),
   /**
    * @private
    */
