@@ -924,6 +924,10 @@ msgid "All"
 msgstr "Tout"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
+msgid "All contracts"
+msgstr ""
+
+#: apps/remix/app/components/general/app-command-menu.tsx
 msgid "All documents"
 msgstr "Tous les documents"
 
@@ -1986,6 +1990,7 @@ msgstr "Continuer vers la connexion"
 #: apps/remix/app/routes/_authenticated+/contracts.$id.$runId.$publicAccessToken.retry.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
+#: apps/remix/app/components/general/app-command-menu.tsx
 msgid "Contracts"
 msgstr ""
 
@@ -4112,10 +4117,7 @@ msgstr "Déplacer vers l'équipe"
 msgid "Moving..."
 msgstr "Déplacement..."
 
-#: apps/remix/app/routes/_authenticated+/music._index.tsx
-#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
-#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Music"
 msgstr ""
 
@@ -4502,7 +4504,6 @@ msgstr "Les clés d'accès vous permettent de vous connecter et de vous authenti
 msgid "Passkeys are not supported on this browser"
 msgstr "Les clés d'accès ne sont pas prises en charge sur ce navigateur"
 
-#: apps/remix/app/components/general/app-command-menu.tsx
 #: apps/remix/app/components/forms/signup.tsx
 #: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/forms/reset-password.tsx
@@ -6852,6 +6853,7 @@ msgid "Triggers"
 msgstr "Déclencheurs"
 
 #: apps/remix/app/routes/_authenticated+/tustreams._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "TuStreams"
 msgstr ""
@@ -7413,6 +7415,12 @@ msgstr "Consultation"
 #: apps/remix/app/components/general/task/contracts-status.tsx
 #: apps/remix/app/components/general/task/contracts-status.tsx
 msgid "Vigente"
+msgstr ""
+
+#: apps/remix/app/routes/_authenticated+/music._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "Virgin"
 msgstr ""
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx

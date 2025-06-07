@@ -39,6 +39,7 @@ type TCreateFolderFormSchema = z.infer<typeof ZCreateFolderFormSchema>;
 
 export type CreateFolderDialogProps = {
   trigger?: React.ReactNode;
+  tableToConsult: string;
 } & Omit<DialogPrimitive.DialogProps, 'children'>;
 
 type SearchProps = {
@@ -49,7 +50,11 @@ type SearchProps = {
   period?: '7d' | '14d' | '30d' | undefined;
 };
 
-export const AdvancedFilterDialog = ({ trigger, ...props }: CreateFolderDialogProps) => {
+export const AdvancedFilterDialog = ({
+  trigger,
+  tableToConsult,
+  ...props
+}: CreateFolderDialogProps) => {
   const aiQuery = trpc.document.aiConnection.useMutation();
 
   const { _ } = useLingui();
@@ -79,7 +84,10 @@ export const AdvancedFilterDialog = ({ trigger, ...props }: CreateFolderDialogPr
     setLoadingStep(1);
     setActiveQuery('');
     try {
-      const { query, companies, generation } = await aiQuery.mutateAsync({ question });
+      const { query, companies, generation } = await aiQuery.mutateAsync({
+        question,
+        tableToConsult,
+      });
 
       // const query = await generateQuery(question);
       console.log('Generated query:', query);
@@ -175,7 +183,10 @@ export const AdvancedFilterDialog = ({ trigger, ...props }: CreateFolderDialogPr
                 <div className="h-full flex-grow">
                   <AnimatePresence mode="wait">
                     {!submitted ? (
-                      <SuggestedQueries handleSuggestionClick={handleSuggestionClick} />
+                      <SuggestedQueries
+                        tableToConsult={tableToConsult}
+                        handleSuggestionClick={handleSuggestionClick}
+                      />
                     ) : (
                       <motion.div
                         key="results"

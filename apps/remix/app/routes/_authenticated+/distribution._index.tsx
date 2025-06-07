@@ -21,6 +21,7 @@ import DistributionForm from '@documenso/ui/primitives/form-distribution';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { AdvancedFilterDialog } from '~/components/dialogs/advanced-filte-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
 import { DistributionTable } from '~/components/tables/distribution-table';
@@ -448,6 +449,7 @@ export default function DistributionPage() {
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
         </div>
+        <AdvancedFilterDialog tableToConsult="Distribution" />
         <Button onClick={openCreateDialog}>Add Item</Button>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

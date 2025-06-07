@@ -28,9 +28,9 @@ export const Results = ({
       .join(' ');
   };
 
-  const formatCellValue = (column: string, value: any) => {
+  const formatCellValue = (column: string, value: unknown) => {
     if (column.toLowerCase().includes('valuation')) {
-      const parsedValue = parseFloat(value);
+      const parsedValue = parseFloat(value as string);
       if (isNaN(parsedValue)) {
         return '';
       }
@@ -39,7 +39,7 @@ export const Results = ({
       return `$${trimmedValue}B`;
     }
     if (column.toLowerCase().includes('rate')) {
-      const parsedValue = parseFloat(value);
+      const parsedValue = parseFloat(value as string);
       if (isNaN(parsedValue)) {
         return '';
       }
@@ -55,16 +55,19 @@ export const Results = ({
   return (
     <div className="flex flex-grow flex-col">
       <Tabs defaultValue="table" className="flex w-full flex-grow flex-col">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="table">Table</TabsTrigger>
+        <TabsList className="flex h-fit flex-col">
+          <TabsTrigger className="w-full" value="table">
+            Table
+          </TabsTrigger>
           <TabsTrigger
+            className="w-full"
             value="charts"
             disabled={Object.keys(results[0] || {}).length <= 1 || results.length < 2}
           >
             Chart
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="table" className="flex-grow">
+        <TabsContent value="table" className="flex flex-grow">
           <div className="relative w-full overflow-x-scroll sm:min-h-[10px]">
             <Table className="divide-border min-w-full divide-y">
               <TableHeader className="bg-secondary sticky top-0 shadow-sm">

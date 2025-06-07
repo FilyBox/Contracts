@@ -209,20 +209,13 @@ export default function ContractsPage() {
       if (!dateString || dateString.trim() === '') return undefined;
 
       try {
-        // Asume formato MM/dd/yyyy
-        let [month, day, year] = dateString.split('/');
+        let [month, day] = dateString.split('/');
+        const year = dateString.split('/')[2];
         if (!month || !day || !year) return undefined;
-
-        // if ( day > '31' || year.length !== 4) {
-        //   console.warn(`Invalid date format: ${dateString}`);
-        //   return undefined;
-        // }
-
         if (month > day) {
           [month, day] = [day, month];
         }
-
-        // Crear fecha en formato ISO (yyyy-MM-dd)
+        // Crear fecha en formato (yyyy-MM-dd)
         const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         const date = new Date(isoDate);
 
@@ -570,7 +563,7 @@ export default function ContractsPage() {
                   return (
                     <TabsTrigger
                       key={value}
-                      className="hover:text-foreground min-w-[60px]"
+                      className="hover:text-foreground"
                       value={value}
                       asChild
                     >
@@ -593,7 +586,7 @@ export default function ContractsPage() {
             </Tabs>
 
             <Button onClick={openCreateDialog}>Add Item</Button>
-            <AdvancedFilterDialog />
+            <AdvancedFilterDialog tableToConsult="Contracts" />
             <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
               <DocumentSearch initialValue={findDocumentSearchParams.query} />
             </div>

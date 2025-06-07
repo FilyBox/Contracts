@@ -919,6 +919,10 @@ msgid "All"
 msgstr "All"
 
 #: apps/remix/app/components/general/app-command-menu.tsx
+msgid "All contracts"
+msgstr "All contracts"
+
+#: apps/remix/app/components/general/app-command-menu.tsx
 msgid "All documents"
 msgstr "All documents"
 
@@ -1981,6 +1985,7 @@ msgstr "Continue to login"
 #: apps/remix/app/routes/_authenticated+/contracts.$id.$runId.$publicAccessToken.retry.tsx
 #: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
+#: apps/remix/app/components/general/app-command-menu.tsx
 msgid "Contracts"
 msgstr "Contracts"
 
@@ -4107,10 +4112,7 @@ msgstr "Move to Team"
 msgid "Moving..."
 msgstr "Moving..."
 
-#: apps/remix/app/routes/_authenticated+/music._index.tsx
-#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop.tsx
-#: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "Music"
 msgstr "Music"
 
@@ -4497,7 +4499,6 @@ msgstr "Passkeys allow you to sign in and authenticate using biometrics, passwor
 msgid "Passkeys are not supported on this browser"
 msgstr "Passkeys are not supported on this browser"
 
-#: apps/remix/app/components/general/app-command-menu.tsx
 #: apps/remix/app/components/forms/signup.tsx
 #: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/forms/reset-password.tsx
@@ -6849,6 +6850,7 @@ msgid "Triggers"
 msgstr "Triggers"
 
 #: apps/remix/app/routes/_authenticated+/tustreams._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
 #: apps/remix/app/components/general/app-nav-desktop-team.tsx
 msgid "TuStreams"
 msgstr "TuStreams"
@@ -7411,6 +7413,12 @@ msgstr "Viewing"
 #: apps/remix/app/components/general/task/contracts-status.tsx
 msgid "Vigente"
 msgstr "Vigente"
+
+#: apps/remix/app/routes/_authenticated+/music._index.tsx
+#: apps/remix/app/components/general/app-nav-mobile-team.tsx
+#: apps/remix/app/components/general/app-nav-desktop-team.tsx
+msgid "Virgin"
+msgstr "Virgin"
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 msgid "Waiting"
