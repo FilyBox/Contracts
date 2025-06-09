@@ -1645,6 +1645,7 @@ msgid "Clear file"
 msgstr "Limpiar archivo"
 
 #: packages/ui/primitives/data-table.tsx
+#: packages/ui/primitives/data-table-table.tsx
 msgid "Clear filters"
 msgstr "Limpiar filtros"
 
@@ -4164,6 +4165,7 @@ msgid "No restrictions"
 msgstr "Sin restricciones"
 
 #: packages/ui/primitives/data-table.tsx
+#: packages/ui/primitives/data-table-table.tsx
 msgid "No results found"
 msgstr "No se encontraron resultados"
 
@@ -5617,6 +5619,7 @@ msgid "Something went wrong!"
 msgstr "¡Algo salió mal!"
 
 #: packages/ui/primitives/data-table.tsx
+#: packages/ui/primitives/data-table-table.tsx
 msgid "Something went wrong."
 msgstr "Algo salió mal."
 

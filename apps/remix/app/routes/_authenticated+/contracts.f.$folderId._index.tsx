@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro';
 import { FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
+import { z } from 'zod';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
@@ -50,9 +51,68 @@ const ZSearchParamsSchema = ZFindContractsInternalRequestSchema.pick({
   query: true,
 });
 
+const sortColumns = z
+  .enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'status',
+    'title',
+    'fileName',
+    'startDate',
+    'endDate',
+    'isPossibleToExpand',
+    'possibleExtensionTime',
+    'documentId',
+  ])
+  .optional();
+
+export const TypeSearchParams = z.record(
+  z.string(),
+  z.union([z.string(), z.array(z.string()), z.undefined()]),
+);
+
 export default function ContractsPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const sort = useMemo(
+    () => TypeSearchParams.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+    [searchParams],
+  );
+
+  const columnOrder = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { id } = parsedSort[0];
+          const isValidColumn = sortColumns.safeParse(id);
+          return isValidColumn.success ? id : undefined;
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'title';
+      }
+    }
+    return 'title';
+  }, [sort]);
+
+  const columnDirection = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { desc } = parsedSort[0];
+          return desc ? 'desc' : 'asc';
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'asc';
+      }
+    }
+    return 'asc';
+  }, [sort]);
 
   const team = useOptionalCurrentTeam();
 
@@ -95,6 +155,8 @@ export default function ContractsPage() {
     perPage: findDocumentSearchParams.perPage,
     folderId: folderId,
     status: findDocumentSearchParams.status,
+    orderByColumn: columnOrder,
+    orderByDirection: columnDirection,
   });
 
   const {

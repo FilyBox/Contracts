@@ -1,4 +1,5 @@
 import { useTransition } from 'react';
+import * as React from 'react';
 
 import { useLingui } from '@lingui/react';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -6,13 +7,21 @@ import { Loader } from 'lucide-react';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindContractsResponse } from '@documenso/trpc/server/contracts-router/schema';
+import { useDataTable } from '@documenso/ui/lib/use-data-table';
 import { Checkbox } from '@documenso/ui/primitives/checkbox';
-import { DataTable } from '@documenso/ui/primitives/data-table';
-import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
+import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination-pagination';
+import { DataTable } from '@documenso/ui/primitives/data-table-table';
 
 import { useOptionalCurrentTeam } from '~/providers/team';
 
+import { TasksTableActionBar } from '../contracts/contracts-table-action-bar';
+import { DataTableAdvancedToolbar } from './data-table-advanced-toolbar';
+import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableFilterList } from './data-table-filter-list';
+import { DataTableFilterMenu } from './data-table-filter-menu';
 import { DataTableSkeleton } from './data-table-skeleton';
+import { DataTableSortList } from './data-table-sort-list';
+import { DataTableToolbar } from './data-table-toolbar';
 
 // export type DocumentsTableProps = {
 //   data?: TFindReleaseResponse;
@@ -103,58 +112,62 @@ export const ContractsTable = ({
       },
       {
         accessorKey: 'title',
-        header: 'Title',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Title" />,
         enableHiding: true,
+        enableColumnFilter: true,
       },
       {
         accessorKey: 'fileName',
-        header: 'File Name',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="FileName" />,
         enableHiding: true,
+        enableColumnFilter: true,
       },
       {
         accessorKey: 'artists',
-        header: 'Artists',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Artists" />,
         enableHiding: true,
       },
       {
         accessorKey: 'startDate',
-        header: 'Start Date',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="StartDate" />,
         enableHiding: true,
       },
       {
         accessorKey: 'endDate',
-        header: 'End Date',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="EndDate" />,
         enableHiding: true,
       },
       {
         accessorKey: 'isPossibleToExpand',
-        header: 'Expandable',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Expandable" />,
         enableHiding: true,
+        enableColumnFilter: true,
       },
       {
         accessorKey: 'possibleExtensionTime',
-        header: 'Extension Time',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="ExtensionTime" />,
         enableHiding: true,
       },
 
       {
         accessorKey: 'status',
-        header: 'Status',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         enableHiding: true,
+        enableColumnFilter: true,
       },
       {
         accessorKey: 'documentId',
-        header: 'Document ID',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="DocumentID" />,
         enableHiding: true,
       },
       {
         accessorKey: 'createdAt',
-        header: 'Created At',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="CreatedAt" />,
         enableHiding: true,
       },
       {
         accessorKey: 'summary',
-        header: 'Summary',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Summary" />,
         enableHiding: true,
       },
     ];
@@ -166,6 +179,24 @@ export const ContractsTable = ({
     onDelete?: (id: number) => void;
   }
   const columns = createColumns();
+
+  const { table, shallow, debounceMs, throttleMs } = useDataTable({
+    data: data?.data || [],
+    columns,
+    pageCount: data?.totalPages || 1,
+    enableAdvancedFilter: true,
+    initialState: {
+      sorting: [{ id: 'createdAt', desc: true }],
+      columnPinning: { right: ['actions'] },
+    },
+    defaultColumn: {
+      columns,
+      enableColumnFilter: false,
+    },
+    getRowId: (originalRow) => originalRow.id.toString(),
+    shallow: false,
+    clearOnDefault: true,
+  });
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -184,11 +215,10 @@ export const ContractsTable = ({
   };
 
   return (
-    <div className="relative">
+    <>
       <DataTable
         setIsMultipleDelete={setIsMultipleDelete}
         isMultipleDelete={isMultipleDelete}
-        columns={columns}
         onDelete={onDelete}
         onEdit={onEdit}
         onRetry={onRetry}
@@ -217,17 +247,84 @@ export const ContractsTable = ({
             />
           ),
         }}
+        table={table}
+        actionBar={<TasksTableActionBar table={table} />}
       >
-        {(table) => <DataTablePagination additionalInformation="VisibleCount" table={table} />}
-      </DataTable>
+        {/* <DataTableToolbar table={table}>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar> */}
 
-      {isPending && (
-        <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
-          <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
-        </div>
-      )}
-    </div>
+        <DataTableAdvancedToolbar table={table}>
+          <DataTableSortList table={table} align="start" />
+          <DataTableFilterList
+            table={table}
+            shallow={shallow}
+            debounceMs={debounceMs}
+            throttleMs={throttleMs}
+            align="start"
+          />
+        </DataTableAdvancedToolbar>
+      </DataTable>
+      {/* <UpdateTaskSheet
+        open={rowAction?.variant === "update"}
+        onOpenChange={() => setRowAction(null)}
+        task={rowAction?.row.original ?? null}
+      />
+      <DeleteTasksDialog
+        open={rowAction?.variant === "delete"}
+        onOpenChange={() => setRowAction(null)}
+        tasks={rowAction?.row.original ? [rowAction?.row.original] : []}
+        showTrigger={false}
+        onSuccess={() => rowAction?.row.toggleSelected(false)}
+      /> */}
+    </>
   );
+
+  // return (
+  //   <div className="relative">
+  //     <DataTable
+  // setIsMultipleDelete={setIsMultipleDelete}
+  // isMultipleDelete={isMultipleDelete}
+  // columns={columns}
+  // onDelete={onDelete}
+  // onEdit={onEdit}
+  // onRetry={onRetry}
+  // onNavegate={onNavegate}
+  // data={results.data}
+  // onMultipleDelete={onMultipleDelete}
+  // perPage={results.perPage}
+  // currentPage={results.currentPage}
+  // totalPages={results.totalPages}
+  // onPaginationChange={onPaginationChange}
+  // onMoveDocument={onMoveDocument}
+  // columnVisibility={{
+  //   sender: team !== undefined,
+  // }}
+  // error={{
+  //   enable: isLoadingError || false,
+  // }}
+  // skeleton={{
+  //   enable: isLoading || false,
+  //   rows: 5,
+  //   component: (
+  //     <DataTableSkeleton
+  //       columnCount={columns.length}
+  //       cellWidths={['10rem', '30rem', '10rem', '10rem', '6rem', '6rem', '6rem']}
+  //       shrinkZero
+  //     />
+  //   ),
+  // }}
+  //     >
+  //       {(table) => <DataTablePagination additionalInformation="VisibleCount" table={table} />}
+  //     </DataTable>
+
+  //     {isPending && (
+  //       <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
+  //         <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 };
 
 type DataTableTitleProps = {
