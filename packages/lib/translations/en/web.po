@@ -135,16 +135,6 @@ msgstr "{0} has invited you to {recipientActionVerb} the document \"{1}\"."
 msgid "{0} invited you to {recipientActionVerb} a document"
 msgstr "{0} invited you to {recipientActionVerb} a document"
 
-#. placeholder {0}: memberName || memberEmail
-#: packages/email/templates/team-join.tsx
-msgid "{0} joined the team {teamName}"
-msgstr "{0} joined the team {teamName}"
-
-#. placeholder {0}: memberName || memberEmail
-#: packages/email/templates/team-leave.tsx
-msgid "{0} left the team {teamName}"
-msgstr "{0} left the team {teamName}"
-
 #. placeholder {0}: remaining.documents
 #. placeholder {1}: quota.documents
 #: apps/remix/app/components/general/document/document-upload.tsx
@@ -176,10 +166,6 @@ msgstr "{0} Recipient(s)"
 msgid "{charactersRemaining, plural, one {1 character remaining} other {{charactersRemaining} characters remaining}}"
 msgstr "{charactersRemaining, plural, one {1 character remaining} other {{charactersRemaining} characters remaining}}"
 
-#: packages/email/templates/document-invite.tsx
-msgid "{inviterName} <0>({inviterEmail})</0>"
-msgstr "{inviterName} <0>({inviterEmail})</0>"
-
 #: packages/email/templates/document-cancel.tsx
 msgid "{inviterName} has cancelled the document {documentName}, you don't need to sign it anymore."
 msgstr "{inviterName} has cancelled the document {documentName}, you don't need to sign it anymore."
@@ -192,14 +178,6 @@ msgstr "{inviterName} has cancelled the document<0/>\"{documentName}\""
 #: packages/email/template-components/template-document-invite.tsx
 msgid "{inviterName} has invited you to {0}<0/>\"{documentName}\""
 msgstr "{inviterName} has invited you to {0}<0/>\"{documentName}\""
-
-#: packages/email/templates/document-invite.tsx
-msgid "{inviterName} has invited you to {action} {documentName}"
-msgstr "{inviterName} has invited you to {action} {documentName}"
-
-#: packages/email/templates/document-invite.tsx
-msgid "{inviterName} has invited you to {action} the document \"{documentName}\"."
-msgstr "{inviterName} has invited you to {action} the document \"{documentName}\"."
 
 #: packages/email/templates/recipient-removed-from-document.tsx
 msgid "{inviterName} has removed you from the document {documentName}."
@@ -219,18 +197,6 @@ msgstr "{inviterName} on behalf of \"{0}\" has invited you to {recipientActionVe
 #: packages/email/template-components/template-document-invite.tsx
 msgid "{inviterName} on behalf of \"{teamName}\" has invited you to {0}<0/>\"{documentName}\""
 msgstr "{inviterName} on behalf of \"{teamName}\" has invited you to {0}<0/>\"{documentName}\""
-
-#: packages/email/templates/document-invite.tsx
-msgid "{inviterName} on behalf of \"{teamName}\" has invited you to {action} {documentName}"
-msgstr "{inviterName} on behalf of \"{teamName}\" has invited you to {action} {documentName}"
-
-#: packages/email/templates/team-join.tsx
-msgid "{memberEmail} joined the following team"
-msgstr "{memberEmail} joined the following team"
-
-#: packages/email/templates/team-leave.tsx
-msgid "{memberEmail} left the following team"
-msgstr "{memberEmail} left the following team"
 
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings.billing.tsx
 msgid "{numberOfSeats, plural, one {# member} other {# members}}"
@@ -346,22 +312,10 @@ msgstr "{recipientName} {action} a document by using one of your direct links"
 msgid "{recipientName} has rejected the document '{documentName}'"
 msgstr "{recipientName} has rejected the document '{documentName}'"
 
-#: packages/email/template-components/template-document-recipient-signed.tsx
-msgid "{recipientReference} has completed signing the document."
-msgstr "{recipientReference} has completed signing the document."
-
 #. placeholder {0}: document.title
 #: packages/lib/jobs/definitions/emails/send-recipient-signed-email.handler.ts
 msgid "{recipientReference} has signed \"{0}\""
 msgstr "{recipientReference} has signed \"{0}\""
-
-#: packages/email/template-components/template-document-recipient-signed.tsx
-msgid "{recipientReference} has signed \"{documentName}\""
-msgstr "{recipientReference} has signed \"{documentName}\""
-
-#: packages/email/templates/document-recipient-signed.tsx
-msgid "{recipientReference} has signed {documentName}"
-msgstr "{recipientReference} has signed {documentName}"
 
 #: apps/remix/app/components/forms/public-profile-form.tsx
 #: apps/remix/app/components/dialogs/public-profile-template-manage-dialog.tsx
@@ -376,10 +330,6 @@ msgstr "{signerName} has rejected the document \"{documentName}\"."
 #: packages/email/template-components/template-document-invite.tsx
 msgid "{teamName} has invited you to {0}<0/>\"{documentName}\""
 msgstr "{teamName} has invited you to {0}<0/>\"{documentName}\""
-
-#: packages/email/templates/document-invite.tsx
-msgid "{teamName} has invited you to {action} {documentName}"
-msgstr "{teamName} has invited you to {action} {documentName}"
 
 #: packages/email/templates/team-transfer-request.tsx
 msgid "{teamName} ownership transfer request"
@@ -421,10 +371,6 @@ msgstr "<0>\"{0}\"</0>is no longer available to sign"
 #: packages/email/templates/team-transfer-request.tsx
 msgid "<0>{senderName}</0> has requested that you take ownership of the following team"
 msgstr "<0>{senderName}</0> has requested that you take ownership of the following team"
-
-#: packages/email/templates/confirm-team-email.tsx
-msgid "<0>{teamName}</0> has requested to use your email address for their team."
-msgstr "<0>{teamName}</0> has requested to use your email address for their team."
 
 #: apps/remix/app/components/tables/lpm-table-artist-filter.tsx
 msgid "<0>Artist:</0> All"
@@ -631,18 +577,10 @@ msgstr "A secret that will be sent to your URL so you can verify that the reques
 msgid "A stable internet connection"
 msgstr "A stable internet connection"
 
-#: packages/email/templates/team-join.tsx
-msgid "A team member has joined a team"
-msgstr "A team member has joined a team"
-
 #. placeholder {0}: team.name
 #: packages/lib/jobs/definitions/emails/send-team-member-left-email.handler.ts
 msgid "A team member has left {0}"
 msgstr "A team member has left {0}"
-
-#: packages/email/templates/team-leave.tsx
-msgid "A team member has left a team"
-msgstr "A team member has left a team"
 
 #: packages/email/templates/team-delete.tsx
 #: packages/email/templates/team-delete.tsx
@@ -664,18 +602,8 @@ msgstr "A verification email will be sent to the provided email."
 
 #: apps/remix/app/components/general/teams/team-invitations.tsx
 #: packages/email/templates/team-transfer-request.tsx
-#: packages/email/templates/team-invite.tsx
-#: packages/email/templates/confirm-team-email.tsx
 msgid "Accept"
 msgstr "Accept"
-
-#: packages/email/templates/team-invite.tsx
-msgid "Accept invitation to join a team"
-msgstr "Accept invitation to join a team"
-
-#: packages/email/templates/confirm-team-email.tsx
-msgid "Accept team email request for {teamName}"
-msgstr "Accept team email request for {teamName}"
 
 #: packages/email/templates/team-transfer-request.tsx
 msgid "Accept team transfer request"
@@ -965,10 +893,6 @@ msgstr "All templates"
 #: apps/remix/app/components/general/period-selector.tsx
 msgid "All Time"
 msgstr "All Time"
-
-#: packages/email/templates/confirm-team-email.tsx
-msgid "Allow document recipients to reply directly to this email address"
-msgstr "Allow document recipients to reply directly to this email address"
 
 #: apps/remix/app/components/embed/authoring/configure-document-recipients.tsx
 #: packages/ui/primitives/template-flow/add-template-placeholder-recipients.tsx
@@ -1511,10 +1435,6 @@ msgstr "Bulk Import"
 msgid "Bulk Send Complete: {0}"
 msgstr "Bulk Send Complete: {0}"
 
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Bulk send operation complete for template \"{templateName}\""
-msgstr "Bulk send operation complete for template \"{templateName}\""
-
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "Bulk Send Template via CSV"
 msgstr "Bulk Send Template via CSV"
@@ -1523,14 +1443,6 @@ msgstr "Bulk Send Template via CSV"
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "Bulk Send via CSV"
 msgstr "Bulk Send via CSV"
-
-#: packages/email/templates/team-invite.tsx
-msgid "by <0>{senderName}</0>"
-msgstr "by <0>{senderName}</0>"
-
-#: packages/email/templates/confirm-team-email.tsx
-msgid "By accepting this request, you will be granting <0>{teamName}</0> access to:"
-msgstr "By accepting this request, you will be granting <0>{teamName}</0> access to:"
 
 #: packages/email/templates/team-transfer-request.tsx
 msgid "By accepting this request, you will take responsibility for any billing items associated with this team."
@@ -1823,7 +1735,6 @@ msgstr "Complete Viewing"
 #: apps/remix/app/components/general/document/document-status.tsx
 #: packages/lib/constants/document.ts
 #: packages/email/template-components/template-document-self-signed.tsx
-#: packages/email/template-components/template-document-recipient-signed.tsx
 #: packages/email/template-components/template-document-completed.tsx
 msgid "Completed"
 msgstr "Completed"
@@ -2289,7 +2200,6 @@ msgid "Date Format"
 msgstr "Date Format"
 
 #: apps/remix/app/components/general/teams/team-invitations.tsx
-#: packages/email/templates/team-invite.tsx
 msgid "Decline"
 msgstr "Decline"
 
@@ -2417,10 +2327,6 @@ msgstr "Details"
 #: apps/remix/app/components/tables/settings-security-activity-table.tsx
 msgid "Device"
 msgstr "Device"
-
-#: packages/email/templates/reset-password.tsx
-msgid "Didn't request a password change? We are here to help you secure your account, just <0>contact us.</0>"
-msgstr "Didn't request a password change? We are here to help you secure your account, just <0>contact us.</0>"
 
 #: apps/remix/app/components/tables/templates-table.tsx
 #: apps/remix/app/components/general/template/template-direct-link-badge.tsx
@@ -3315,10 +3221,6 @@ msgstr "Failed to update template"
 msgid "Failed to update webhook"
 msgstr "Failed to update webhook"
 
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Failed: {failedCount}"
-msgstr "Failed: {failedCount}"
-
 #: apps/remix/app/components/tables/distribution-table.tsx
 msgid "Fecha de Creación"
 msgstr "Fecha de Creación"
@@ -3435,7 +3337,6 @@ msgstr "Forgot Password?"
 
 #: apps/remix/app/routes/_unauthenticated+/forgot-password.tsx
 #: apps/remix/app/components/forms/signin.tsx
-#: packages/email/template-components/template-forgot-password.tsx
 msgid "Forgot your password?"
 msgstr "Forgot your password?"
 
@@ -3553,14 +3454,6 @@ msgstr "Here you can set preferences and defaults for your team."
 #: apps/remix/app/components/dialogs/template-direct-link-dialog.tsx
 msgid "Here's how it works:"
 msgstr "Here's how it works:"
-
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Hi {userName},"
-msgstr "Hi {userName},"
-
-#: packages/email/templates/reset-password.tsx
-msgid "Hi, {userName} <0>({userEmail})</0>"
-msgstr "Hi, {userName} <0>({userEmail})</0>"
 
 #: apps/remix/app/routes/_authenticated+/settings+/public-profile.tsx
 #: apps/remix/app/components/tables/documents-table-action-dropdown.tsx
@@ -3771,10 +3664,6 @@ msgstr "It's currently not your turn to sign. Please check back soon as this doc
 msgid "It's currently not your turn to sign. You will receive an email with instructions once it's your turn to sign the document."
 msgstr "It's currently not your turn to sign. You will receive an email with instructions once it's your turn to sign the document."
 
-#: packages/email/templates/team-invite.tsx
-msgid "Join {teamName}"
-msgstr "Join {teamName}"
-
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/text-field.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/radio-field.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/number-field.tsx
@@ -3848,7 +3737,6 @@ msgid "Like to have your own public profile with agreements?"
 msgstr "Like to have your own public profile with agreements?"
 
 #: packages/email/templates/team-transfer-request.tsx
-#: packages/email/templates/confirm-team-email.tsx
 msgid "Link expires in 1 hour."
 msgstr "Link expires in 1 hour."
 
@@ -4505,14 +4393,6 @@ msgstr "Passkeys are not supported on this browser"
 msgid "Password"
 msgstr "Password"
 
-#: packages/email/templates/forgot-password.tsx
-msgid "Password Reset Requested"
-msgstr "Password Reset Requested"
-
-#: packages/email/templates/reset-password.tsx
-msgid "Password Reset Successful"
-msgstr "Password Reset Successful"
-
 #: apps/remix/app/components/general/claim-account.tsx
 #: apps/remix/app/components/forms/signup.tsx
 msgid "Password should not be common or based on personal information"
@@ -4522,10 +4402,6 @@ msgstr "Password should not be common or based on personal information"
 #: apps/remix/app/components/forms/password.tsx
 msgid "Password updated"
 msgstr "Password updated"
-
-#: packages/email/template-components/template-reset-password.tsx
-msgid "Password updated!"
-msgstr "Password updated!"
 
 #: apps/remix/app/components/tables/user-settings-pending-teams-table-actions.tsx
 msgid "Pay"
@@ -4602,10 +4478,6 @@ msgstr "Placeholder"
 #: packages/email/template-components/template-document-invite.tsx
 msgid "Please {0} your document<0/>\"{documentName}\""
 msgstr "Please {0} your document<0/>\"{documentName}\""
-
-#: packages/email/templates/document-invite.tsx
-msgid "Please {action} your document {documentName}"
-msgstr "Please {action} your document {documentName}"
 
 #: packages/lib/jobs/definitions/emails/send-signing-email.handler.ts
 msgid "Please {recipientActionVerb} this document"
@@ -5104,7 +4976,6 @@ msgstr "Reset email sent"
 #: apps/remix/app/routes/_unauthenticated+/reset-password.$token.tsx
 #: apps/remix/app/components/forms/reset-password.tsx
 #: apps/remix/app/components/forms/forgot-password.tsx
-#: packages/email/template-components/template-forgot-password.tsx
 msgid "Reset Password"
 msgstr "Reset Password"
 
@@ -5340,10 +5211,6 @@ msgstr "Send document deleted email"
 msgid "Send document pending email"
 msgstr "Send document pending email"
 
-#: packages/email/templates/confirm-team-email.tsx
-msgid "Send documents on behalf of the team using the email address"
-msgstr "Send documents on behalf of the team using the email address"
-
 #: apps/remix/app/components/dialogs/template-bulk-send-dialog.tsx
 msgid "Send documents to recipients immediately"
 msgstr "Send documents to recipients immediately"
@@ -5496,7 +5363,6 @@ msgstr "Sign Here"
 
 #: apps/remix/app/components/forms/signin.tsx
 #: apps/remix/app/components/forms/signin.tsx
-#: packages/email/template-components/template-reset-password.tsx
 msgid "Sign In"
 msgstr "Sign In"
 
@@ -5846,14 +5712,6 @@ msgstr "Success"
 msgid "Successfully created passkey"
 msgstr "Successfully created passkey"
 
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Successfully created: {successCount}"
-msgstr "Successfully created: {successCount}"
-
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Summary:"
-msgstr "Summary:"
-
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "System Requirements"
 msgstr "System Requirements"
@@ -6130,10 +5988,6 @@ msgstr "Text Color"
 msgid "Thank you for using LPM to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
 msgstr "Thank you for using LPM to perform your electronic document signing. The purpose of this disclosure is to inform you about the process, legality, and your rights regarding the use of electronic signatures on our platform. By opting to use an electronic signature, you are agreeing to the terms and conditions outlined below."
 
-#: packages/email/template-components/template-forgot-password.tsx
-msgid "That's okay, it happens! Click the button below to reset your password."
-msgstr "That's okay, it happens! Click the button below to reset your password."
-
 #: apps/remix/app/components/dialogs/admin-user-delete-dialog.tsx
 msgid "The account has been deleted successfully."
 msgstr "The account has been deleted successfully."
@@ -6243,10 +6097,6 @@ msgstr "The folder you are trying to move the document to does not exist."
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
 msgid "The folder you are trying to move the template to does not exist."
 msgstr "The folder you are trying to move the template to does not exist."
-
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "The following errors occurred:"
-msgstr "The following errors occurred:"
 
 #: packages/email/templates/team-delete.tsx
 msgid "The following team has been deleted by its owner. You will no longer be able to access this team and its documents"
@@ -6813,10 +6663,6 @@ msgstr "Total Documents"
 msgid "Total Recipients"
 msgstr "Total Recipients"
 
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Total rows processed: {totalProcessed}"
-msgstr "Total rows processed: {totalProcessed}"
-
 #: apps/remix/app/routes/_authenticated+/admin+/stats.tsx
 msgid "Total Signers that Signed Up"
 msgstr "Total Signers that Signed Up"
@@ -7295,10 +7141,6 @@ msgstr "Verify your email address to unlock all features."
 msgid "Verify your email to upload documents."
 msgstr "Verify your email to upload documents."
 
-#: packages/email/templates/confirm-team-email.tsx
-msgid "Verify your team email address"
-msgstr "Verify your team email address"
-
 #: apps/remix/app/routes/_internal+/[__htmltopdf]+/audit-log.tsx
 msgid "Version History"
 msgstr "Version History"
@@ -7324,10 +7166,6 @@ msgstr "View"
 #: apps/remix/app/routes/_authenticated+/settings+/security._index.tsx
 msgid "View activity"
 msgstr "View activity"
-
-#: packages/email/templates/confirm-team-email.tsx
-msgid "View all documents sent to and from this email address"
-msgstr "View all documents sent to and from this email address"
 
 #: apps/remix/app/components/general/teams/team-email-usage.tsx
 msgid "View all documents sent to your account"
@@ -7682,10 +7520,6 @@ msgstr "We're all empty"
 msgid "We're still waiting for other signers to sign this document.<0/>We'll notify you as soon as it's ready."
 msgstr "We're still waiting for other signers to sign this document.<0/>We'll notify you as soon as it's ready."
 
-#: packages/email/templates/reset-password.tsx
-msgid "We've changed your password as you asked. You can now sign in with your new password."
-msgstr "We've changed your password as you asked. You can now sign in with your new password."
-
 #: apps/remix/app/components/general/verify-email-banner.tsx
 msgid "We've sent a confirmation email to <0>{email}</0>. Please check your inbox and click the link in the email to verify your account."
 msgstr "We've sent a confirmation email to <0>{email}</0>. Please check your inbox and click the link in the email to verify your account."
@@ -7853,10 +7687,6 @@ msgstr "You can choose to enable or disable your team profile for public view."
 msgid "You can copy and share these links to recipients so they can action the document."
 msgstr "You can copy and share these links to recipients so they can action the document."
 
-#: packages/email/templates/confirm-team-email.tsx
-msgid "You can revoke access at any time in your team settings <0>here.</0>"
-msgstr "You can revoke access at any time in your team settings <0>here.</0>"
-
 #: apps/remix/app/components/forms/public-profile-form.tsx
 msgid "You can update the profile URL by updating the team URL in the general settings page."
 msgstr "You can update the profile URL by updating the team URL in the general settings page."
@@ -7868,10 +7698,6 @@ msgstr "You can use the following variables in your message:"
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._index.tsx
 msgid "You can view documents associated with this email and use this identity when sending documents."
 msgstr "You can view documents associated with this email and use this identity when sending documents."
-
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "You can view the created documents in your dashboard under the \"Documents created from template\" section."
-msgstr "You can view the created documents in your dashboard under the \"Documents created from template\" section."
 
 #: packages/email/template-components/template-document-rejected.tsx
 msgid "You can view the document and its status by clicking the button below."
@@ -7938,15 +7764,6 @@ msgstr "You have already verified your email address for <0>{0}</0>."
 #: apps/remix/app/routes/_unauthenticated+/team.decline.$token.tsx
 msgid "You have been invited by <0>{0}</0> to join their team."
 msgstr "You have been invited by <0>{0}</0> to join their team."
-
-#. placeholder {0}: team.name
-#: packages/lib/server-only/team/create-team-member-invites.ts
-msgid "You have been invited to join {0}"
-msgstr "You have been invited to join {0}"
-
-#: packages/email/templates/team-invite.tsx
-msgid "You have been invited to join the following team"
-msgstr "You have been invited to join the following team"
 
 #: packages/lib/server-only/recipient/set-document-recipients.ts
 #: packages/lib/server-only/recipient/delete-document-recipient.ts
@@ -8128,10 +7945,6 @@ msgstr "Your branding preferences have been updated"
 msgid "Your bulk send has been initiated. You will receive an email notification upon completion."
 msgstr "Your bulk send has been initiated. You will receive an email notification upon completion."
 
-#: packages/email/templates/bulk-send-complete.tsx
-msgid "Your bulk send operation for template \"{templateName}\" has completed."
-msgstr "Your bulk send operation for template \"{templateName}\" has completed."
-
 #: apps/remix/app/routes/_authenticated+/settings+/billing.tsx
 msgid "Your current plan is past due. Please update your payment information."
 msgstr "Your current plan is past due. Please update your payment information."
@@ -8218,10 +8031,6 @@ msgstr "Your new password cannot be the same as your old password."
 #: apps/remix/app/components/forms/password.tsx
 msgid "Your password has been updated successfully."
 msgstr "Your password has been updated successfully."
-
-#: packages/email/template-components/template-reset-password.tsx
-msgid "Your password has been updated."
-msgstr "Your password has been updated."
 
 #: apps/remix/app/components/general/teams/team-layout-billing-banner.tsx
 msgid "Your payment for teams is overdue. Please settle the payment to avoid any service disruptions."

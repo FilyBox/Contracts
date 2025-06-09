@@ -1,5 +1,4 @@
-import { Trans } from '@lingui/react/macro';
-
+// import { Trans } from '@lingui/react/macro';
 import { Column, Img, Section, Text } from '../components';
 import { TemplateDocumentImage } from './template-document-image';
 
@@ -34,19 +33,17 @@ export const TemplateDocumentRecipientSigned = ({
                 src={getAssetUrl('/static/completed.png')}
                 className="-mt-0.5 mr-2 inline h-7 w-7 align-middle"
               />
-              <Trans>Completed</Trans>
+              Completed
             </Text>
           </Column>
         </Section>
 
         <Text className="text-primary mb-0 text-center text-lg font-semibold">
-          <Trans>
-            {recipientReference} has signed "{documentName}"
-          </Trans>
+          {recipientReference} has signed "{documentName}"
         </Text>
 
         <Text className="mx-auto mb-6 mt-1 max-w-[80%] text-center text-base text-slate-400">
-          <Trans>{recipientReference} has completed signing the document.</Trans>
+          {recipientReference} has completed signing the document.
         </Text>
       </Section>
     </>

@@ -106,7 +106,6 @@ const getCounts = async ({ user, artistIds, search, teamId, createdAt }: GetCoun
       }
     : {};
 
-  console.log('teamId', teamId);
   return Promise.all([
     prisma.tuStreams.groupBy({
       by: ['type'],

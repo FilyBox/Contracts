@@ -1,11 +1,9 @@
-import { msg } from '@lingui/core/macro';
-import { useLingui } from '@lingui/react';
-import { Trans } from '@lingui/react/macro';
-
+// import { msg } from '@lingui/core/macro';
+// import { useLingui } from '@lingui/react';
+// import { Trans } from '@lingui/react/macro';
 import { formatTeamUrl } from '@documenso/lib/utils/teams';
 
 import { Body, Container, Head, Hr, Html, Img, Preview, Section, Text } from '../components';
-import { useBranding } from '../providers/branding';
 import { TemplateFooter } from '../template-components/template-footer';
 import TemplateImage from '../template-components/template-image';
 
@@ -26,28 +24,24 @@ export const TeamJoinEmailTemplate = ({
   teamName = 'Team Name',
   teamUrl = 'demo',
 }: TeamJoinEmailProps) => {
-  const { _ } = useLingui();
-  const branding = useBranding();
+  // const { _ } = useLingui();
+  // const branding = useBranding();
 
-  const previewText = msg`A team member has joined a team`;
+  const previewText = `A team member has joined a team`;
 
   return (
     <Html>
       <Head />
-      <Preview>{_(previewText)}</Preview>
+      <Preview>{previewText}</Preview>
 
       <Body className="mx-auto my-auto font-sans">
         <Section className="bg-white text-slate-500">
           <Container className="mx-auto mb-2 mt-8 max-w-xl rounded-lg border border-solid border-slate-200 p-2 backdrop-blur-sm">
-            {branding.brandingEnabled && branding.brandingLogo ? (
-              <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-6 p-2" />
-            ) : (
-              <TemplateImage
-                assetBaseUrl={assetBaseUrl}
-                className="mb-4 h-6 p-2"
-                staticAsset="logo.png"
-              />
-            )}
+            <TemplateImage
+              assetBaseUrl={assetBaseUrl}
+              className="mb-4 h-6 p-2"
+              staticAsset="logo.png"
+            />
 
             <Section>
               <TemplateImage
@@ -59,13 +53,11 @@ export const TeamJoinEmailTemplate = ({
 
             <Section className="p-2 text-slate-500">
               <Text className="text-center text-lg font-medium text-black">
-                <Trans>
-                  {memberName || memberEmail} joined the team {teamName}
-                </Trans>
+                {memberName || memberEmail} joined the team {teamName}
               </Text>
 
               <Text className="my-1 text-center text-base">
-                <Trans>{memberEmail} joined the following team</Trans>
+                {memberEmail} joined the following team
               </Text>
 
               <div className="mx-auto my-2 w-fit rounded-lg bg-gray-50 px-4 py-2 text-base font-medium text-slate-600">

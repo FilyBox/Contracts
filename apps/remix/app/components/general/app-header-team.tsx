@@ -57,19 +57,16 @@ export const HeaderTeams = ({ className, user, teams, ...props }: HeaderProps) =
       )}
       {...props}
     >
-      <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between gap-x-4 px-4 md:justify-normal md:px-8">
-        <Link
+      <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between gap-x-4 px-4 md:justify-normal md:px-0">
+        {/* <Link
           to={`${getRootHref(params, { returnEmptyRootString: true })}/documents`}
           className="focus-visible:ring-ring ring-offset-background hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 md:inline"
         >
           <BrandingLogo className="h-6 w-auto" />
-        </Link>
+        </Link> */}
         <AppNavDesktopTeams setIsCommandMenuOpen={setIsCommandMenuOpen} />
 
-        <div
-          className="flex gap-x-4 md:ml-8"
-          title={selectedTeam ? selectedTeam.name : (user.name ?? '')}
-        >
+        <div className="flex gap-x-4" title={selectedTeam ? selectedTeam.name : (user.name ?? '')}>
           <MenuSwitcher user={user} teams={teams} />
         </div>
 

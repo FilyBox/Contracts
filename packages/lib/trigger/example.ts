@@ -480,7 +480,6 @@ export const contractInfoTask = task({
     const teamId = payload.teamId;
     const userId = payload.userId;
 
-    console.log('teamId', teamId);
     console.log(`🔹 Buscando archivo con ID: ${documentId} en la base de datos...`);
     try {
       const decryptedId = payload.documentId;

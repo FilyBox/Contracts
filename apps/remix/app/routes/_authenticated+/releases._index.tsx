@@ -545,7 +545,7 @@ export default function TasksPage() {
           </div>
           <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-80">
             <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
             <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}

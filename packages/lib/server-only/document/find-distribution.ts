@@ -26,7 +26,6 @@ export type FindReleaseOptions = {
 export const findDistribution = async ({
   userId,
   teamId,
-
   page = 1,
   perPage = 10,
   where,
@@ -69,6 +68,9 @@ export const findDistribution = async ({
     OR: [
       { proyecto: { contains: query, mode: 'insensitive' } },
       { isrc: { contains: query, mode: 'insensitive' } },
+      { marketingOwner: { contains: query, mode: 'insensitive' } },
+      { nombreDistribucion: { contains: query, mode: 'insensitive' } },
+      { numeroDeCatalogo: { contains: query, mode: 'insensitive' } },
       { tituloCatalogo: { contains: query, mode: 'insensitive' } },
       { proyecto: { contains: query, mode: 'insensitive' } },
       { tipoDeIngreso: { contains: query, mode: 'insensitive' } },

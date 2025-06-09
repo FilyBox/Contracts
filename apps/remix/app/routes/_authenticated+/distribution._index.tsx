@@ -353,7 +353,7 @@ export default function DistributionPage() {
           marketingOwner: item['Marketing Owner'] || undefined,
           nombreDistribucion: item['Nombre Distribucion'] || undefined,
           proyecto: item['Projecto'] || undefined,
-          numeroCatalogo: item['Numero de Catalogo'] || undefined,
+          numeroDeCatalogo: item['Numero de Catalogo'],
           upc: item['UPC'] || undefined,
           localProductNumber: item['Local Product Number'] || undefined,
           isrc: item['ISRC'] || undefined,
@@ -368,7 +368,7 @@ export default function DistributionPage() {
           rtl: convertToNumber(item['RTL']),
           ppd: convertToNumber(item['PPD']),
           rbp: convertToNumber(item['RBP']),
-          tipoCambio: convertToNumber(item['Tipo de Cambio:']),
+          tipoDeCambio: convertToNumber(item['Tipo de Cambio:']),
           valorRecibido: convertToNumber(item['Valor Recibido']),
           regaliasArtisticas: convertToNumber(item['Regalias Artisticas']),
           costoDistribucion: convertToNumber(item['Costo Distribucion']),
@@ -448,9 +448,9 @@ export default function DistributionPage() {
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
+          <AdvancedFilterDialog tableToConsult="Distribution" />
+          <Button onClick={openCreateDialog}>Add Item</Button>
         </div>
-        <AdvancedFilterDialog tableToConsult="Distribution" />
-        <Button onClick={openCreateDialog}>Add Item</Button>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-2xl">
