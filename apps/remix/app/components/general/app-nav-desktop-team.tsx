@@ -10,6 +10,8 @@ import { getRootHref } from '@documenso/lib/utils/params';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
 
+import { AppNavDesktop } from './dropdown-menu';
+
 const navigationLinks = [
   // {
   //   href: '/chatspace',
@@ -38,19 +40,6 @@ const navigationLinks = [
   {
     href: '/distribution',
     label: msg`Distribution`,
-  },
-  {
-    href: '/isrc',
-    label: msg`ISRC`,
-  },
-
-  {
-    href: '/contracts',
-    label: msg`Contracts`,
-  },
-  {
-    href: '/chatspace',
-    label: msg`Chat`,
   },
 ];
 
@@ -105,7 +94,7 @@ export const AppNavDesktopTeams = ({
           </Link>
         ))}
       </div>
-
+      <AppNavDesktop />
       <Button
         variant="outline"
         className="text-muted-foreground flex w-full max-w-44 items-center justify-between rounded-lg"
@@ -116,11 +105,7 @@ export const AppNavDesktopTeams = ({
           {/* <Trans>Search</Trans> */}
         </div>
 
-        <div>
-          {/* <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
-            {modifierKey}+K
-          </div> */}
-        </div>
+        <div></div>
       </Button>
     </div>
   );

@@ -6,6 +6,7 @@ import { contractsRouter } from './contracts-router/router';
 import { distributionRouter } from './distributionStatement-router/router';
 import { documentRouter } from './document-router/router';
 import { embeddingPresignRouter } from './embedding-router/_router';
+import { eventRouter } from './events-router/router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
 import { IsrcSongsRouter } from './isrcsong-router/router';
@@ -17,6 +18,7 @@ import { shareLinkRouter } from './share-link-router/router';
 import { taskRouter } from './task-router/router';
 import { teamRouter } from './team-router/router';
 import { templateRouter } from './template-router/router';
+import { ticketTypeRouter } from './ticket-type-router/router';
 import { router } from './trpc';
 import { tuStreamsRouter } from './tustreams-router/router';
 import { webhookRouter } from './webhook-router/router';
@@ -29,10 +31,12 @@ export const appRouter = router({
   document: documentRouter,
   field: fieldRouter,
   tuStreams: tuStreamsRouter,
+  event: eventRouter,
   artist: artistRouter,
   folder: folderRouter,
   recipient: recipientRouter,
   task: taskRouter,
+  ticketType: ticketTypeRouter,
   release: releaseRouter,
   contracts: contractsRouter,
   lpm: lpmRouter,

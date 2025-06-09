@@ -45,33 +45,21 @@ export const artistRouter = router({
       try {
         return await prisma.artist.create({
           data: { ...artistInfo },
-          // data: {
-          //   name: input.name,
-          //   roles: input.role ?? [],
-          //   event: input.event
-          //     ? {
-          //         connect: input.event.map((eventId) => ({ id: Number(eventId) })),
-          //       }
-          //     : undefined,
-          //   songs: input.song
-          //     ? {
-          //         connect: input.song.map((songId) => ({ id: Number(songId) })),
-          //       }
-          //     : undefined,
-          //   url: input.url,
-          //   disabled: input.disabled ?? false,
-          //   createdAt: input.createdAt ?? new Date(),
-          //   updatedAt: input.updatedAt ?? new Date(),
-          //   userId: userId,
-          //   avatarImageId: input.avatarImageId,
-          //   ...(teamId ? { teamId: teamId } : {}),
-          // },
         });
       } catch (error) {
         console.error('Error al crear artista:', error);
         throw error;
       }
     }),
+
+  findArtistsAll: authenticatedProcedure.query(async () => {
+    const artists = await prisma.artist.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
+    return artists;
+  }),
 
   findArtistById: authenticatedProcedure
     .input(z.object({ artistId: z.string() }))
