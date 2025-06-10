@@ -24,6 +24,7 @@ import {
 
 import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
 import { EventCreateDialog } from '~/components/dialogs/event-create-dialog';
+import { EventUpdateDialog } from '~/components/dialogs/event-update-dialog';
 import { TaskCreateDialog } from '~/components/dialogs/task-create-dialog';
 import { TicketTypeCreateDialog } from '~/components/dialogs/ticket-type-create-dialog';
 import { useOptionalCurrentTeam } from '~/providers/team';
@@ -200,9 +201,7 @@ export default function TasksPage() {
                   <CardFooter>
                     {/* Puedes agregar botones o acciones aquí */}
                     <div className="flex-3 flex items-center justify-between gap-2">
-                      <Button size="sm" onClick={() => handleTaskClick(event.id)}>
-                        <Trans>Actualizar</Trans>
-                      </Button>
+                      <EventUpdateDialog id={event.id} />
                       <Button size="sm" onClick={async () => handleDelete(event.id)}>
                         <Trans>Borrar</Trans>
                       </Button>

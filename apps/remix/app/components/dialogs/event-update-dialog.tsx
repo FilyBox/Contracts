@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { FilePlus, Loader } from 'lucide-react';
@@ -23,8 +23,8 @@ import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { ImageUploader } from '../general/dropzone';
 
-type EventCreateDialogProps = {
-  teamId?: number;
+type EventUpdateDialogProps = {
+  id: number;
 };
 
 const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,13 +43,14 @@ const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => 
   }
 };
 
-export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) => {
+export const EventUpdateDialog = ({ id }: EventUpdateDialogProps) => {
   const { user } = useSession();
   const maxLength = 250;
   const { toast } = useToast();
   const [image, setImage] = useState<File | null>(null);
   const imageUploaderRef = useRef<{ resetPreview: () => void }>(null);
   const [EventData, setEventData] = useState<{
+    id: number;
     name: string;
     description: string | undefined;
     image: string | undefined;
@@ -62,6 +63,7 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     updatedAt: Date;
     deletedAt?: Date | null;
   }>({
+    id,
     name: '',
     description: undefined,
     image: undefined,
@@ -92,9 +94,9 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     return errors;
   }, [EventData.beginning, EventData.end, today]);
 
-  const { mutateAsync: createEvent } = trpc.event.createEvent.useMutation();
+  const { mutateAsync: updateEvent } = trpc.event.updateEventById.useMutation();
 
-  const [showEventCreateDialog, setShowEventCreateDialog] = useState(false);
+  const [showEventUpdateDialog, setShowEventUpdateDialog] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
 
   const { data: artistsList = [] } = trpc.artist.findArtistsAll.useQuery();
@@ -117,6 +119,13 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     setEventData((prev) => ({ ...prev, [name]: value }));
   };
 
+  useEffect(() => {
+    setEventData((prev) => ({
+      ...prev,
+      id,
+    }));
+  }, [id]);
+
   const onCreateEvent = async () => {
     if (isCreatingEvent || !user.id) return;
     setIsCreatingEvent(true);
@@ -129,13 +138,13 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
           variant: 'destructive',
         }),
       );
+      setIsCreatingEvent(false);
       return;
     }
 
-    setIsCreatingEvent(true);
-
     try {
-      await createEvent({
+      await updateEvent({
+        id: EventData.id,
         name: EventData.name,
         description: EventData.description,
         image: EventData.image,
@@ -151,7 +160,7 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
         duration: 5000,
       });
 
-      setShowEventCreateDialog(false);
+      setShowEventUpdateDialog(false);
       setIsCreatingEvent(false);
     } catch (error) {
       toast({
@@ -167,13 +176,13 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
 
   return (
     <Dialog
-      open={showEventCreateDialog}
-      onOpenChange={(value) => !isCreatingEvent && setShowEventCreateDialog(value)}
+      open={showEventUpdateDialog}
+      onOpenChange={(value) => !isCreatingEvent && setShowEventUpdateDialog(value)}
     >
       <DialogTrigger asChild>
         <Button className="m-1 cursor-pointer" disabled={!user.emailVerified}>
           <FilePlus className="-ml-1 mr-2 h-4 w-4" />
-          <Trans>New Event</Trans>
+          <Trans>Actualizar</Trans>
         </Button>
       </DialogTrigger>
 
