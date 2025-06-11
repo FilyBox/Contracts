@@ -235,7 +235,7 @@ export const documentRouter = router({
         perPage,
         orderByDirection,
         orderByColumn,
-        source,
+        // source,
         status,
         period,
         senderIds,
@@ -291,7 +291,7 @@ export const documentRouter = router({
 
   findAllDocumentsInternalUseToChat: authenticatedProcedure
     .input(ZFindDocumentsInternalRequestSchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ ctx }) => {
       const { user, teamId } = ctx;
       const userId = user.id;
 
@@ -677,7 +677,7 @@ export const documentRouter = router({
       });
       if (documentData) {
         const { url } = await getPresignGetUrl(documentData.data || '');
-        const id = await getExtractBodyContractTask(userId, documentId, url, teamId);
+        await getExtractBodyContractTask(userId, documentId, url, teamId);
 
         await prisma.document.update({
           where: { id: documentId },
@@ -739,23 +739,25 @@ export const documentRouter = router({
     }),
 
   aiConnection: authenticatedProcedure
-    .input(z.object({ question: z.string(), folderId: z.number().optional() }))
+    .input(
+      z.object({
+        question: z.string(),
+        folderId: z.number().optional(),
+        tableToConsult: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const { teamId, user } = ctx;
       const userId = user.id;
-      const { question, folderId } = input;
+      const { question, folderId, tableToConsult } = input;
       try {
-        const query = await generateQuery(question, userId, teamId, folderId);
-        console.log('AI Connection query:', { query });
+        const query = await generateQuery(question, userId, teamId, folderId, tableToConsult);
 
         const companies = await runGenerateSQLQuery(query);
-        console.log('AI Connection companies:', { companies });
 
         const generation = await generateChartConfig(companies, question);
-        console.log('AI Connection generation:', { generation });
         return { query, companies, generation };
       } catch (e) {
-        console.log('AI Connection error:', e);
         return { query: '', companies: [], generation: undefined };
       }
     }),

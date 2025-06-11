@@ -33,6 +33,7 @@ import { Input } from '@documenso/ui/primitives/input';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { AdvancedFilterDialog } from '~/components/dialogs/advanced-filte-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
 import { ReleaseType } from '~/components/general/task/release-type';
@@ -67,20 +68,17 @@ export default function TasksPage() {
   const findDocumentSearchParams = useMemo(() => {
     const searchParamsObject = Object.fromEntries(searchParams.entries());
 
-    // Add special handling for the 'type' parameter
-    if (
-      searchParamsObject.type &&
-      ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
-    ) {
-      // Ensure the type exactly matches one of the valid enum values
-      // This handles any case sensitivity issues
-      // searchParamsObject.type = searchParamsObject.type;
-    }
+    // if (
+    //   searchParamsObject.type &&
+    //   ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
+    // ) {
+
+    //   // searchParamsObject.type = searchParamsObject.type;
+    // }
 
     const result = ZSearchParamsSchema.safeParse(searchParamsObject);
 
     if (!result.success) {
-      // Return a default object with manually extracted values from URL
       return {
         type: ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
           ? (searchParamsObject.type as ExtendedReleaseType)
@@ -118,7 +116,7 @@ export default function TasksPage() {
   const createMutation = trpc.release.createRelease.useMutation();
   const updateMutation = trpc.release.updateRelease.useMutation();
   const deleteMutation = trpc.release.deleteRelease.useMutation();
-  const convertDatesMutation = trpc.release.convertDates.useMutation();
+  // const convertDatesMutation = trpc.release.convertDates.useMutation();
   const deleteMultipleMutation = trpc.release.deleteMultipleByIds.useMutation();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -475,10 +473,6 @@ export default function TasksPage() {
     return `${formReleasePath(team?.url)}?${params.toString()}`;
   };
 
-  const handleTaskClick = (taskId: number) => {
-    void navigate(`${releasesRootPath}/${taskId}`);
-  };
-
   return (
     <div className="mx-auto max-w-screen-xl gap-y-8 px-4 md:px-8">
       {/* <CardsChat /> */}
@@ -551,18 +545,18 @@ export default function TasksPage() {
           </div>
           <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
 
-          <div className="mb-4 flex items-center gap-2">
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-80">
             <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
             <Button onClick={handleCsvUpload} disabled={!csvFile || isSubmitting}>
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
             </Button>
           </div>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
-            <Button onClick={openCreateDialog}>Create Release</Button>
-          </div>
+          <AdvancedFilterDialog tableToConsult="Releases" />
+
+          <Button onClick={openCreateDialog}>Create Release</Button>
           {/* <div className="flex w-auto flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <Button
               onClick={handleConvertDates}

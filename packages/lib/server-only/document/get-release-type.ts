@@ -117,7 +117,6 @@ const getCounts = async ({ user, artistIds, search, teamId }: GetCountsOption) =
     OR: [{ lanzamiento: { contains: search, mode: 'insensitive' } }],
   };
 
-  console.log('teamId', teamId);
   return Promise.all([
     prisma.releases.groupBy({
       by: ['typeOfRelease'],

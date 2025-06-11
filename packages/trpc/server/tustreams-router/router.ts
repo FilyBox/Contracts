@@ -258,7 +258,6 @@ export const tuStreamsRouter = router({
         input;
       const { user, teamId } = ctx;
       const userId = user.id;
-      console.log('type of tuStreams:', type);
       // Construir el objeto where para los filtros
       const where: Prisma.tuStreamsWhereInput = {
         ...(teamId && { teamId }),

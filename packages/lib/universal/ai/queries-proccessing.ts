@@ -1,4 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import type { QueryResult } from '@vercel/postgres';
 import { sql } from '@vercel/postgres';
 import { generateObject } from 'ai';
 import { z } from 'zod';
@@ -22,9 +23,9 @@ export const generateQuery = async (
   userId: number,
   teamId: number | undefined,
   folderId: number | undefined,
-  tableToConsult?: string,
+  tableToConsult: string,
 ) => {
-  const resultPrompt = generateAiPrompts(teamId, userId, folderId, 'Contracts');
+  const resultPrompt = generateAiPrompts(teamId, userId, folderId, tableToConsult);
 
   try {
     const result = await generateObject({
@@ -35,7 +36,7 @@ export const generateQuery = async (
         query: z.string(),
       }),
     });
-    let query = result.object.query;
+    const query = result.object.query;
 
     // if (teamId !== undefined) {
     //   query += ' AND "teamId" = ' + teamId;
@@ -45,7 +46,7 @@ export const generateQuery = async (
 
     console.log('Generated query:', query);
     return query;
-  } catch (e) {
+  } catch (e: unknown) {
     console.error(e);
     throw new Error('Failed to generate query');
   }
@@ -67,18 +68,13 @@ export const runGenerateSQLQuery = async (query: string) => {
     throw new Error('Only SELECT queries are allowed');
   }
 
-  let data: any;
+  let data: QueryResult;
   console.log('e');
   try {
     data = await sql.query(query);
     // data = await sql.query(query);
-  } catch (e: any) {
-    if (e.message.includes('relation "unicorns" does not exist')) {
-      // throw error
-      throw Error('Table does not exist');
-    } else {
-      throw e;
-    }
+  } catch (e: unknown) {
+    throw new Error('Failed to execute SQL query');
   }
 
   return data.rows as Result[];
@@ -117,7 +113,7 @@ export const explainQuery = async (input: string, sqlQuery: string) => {
       ${sqlQuery}`,
     });
     return result.object;
-  } catch (e) {
+  } catch (e: unknown) {
     console.error(e);
     throw new Error('Failed to generate query');
   }
@@ -162,8 +158,8 @@ export const generateChartConfig = async (results: Result[], userQuery: string) 
 
     const updatedConfig: Config = { ...config, colors };
     return { config: updatedConfig };
-  } catch (e) {
-    // @ts-ignore
+  } catch (e: unknown) {
+    // @ts-expect-error e is type unknown
     console.error(e.message);
     throw new Error('Failed to generate chart suggestion');
   }

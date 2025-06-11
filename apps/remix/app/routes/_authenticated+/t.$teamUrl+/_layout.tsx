@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { msg } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { SubscriptionStatus } from '@prisma/client';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { Link, Outlet } from 'react-router';
 
 import { TEAM_PLAN_LIMITS } from '@documenso/ee/server-only/limits/constants';
@@ -94,9 +95,11 @@ export default function Layout({ params }: Route.ComponentProps) {
               </PortalComponent>
             )}
 
-          <main className="mt-8 pb-8 md:mt-12 md:pb-12">
-            <Outlet />
-          </main>
+          <NuqsAdapter>
+            <main className="mt-8 pb-8 md:mt-12 md:pb-12">
+              <Outlet />
+            </main>
+          </NuqsAdapter>
         </TrpcProvider>
       </LimitsProvider>
     </TeamProvider>

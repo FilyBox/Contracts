@@ -25,6 +25,7 @@ export const getTeamInvitations = async ({
   return await prisma.teamMemberInvite.findMany({
     where: {
       email,
+      status: 'PENDING',
     },
     include: {
       team: {

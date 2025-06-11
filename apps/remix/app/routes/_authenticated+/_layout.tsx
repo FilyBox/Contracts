@@ -1,3 +1,4 @@
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { Outlet, redirect } from 'react-router';
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
@@ -57,9 +58,11 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
 
       <HeaderTeams user={user} teams={teams} />
 
-      <main className="mt-8 overflow-x-hidden pb-8 md:mt-12 md:pb-12">
-        <Outlet />
-      </main>
+      <NuqsAdapter>
+        <main className="mt-8 overflow-x-hidden pb-8 md:mt-12 md:pb-12">
+          <Outlet />
+        </main>
+      </NuqsAdapter>
     </LimitsProvider>
   );
 }

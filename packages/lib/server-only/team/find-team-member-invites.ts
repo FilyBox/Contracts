@@ -71,6 +71,7 @@ export const findTeamMemberInvites = async ({
   const whereClause: Prisma.TeamMemberInviteWhereInput = {
     ...termFilters,
     teamId: userTeam.id,
+    status: 'PENDING',
   };
 
   const [data, count] = await Promise.all([

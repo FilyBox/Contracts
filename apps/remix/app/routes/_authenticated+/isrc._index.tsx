@@ -19,6 +19,7 @@ import MyForm from '@documenso/ui/primitives/form-custom-isrc';
 import { Input } from '@documenso/ui/primitives/input';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { AdvancedFilterDialog } from '~/components/dialogs/advanced-filte-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { IsrcTable } from '~/components/tables/isrc-table';
@@ -288,6 +289,7 @@ export default function IsrcPage() {
           </div>
           <Button onClick={openCreateDialog}>Add Item</Button>
           <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
+          <AdvancedFilterDialog tableToConsult="Isrc" />
 
           <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />

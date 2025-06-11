@@ -11,6 +11,7 @@ import { Theme, useTheme } from 'remix-themes';
 
 import { SUPPORTED_LANGUAGES } from '@documenso/lib/constants/i18n';
 import {
+  CONTRACTS_PAGE_SHORTCUT,
   DOCUMENTS_PAGE_SHORTCUT,
   SETTINGS_PAGE_SHORTCUT,
   TEMPLATES_PAGE_SHORTCUT,
@@ -56,6 +57,14 @@ const TEMPLATES_PAGES = [
   },
 ];
 
+const CONTRACTS_PAGES = [
+  {
+    label: msg`All contracts`,
+    path: '/contracts',
+    shortcut: CONTRACTS_PAGE_SHORTCUT.replace('+', ''),
+  },
+];
+
 const SETTINGS_PAGES = [
   {
     label: msg`Settings`,
@@ -63,7 +72,7 @@ const SETTINGS_PAGES = [
     shortcut: SETTINGS_PAGE_SHORTCUT.replace('+', ''),
   },
   { label: msg`Profile`, path: '/settings/profile' },
-  { label: msg`Password`, path: '/settings/password' },
+  // { label: msg`Password`, path: '/settings/password' },
 ];
 
 export type AppCommandMenuProps = {
@@ -147,11 +156,13 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
   const goToSettings = useCallback(() => push(SETTINGS_PAGES[0].path), [push]);
   const goToDocuments = useCallback(() => push(DOCUMENTS_PAGES[0].path), [push]);
   const goToTemplates = useCallback(() => push(TEMPLATES_PAGES[0].path), [push]);
+  const goToContracts = useCallback(() => push(CONTRACTS_PAGES[0].path), [push]);
 
   useHotkeys(['ctrl+k', 'meta+k'], toggleOpen, { preventDefault: true });
   useHotkeys(SETTINGS_PAGE_SHORTCUT, goToSettings);
   useHotkeys(DOCUMENTS_PAGE_SHORTCUT, goToDocuments);
   useHotkeys(TEMPLATES_PAGE_SHORTCUT, goToTemplates);
+  useHotkeys(CONTRACTS_PAGE_SHORTCUT, goToContracts);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Escape goes to previous page
@@ -203,9 +214,13 @@ export function AppCommandMenu({ open, onOpenChange }: AppCommandMenuProps) {
             <CommandGroup className="mx-2 p-0 pb-2" heading={_(msg`Templates`)}>
               <Commands push={push} pages={TEMPLATES_PAGES} />
             </CommandGroup>
+            <CommandGroup className="mx-2 p-0 pb-2" heading={_(msg`Contracts`)}>
+              <Commands push={push} pages={CONTRACTS_PAGES} />
+            </CommandGroup>
             <CommandGroup className="mx-2 p-0 pb-2" heading={_(msg`Settings`)}>
               <Commands push={push} pages={SETTINGS_PAGES} />
             </CommandGroup>
+
             <CommandGroup className="mx-2 p-0 pb-2" heading={_(msg`Preferences`)}>
               <CommandItem className="-mx-2 -my-1 rounded-lg" onSelect={() => addPage('language')}>
                 Change language

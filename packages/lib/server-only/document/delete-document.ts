@@ -167,8 +167,6 @@ const handleDocumentOwnerDelete = async ({
     },
   });
 
-  console.log('documentBody', documentBody);
-
   if (documentBody) {
     const deletedDocument = await prisma.$transaction(async (tx) => {
       // Currently redundant since deleting a document will delete the audit logs.

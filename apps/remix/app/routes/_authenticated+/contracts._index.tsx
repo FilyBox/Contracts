@@ -4,6 +4,7 @@ import { Trans } from '@lingui/react/macro';
 import { FolderIcon, HomeIcon, Loader2 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Link } from 'react-router';
+import { z } from 'zod';
 
 import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
@@ -17,6 +18,7 @@ import {
   ZFindContractsInternalRequestSchema,
 } from '@documenso/trpc/server/contracts-router/schema';
 import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
+// import { searchParamsCache } from '@documenso/ui/lib/validations';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
@@ -37,8 +39,7 @@ import { ContractsTable } from '~/components/tables/contracts-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
-
-// import { type IsrcSongsData } from '@documenso/ui/primitives/types';
+import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
 type CsvColumnMapping = {
   csvColumn: string;
@@ -57,8 +58,68 @@ const ZSearchParamsSchema = ZFindContractsInternalRequestSchema.pick({
   query: true,
 });
 
+const sortColumns = z
+  .enum([
+    'id',
+    'createdAt',
+    'updatedAt',
+    'status',
+    'title',
+    'fileName',
+    'startDate',
+    'endDate',
+    'isPossibleToExpand',
+    'possibleExtensionTime',
+    'documentId',
+  ])
+  .optional();
+
+export const TypeSearchParams = z.record(
+  z.string(),
+  z.union([z.string(), z.array(z.string()), z.undefined()]),
+);
+
 export default function ContractsPage() {
   const [searchParams] = useSearchParams();
+
+  const sort = useMemo(
+    () => TypeSearchParams.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+    [searchParams],
+  );
+
+  const columnOrder = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { id } = parsedSort[0];
+          const isValidColumn = sortColumns.safeParse(id);
+          return isValidColumn.success ? id : undefined;
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'title';
+      }
+    }
+    return 'title';
+  }, [sort]);
+
+  const columnDirection = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { desc } = parsedSort[0];
+          return desc ? 'desc' : 'asc';
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'asc';
+      }
+    }
+    return 'asc';
+  }, [sort]);
+
   const team = useOptionalCurrentTeam();
   const navigate = useNavigate();
 
@@ -87,6 +148,8 @@ export default function ContractsPage() {
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
     status: findDocumentSearchParams.status,
+    orderByColumn: columnOrder,
+    orderByDirection: columnDirection,
   });
 
   const retryDocument = trpc.document.retryChatDocument.useMutation();
@@ -351,8 +414,6 @@ export default function ContractsPage() {
     window.location.href = documentPath;
   };
   const handleUpdate = async (updatedContracts: Contract) => {
-    console.log('Updated User:', updatedContracts);
-    console.log('id', updatedContracts.id);
     setIsSubmitting(true);
     try {
       const { id } = await updateContractsMutation.mutateAsync({
@@ -368,8 +429,6 @@ export default function ContractsPage() {
         documentId: updatedContracts.documentId ?? undefined,
         summary: updatedContracts.summary ?? undefined,
       });
-
-      console.log('Updated Record ID:', id);
 
       setData(
         dataIntial.map((record) => (record.id === updatedContracts.id ? updatedContracts : record)),
@@ -403,7 +462,6 @@ export default function ContractsPage() {
 
   const handleMultipleDelete = async (ids: number[]) => {
     try {
-      console.log('Deleting records with IDs in index contracts:', ids);
       await deleteMultipleContractsMutation.mutateAsync({ ids: ids });
 
       toast({
@@ -593,7 +651,7 @@ export default function ContractsPage() {
             </Tabs>
 
             <Button onClick={openCreateDialog}>Add Item</Button>
-            <AdvancedFilterDialog />
+            <AdvancedFilterDialog tableToConsult="Contracts" />
             <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
               <DocumentSearch initialValue={findDocumentSearchParams.query} />
             </div>

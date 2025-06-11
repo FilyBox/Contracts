@@ -1,12 +1,12 @@
-import { msg } from '@lingui/core/macro';
-import { useLingui } from '@lingui/react';
-import { Trans } from '@lingui/react/macro';
+// import { msg } from '@lingui/core/macro';
+// import { useLingui } from '@lingui/react';
+// import { Trans } from '@lingui/react/macro';
 import type { RecipientRole } from '@prisma/client';
 
 import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-roles';
 
 import { Body, Container, Head, Hr, Html, Img, Link, Preview, Section, Text } from '../components';
-import { useBranding } from '../providers/branding';
+// import { useBranding } from '../providers/branding';
 import type { TemplateDocumentInviteProps } from '../template-components/template-document-invite';
 import { TemplateDocumentInvite } from '../template-components/template-document-invite';
 import { TemplateFooter } from '../template-components/template-footer';
@@ -34,21 +34,21 @@ export const DocumentInviteEmailTemplate = ({
   teamName = '',
   includeSenderDetails,
 }: DocumentInviteEmailTemplateProps) => {
-  const { _ } = useLingui();
-  const branding = useBranding();
+  // const { _ } = useLingui();
+  // const branding = useBranding();
 
-  const action = _(RECIPIENT_ROLES_DESCRIPTION[role].actionVerb).toLowerCase();
+  const action = String(RECIPIENT_ROLES_DESCRIPTION[role].actionVerb).toLowerCase();
 
-  let previewText = msg`${inviterName} has invited you to ${action} ${documentName}`;
+  let previewText = `${inviterName} has invited you to ${action} ${documentName}`;
 
   if (isTeamInvite) {
     previewText = includeSenderDetails
-      ? msg`${inviterName} on behalf of "${teamName}" has invited you to ${action} ${documentName}`
-      : msg`${teamName} has invited you to ${action} ${documentName}`;
+      ? `${inviterName} on behalf of "${teamName}" has invited you to ${action} ${documentName}`
+      : `${teamName} has invited you to ${action} ${documentName}`;
   }
 
   if (selfSigner) {
-    previewText = msg`Please ${action} your document ${documentName}`;
+    previewText = `Please ${action} your document ${documentName}`;
   }
 
   const getAssetUrl = (path: string) => {
@@ -58,17 +58,13 @@ export const DocumentInviteEmailTemplate = ({
   return (
     <Html>
       <Head />
-      <Preview>{_(previewText)}</Preview>
+      <Preview>{previewText}</Preview>
 
       <Body className="mx-auto my-auto bg-white font-sans">
         <Section>
           <Container className="mx-auto mb-2 mt-8 max-w-xl rounded-lg border border-solid border-slate-200 p-4 backdrop-blur-sm">
             <Section>
-              {branding.brandingEnabled && branding.brandingLogo ? (
-                <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-6" />
-              ) : (
-                <Img src={getAssetUrl('/static/logo.png')} alt="logo" className="mb-4 h-6" />
-              )}
+              <Img src={getAssetUrl('/static/logo.png')} alt="logo" className="mb-4 h-6" />
 
               <TemplateDocumentInvite
                 inviterName={inviterName}
@@ -89,12 +85,10 @@ export const DocumentInviteEmailTemplate = ({
             <Section>
               {!isTeamInvite && (
                 <Text className="my-4 text-base font-semibold">
-                  <Trans>
-                    {inviterName}{' '}
-                    <Link className="font-normal text-slate-400" href="mailto:{inviterEmail}">
-                      ({inviterEmail})
-                    </Link>
-                  </Trans>
+                  {inviterName}{' '}
+                  <Link className="font-normal text-slate-400" href="mailto:{inviterEmail}">
+                    ({inviterEmail})
+                  </Link>
                 </Text>
               )}
 
@@ -102,9 +96,7 @@ export const DocumentInviteEmailTemplate = ({
                 {customBody ? (
                   <pre className="font-sans text-base text-slate-400">{customBody}</pre>
                 ) : (
-                  <Trans>
-                    {inviterName} has invited you to {action} the document "{documentName}".
-                  </Trans>
+                  `${inviterName} has invited you to ${action} the document "${documentName}."`
                 )}
               </Text>
             </Section>

@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { type MouseEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, TeamMemberRole } from '@prisma/client';
-import { ChevronLeft } from 'lucide-react';
+import equal from 'fast-deep-equal';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, XIcon } from 'lucide-react';
+import { Maximize } from 'lucide-react';
 import { Link, redirect } from 'react-router';
 import { useNavigate } from 'react-router';
 import { match } from 'ts-pattern';
+import { useDebounceCallback, useWindowSize } from 'usehooks-ts';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
 import { useSession } from '@documenso/lib/client-only/providers/session';
@@ -19,6 +23,7 @@ import { DocumentVisibility } from '@documenso/lib/types/document-visibility';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 import Component from '@documenso/ui/components/ai-card/ai-generation-card';
+import { Button } from '@documenso/ui/primitives/button';
 import { Card, CardContent } from '@documenso/ui/primitives/card';
 import PDFViewer from '@documenso/ui/primitives/pdf-viewer';
 
@@ -26,6 +31,36 @@ import { DocumentRecipientLinkCopyDialog } from '~/components/general/document/d
 import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
 
 import type { Route } from './+types/documents.$id._index';
+
+type UIArtifact = {
+  title: string;
+  documentId: string;
+  kind: string;
+  content: string;
+  isVisible: boolean;
+  status: 'streaming' | 'idle';
+  boundingBox: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  };
+};
+
+export const initialArtifactData: UIArtifact = {
+  documentId: 'init',
+  content: '',
+  kind: 'text',
+  title: '',
+  status: 'idle',
+  isVisible: false,
+  boundingBox: {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+  },
+};
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const { user } = await getSession(request);
@@ -127,6 +162,84 @@ export default function DocumentPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { _ } = useLingui();
   const { user } = useSession();
+
+  const [uiArtifact, setUiArtifact] = useState<UIArtifact>(initialArtifactData);
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
+
+  const PureHitboxLayer = ({
+    hitboxRef,
+    result,
+    setArtifact,
+  }: {
+    hitboxRef: React.RefObject<HTMLDivElement>;
+    result: any;
+    setArtifact: (updaterFn: UIArtifact | ((currentArtifact: UIArtifact) => UIArtifact)) => void;
+  }) => {
+    const handleClick = useCallback(
+      (event: MouseEvent<HTMLElement>) => {
+        const boundingBox = event.currentTarget.getBoundingClientRect();
+
+        setArtifact((artifact) =>
+          artifact.status === 'streaming'
+            ? { ...artifact, isVisible: true }
+            : {
+                ...artifact,
+                title: result.title,
+                documentId: result.id,
+                kind: result.kind,
+                isVisible: true,
+                boundingBox: {
+                  left: boundingBox.x,
+                  top: boundingBox.y,
+                  width: boundingBox.width,
+                  height: boundingBox.height,
+                },
+              },
+        );
+      },
+      [setArtifact, result],
+    );
+
+    return (
+      <div
+        className="absolute left-0 top-0 z-10 size-full rounded-xl"
+        ref={hitboxRef}
+        onClick={handleClick}
+        role="presentation"
+        aria-hidden="true"
+      >
+        <div className="flex w-full items-center justify-end p-4">
+          <div className="absolute right-[9px] top-[13px] rounded-md p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700">
+            <Maximize />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const HitboxLayer = memo(PureHitboxLayer, (prevProps, nextProps) => {
+    if (!equal(prevProps.result, nextProps.result)) return false;
+    return true;
+  });
+
+  const hitboxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const boundingBox = hitboxRef.current?.getBoundingClientRect();
+
+    if (initialArtifactData.documentId && boundingBox) {
+      setUiArtifact((artifact) => ({
+        ...artifact,
+        boundingBox: {
+          left: boundingBox.x,
+          top: boundingBox.y,
+          width: boundingBox.width,
+          height: boundingBox.height,
+        },
+      }));
+    }
+  }, [initialArtifactData.documentId, setUiArtifact]);
+
   const retryDocument = trpc.document.retryContractData.useMutation();
 
   const { document, documentRootPath, fields, contract } = loaderData;
@@ -147,28 +260,88 @@ export default function DocumentPage() {
     }
   };
   return (
-    <div className="relative mx-auto -mt-4 w-full max-w-screen-xl px-4 md:px-8">
+    <div className="mx-auto -mt-4 w-full px-4 md:px-8">
       {document.status === DocumentStatus.PENDING && (
         <DocumentRecipientLinkCopyDialog recipients={recipients} />
       )}
+      {/* <div className="relative w-full cursor-pointer">
+        <HitboxLayer
+          hitboxRef={hitboxRef}
+          result={initialArtifactData}
+          setArtifact={setUiArtifact}
+        />
+        <p>el pepe</p>
+      </div> */}
+      <AnimatePresence>
+        {uiArtifact.isVisible && (
+          <motion.div
+            className="dark:bg-muted bg-background fixed z-50 flex h-screen w-screen flex-col overflow-y-scroll border-zinc-200 md:border-l dark:border-zinc-700"
+            initial={{
+              opacity: 1,
+              x: initialArtifactData.boundingBox.left,
+              y: initialArtifactData.boundingBox.top,
+              height: windowHeight,
+              width: windowWidth ? windowWidth : 'calc(100dvw)',
+              borderRadius: 50,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+              y: 0,
+              height: windowHeight,
+              width: windowWidth ? windowWidth : 'calc(100dvw)',
+              borderRadius: 0,
+              transition: {
+                delay: 0,
+                type: 'spring',
+                stiffness: 200,
+                damping: 30,
+                duration: 5000,
+              },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0.5,
+              transition: {
+                delay: 0.1,
+                type: 'spring',
+                stiffness: 600,
+                damping: 30,
+              },
+            }}
+          >
+            <div className="flex flex-col items-start justify-between p-2">
+              <div className="flex flex-row items-start gap-4">
+                <Button
+                  data-testid="artifact-close-button"
+                  variant="outline"
+                  className="h-fit p-2 dark:hover:bg-zinc-700"
+                  onClick={() => {
+                    setUiArtifact((currentArtifact) =>
+                      currentArtifact.status === 'streaming'
+                        ? {
+                            ...currentArtifact,
+                            isVisible: false,
+                          }
+                        : { ...initialArtifactData, status: 'idle' },
+                    );
+                  }}
+                >
+                  <XIcon size={18} />
+                </Button>
+              </div>
+              <p>yo</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Link to={documentRootPath} className="flex items-center text-[#7AC455] hover:opacity-80">
         <ChevronLeft className="mr-2 inline-block h-5 w-5" />
         <Trans>Contracts</Trans>
       </Link>
 
-      {/* <div className="flex flex-row justify-between truncate">
-        <div>
-          <h1
-            className="mt-4 block max-w-[20rem] truncate text-2xl font-semibold md:max-w-[30rem] md:text-3xl"
-            title={document.title}
-          >
-            {document.title}
-          </h1>
-          
-        </div>
-      </div> */}
-      <div className="relative mt-6 grid w-full grid-cols-12 gap-8">
+      <div className="mt-6 grid w-full grid-cols-12 gap-8">
         <Card
           className="col-span-12 rounded-xl before:rounded-xl lg:col-span-6 xl:col-span-7"
           gradient
@@ -178,165 +351,18 @@ export default function DocumentPage() {
           </CardContent>
         </Card>
 
-        <div className="col-span-12 lg:fixed lg:right-8 lg:top-20 lg:col-span-6 xl:col-span-5">
-          {contract && (
-            <Component
-              generating={isGenerating}
-              handleRetry={handleRetry}
-              documentRootPath={documentRootPath}
-              contract={contract}
-            />
-          )}
+        <div className="dark:bg-mutedh-full !max-w-full items-center">
+          <div className="col-span-12 lg:fixed lg:right-8 lg:top-20 lg:col-span-6 xl:col-span-5">
+            {contract && (
+              <Component
+                generating={isGenerating}
+                handleRetry={handleRetry}
+                documentRootPath={documentRootPath}
+                contract={contract}
+              />
+            )}
+          </div>
         </div>
-
-        {/* <Card
-          className="col-span-12 rounded-xl before:rounded-xl lg:fixed lg:right-8 lg:top-20 lg:col-span-6 lg:max-w-[32rem] xl:col-span-7"
-          gradient
-        >
-          <CardContent className="p-2">
-            <section className="border-border bg-widget flex w-full flex-col rounded-xl border pb-4 pt-6">
-              <div className="px-6 py-4">
-                <h3 className="mb-4 border-b border-gray-200 pb-3 text-2xl font-semibold">
-                  {contract?.fileName}
-                </h3>
-
-                <div className="grid grid-cols-1 gap-4">
-                  {contract?.title && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Title</span>
-                      <span className="text-base">{contract.title}</span>
-                    </div>
-                  )}
-
-                  {contract?.artists && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Artists</span>
-                      <span className="text-base">{contract.artists}</span>
-                    </div>
-                  )}
-
-                  {contract?.status && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Status</span>
-                      <span className="text-base">{contract.status}</span>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {contract?.startDate && (
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500">Start Date</span>
-                        <span className="text-base">{contract.startDate}</span>
-                      </div>
-                    )}
-
-                    {contract?.endDate && (
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500">End Date</span>
-                        <span className="text-base">{contract.endDate}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {contract?.isPossibleToExpand !== undefined && (
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500">Can Extend</span>
-                        <span className="text-base">{contract.isPossibleToExpand}</span>
-                      </div>
-                    )}
-
-                    {contract?.possibleExtensionTime && (
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-500">Extension Time</span>
-                        <span className="text-base">{contract.possibleExtensionTime}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {contract?.summary && (
-                    <div className="mt-2 flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Summary</span>
-                      <p className="mt-1 text-base">{contract.summary}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-          </CardContent>
-        </Card> */}
-
-        {/* <div className="right-8 top-20 col-span-12 flex max-h-screen w-full overflow-y-auto md:max-w-[32rem] lg:fixed lg:col-span-6 xl:col-span-5">
-          <section className="border-border bg-widget flex w-full flex-col rounded-xl border pb-4 pt-6">
-            <div className="px-6 py-4">
-              <h3 className="mb-4 border-b border-gray-200 pb-3 text-2xl font-semibold">
-                {contract?.fileName}
-              </h3>
-
-              <div className="grid grid-cols-1 gap-4">
-                {contract?.title && (
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500">Title</span>
-                    <span className="text-base">{contract.title}</span>
-                  </div>
-                )}
-
-                {contract?.artists && (
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500">Artists</span>
-                    <span className="text-base">{contract.artists}</span>
-                  </div>
-                )}
-
-                {contract?.status && (
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500">Status</span>
-                    <span className="text-base">{contract.status}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  {contract?.startDate && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Start Date</span>
-                      <span className="text-base">{contract.startDate}</span>
-                    </div>
-                  )}
-
-                  {contract?.endDate && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">End Date</span>
-                      <span className="text-base">{contract.endDate}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {contract?.isPossibleToExpand !== undefined && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Can Extend</span>
-                      <span className="text-base">{contract.isPossibleToExpand}</span>
-                    </div>
-                  )}
-
-                  {contract?.possibleExtensionTime && (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-500">Extension Time</span>
-                      <span className="text-base">{contract.possibleExtensionTime}</span>
-                    </div>
-                  )}
-                </div>
-
-                {contract?.summary && (
-                  <div className="mt-2 flex flex-col">
-                    <span className="text-sm font-medium text-gray-500">Summary</span>
-                    <p className="mt-1 text-base">{contract.summary}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        </div> */}
       </div>
     </div>
   );

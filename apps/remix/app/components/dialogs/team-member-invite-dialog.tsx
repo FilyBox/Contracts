@@ -229,7 +229,7 @@ export const TeamMemberInviteDialog = ({ trigger, ...props }: TeamMemberInviteDi
     });
 
     downloadFile({
-      filename: 'documenso-team-member-invites-template.csv',
+      filename: 'team-member-invites-template.csv',
       data: blob,
     });
   };

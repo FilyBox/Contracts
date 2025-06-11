@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { sql } from '@vercel/postgres';
+import { type QueryResult, sql } from '@vercel/postgres';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
@@ -132,22 +132,13 @@ export const runGenerateSQLQuery = async (query: string) => {
   }
   console.log('postgres connectionString', env('NEXT_PRIVATE_SIGNING_LOCAL_FILE_CONTENTS'));
 
-  let data: any;
+  let data: QueryResult;
   console.log('e');
   try {
     console.log('Using Vercel Postgres connection string');
-
-    // const pooledConnectionString = postgresConnectionString('pool');
-    // console.log('Pooled connection string:', pooledConnectionString);
-    // console.log('Using pooled connection string:', env('NEXT_PRIVATE_DIRECT_DATABASE_URL'));
-    // const pool = createPool({
-    //   connectionString:
-    //     'postgresql://neondb_owner:npg_XSoCz4h8OeJy@ep-orange-rain-a4c1tdtc-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require',
-    // });
-
     data = await sql.query(query);
     // data = await sql.query(query);
-  } catch (e: any) {
+  } catch (e) {
     if (e.message.includes('relation "unicorns" does not exist')) {
       // throw error
       throw Error('Table does not exist');
@@ -238,7 +229,6 @@ export const generateChartConfig = async (results: Result[], userQuery: string) 
     const updatedConfig: Config = { ...config, colors };
     return { config: updatedConfig };
   } catch (e) {
-    // @ts-ignore
     console.error(e.message);
     throw new Error('Failed to generate chart suggestion');
   }
