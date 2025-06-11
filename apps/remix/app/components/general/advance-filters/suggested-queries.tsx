@@ -71,6 +71,10 @@ export const SuggestedQueries = ({
             },
           ],
         };
+      case 'TuStreams':
+        return {
+          suggestionQueries: [],
+        };
 
       default:
         return {

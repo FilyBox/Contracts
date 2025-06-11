@@ -19,7 +19,7 @@ export type FindReleaseOptions = {
 
   perPage?: number;
   orderBy?: {
-    column: keyof Omit<Releases, 'release'>;
+    column: keyof Releases;
     direction: 'asc' | 'desc';
   };
   type?: ExtendedReleaseType;
@@ -44,7 +44,6 @@ export const findRelease = async ({
   query,
 }: FindReleaseOptions) => {
   let team = null;
-
   if (teamId !== undefined) {
     team = await prisma.team.findFirstOrThrow({
       where: {

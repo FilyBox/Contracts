@@ -12,7 +12,8 @@ import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { formReleasePath } from '@documenso/lib/utils/teams';
 import { type Team } from '@documenso/prisma/client';
 import { type Releases } from '@documenso/prisma/client';
-import { ExtendedRelease, ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
+import type { ExtendedRelease } from '@documenso/prisma/types/extended-release';
+import { ExtendedReleaseType } from '@documenso/prisma/types/extended-release';
 import { trpc } from '@documenso/trpc/react';
 import {
   type TFindReleaseInternalResponse,
@@ -52,6 +53,32 @@ export function meta() {
   return appMetaTags('Releases');
 }
 
+const sortColumns = z
+  .enum([
+    'createdAt',
+    'date',
+    'lanzamiento',
+    'typeOfRelease',
+    'release',
+    'uploaded',
+    'streamingLink',
+    'assets',
+    'canvas',
+    'cover',
+    'audioWAV',
+    'video',
+    'banners',
+    'pitch',
+    'EPKUpdates',
+    'WebSiteUpdates',
+    'Biography',
+  ])
+  .optional();
+export const TypeSearchParams = z.record(
+  z.string(),
+  z.union([z.string(), z.array(z.string()), z.undefined()]),
+);
+
 const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
   type: true,
   release: true,
@@ -64,17 +91,46 @@ const ZSearchParamsSchema = ZFindReleaseInternalRequestSchema.pick({
 });
 export default function TasksPage() {
   const [searchParams] = useSearchParams();
+  const sort = useMemo(
+    () => TypeSearchParams.safeParse(Object.fromEntries(searchParams.entries())).data || {},
+    [searchParams],
+  );
+
+  const columnOrder = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { id } = parsedSort[0];
+          const isValidColumn = sortColumns.safeParse(id);
+          return isValidColumn.success ? id : undefined;
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'date';
+      }
+    }
+    return 'date';
+  }, [sort]);
+
+  const columnDirection = useMemo(() => {
+    if (sort.sort) {
+      try {
+        const parsedSort = JSON.parse(sort.sort as string);
+        if (Array.isArray(parsedSort) && parsedSort.length > 0) {
+          const { desc } = parsedSort[0];
+          return desc ? 'desc' : 'asc';
+        }
+      } catch (error) {
+        console.error('Error parsing sort parameter:', error);
+        return 'asc';
+      }
+    }
+    return 'asc';
+  }, [sort]);
 
   const findDocumentSearchParams = useMemo(() => {
     const searchParamsObject = Object.fromEntries(searchParams.entries());
-
-    // if (
-    //   searchParamsObject.type &&
-    //   ['EP', 'Album', 'Sencillo', 'ALL'].includes(searchParamsObject.type)
-    // ) {
-
-    //   // searchParamsObject.type = searchParamsObject.type;
-    // }
 
     const result = ZSearchParamsSchema.safeParse(searchParamsObject);
 
@@ -106,6 +162,8 @@ export default function TasksPage() {
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
     artistIds: findDocumentSearchParams.artistIds,
+    orderByColumn: columnOrder,
+    orderByDirection: columnDirection,
   });
 
   const { data: artistData, isLoading: artistDataloading } =
@@ -183,10 +241,8 @@ export default function TasksPage() {
     if (!dateString) return null;
 
     try {
-      // No need to normalize to lowercase since we have both cases in the mapping
       const normalizedInput = dateString.trim();
 
-      // Match patterns like "24 de abril", "24 abril", "24 de Abril", etc.
       const regex = /(\d+)(?:\s+de)?\s+([a-zA-Zé]+)(?:\s+de\s+(\d{4}))?/;
       const match = normalizedInput.match(regex);
 
@@ -441,17 +497,11 @@ export default function TasksPage() {
     setIsDialogOpen(true);
   };
 
-  const [release, setRelease] = useState<TFindReleaseInternalResponse['release']>({
-    [ExtendedRelease.Focus]: 0,
-    [ExtendedRelease.Soft]: 0,
-    [ExtendedRelease.ALL]: 0,
-  });
-
-  // useEffect(() => {
-  //   if (data?.type) {
-  //     setType(data.type);
-  //   }
-  // }, [data?.type]);
+  // const [release, setRelease] = useState<TFindReleaseInternalResponse['release']>({
+  //   [ExtendedRelease.Focus]: 0,
+  //   [ExtendedRelease.Soft]: 0,
+  //   [ExtendedRelease.ALL]: 0,
+  // });
 
   useEffect(() => {
     void refetch();
@@ -539,11 +589,12 @@ export default function TasksPage() {
               })}
             </TabsList>
           </Tabs>
-
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4 sm:w-48">
             <PeriodSelector />
           </div>
-          <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 sm:w-48">
+            <TableArtistFilter artistData={artistData} isLoading={artistDataloading} />
+          </div>
 
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-80">
             <Input type="file" accept=".csv" onChange={handleFileChange} className="max-w-sm" />
@@ -551,21 +602,13 @@ export default function TasksPage() {
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
             </Button>
           </div>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 sm:w-48">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
           <AdvancedFilterDialog tableToConsult="Releases" />
-
-          <Button onClick={openCreateDialog}>Create Release</Button>
-          {/* <div className="flex w-auto flex-wrap items-center justify-between gap-x-2 gap-y-4">
-            <Button
-              onClick={handleConvertDates}
-              variant="outline"
-              disabled={convertDatesMutation.isLoading}
-            >
-              {convertDatesMutation.isLoading ? 'Converting...' : 'Convert Date Formats'}
-            </Button>
-          </div> */}
+          <Button className="w-full sm:w-48" onClick={openCreateDialog}>
+            Create Release
+          </Button>
         </div>
 
         <div className="mt w-full">

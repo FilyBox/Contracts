@@ -1,47 +1,46 @@
-import { useMemo, useTransition } from 'react';
+import { useTransition } from 'react';
+import * as React from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { Loader } from 'lucide-react';
 import { CheckIcon, XIcon } from 'lucide-react';
-import { DateTime } from 'luxon';
 import { Link } from 'react-router';
 
 import { useUpdateSearchParams } from '@documenso/lib/client-only/hooks/use-update-search-params';
 import type { TFindReleaseResponse } from '@documenso/trpc/server/releases-router/schema';
+import { useDataTable } from '@documenso/ui/lib/use-data-table';
 import { Checkbox } from '@documenso/ui/primitives/checkbox';
-import type { DataTableColumnDef } from '@documenso/ui/primitives/data-table';
-import { DataTable } from '@documenso/ui/primitives/data-table';
-import { DataTablePagination } from '@documenso/ui/primitives/data-table-pagination';
+import { DataTable } from '@documenso/ui/primitives/data-table-table';
 
-import { DataTableSkeleton } from '~/components/tables/data-table-skeleton';
 import { useOptionalCurrentTeam } from '~/providers/team';
 
-// export type DocumentsTableProps = {
-//   data?: TFindReleaseResponse;
-//   isLoading?: boolean;
-//   isLoadingError?: boolean;
-//   onMoveDocument?: (documentId: number) => void;
-//     onAdd: () => void;
-//   onEdit: (data: TData) => void;
-//   onDelete: (data: TData) => void;
-// };
+import { ReleasesTableActionBar } from '../releases/releases-table-action-bar';
+import { DataTableAdvancedToolbar } from './data-table-advanced-toolbar';
+import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableFilterList } from './data-table-filter-list';
+import { DataTableSkeleton } from './data-table-skeleton';
+import { DataTableSortList } from './data-table-sort-list';
 
 interface DataTableProps<TData, TValue> {
   data?: TFindReleaseResponse;
   isLoading?: boolean;
   isLoadingError?: boolean;
   onAdd: () => void;
-  onEdit?: (data: DocumentsTableRow) => void;
-  onDelete?: (data: DocumentsTableRow) => void;
+  onRetry?: (data: ReleaseTableRow) => void;
+
+  onEdit?: (data: ReleaseTableRow) => void;
   onMultipleDelete: (ids: number[]) => void;
   isMultipleDelete?: boolean;
   setIsMultipleDelete?: (value: boolean) => void;
+  onDelete?: (data: ReleaseTableRow) => void;
+  onNavegate?: (data: ReleaseTableRow) => void;
+  onMoveDocument?: (data: ReleaseTableRow) => void;
 }
 
-type DocumentsTableRow = TFindReleaseResponse['data'][number];
+type ReleaseTableRow = TFindReleaseResponse['data'][number];
 
 export const ReleasesTable = ({
   data,
@@ -53,7 +52,7 @@ export const ReleasesTable = ({
   onMultipleDelete,
   isMultipleDelete = false,
   setIsMultipleDelete,
-}: DataTableProps<DocumentsTableRow, DocumentsTableRow>) => {
+}: DataTableProps<ReleaseTableRow, ReleaseTableRow>) => {
   const { _, i18n } = useLingui();
 
   const team = useOptionalCurrentTeam();
@@ -61,8 +60,8 @@ export const ReleasesTable = ({
 
   const updateSearchParams = useUpdateSearchParams();
 
-  const columns = useMemo(() => {
-    return [
+  const createColumns = (): ColumnDef<ReleaseTableRow>[] => {
+    const columns: ColumnDef<ReleaseTableRow>[] = [
       {
         id: 'select',
         header: ({ table }) => (
@@ -88,55 +87,67 @@ export const ReleasesTable = ({
         enableHiding: false,
         size: 40,
       },
-
       {
-        header: _(msg`Created`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Created`)} />,
         accessorKey: 'createdAt',
+        enableHiding: true,
         cell: ({ row }) =>
-          i18n.date(row.original.createdAt, { ...DateTime.DATETIME_SHORT, hourCycle: 'h12' }),
+          row.original.createdAt
+            ? format(row.original.createdAt, 'd MMM yyyy HH:mm', { locale: es })
+            : '-',
       },
       {
-        header: _(msg`Date`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Date`)} />,
         accessorKey: 'date',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) =>
-          row.original.date ? format(row.original.date, 'd MMM yyyy', { locale: es }) + '' : '-',
-
-        // format(new Date(row.original.date + 'T00:00:00'), 'dd/MM/yyyy') : '-',
-      },
-      {
-        header: _(msg`Artist`),
-        accessorKey: 'artist',
-        cell: ({ row }) => row.original.artist || '-',
+          row.original.date ? format(row.original.date, 'd MMM yyyy', { locale: es }) : '-',
       },
 
       {
-        header: _(msg`Artists`),
+        // header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Artists`)} />,
         accessorKey: 'releasesArtists',
-        cell: ({ row }) => row.original.artist || '-',
+        enableHiding: true,
+        enableColumnFilter: false,
+        cell: ({ row }) => row.original.releasesArtists || '-',
       },
       {
-        header: _(msg`Release Title`),
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={_(msg`Lanzamiento`)} />
+        ),
         accessorKey: 'lanzamiento',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => row.original.lanzamiento || '-',
       },
       {
-        header: _(msg`Type`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Type`)} />,
         accessorKey: 'typeOfRelease',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => row.original.typeOfRelease || '-',
       },
       {
-        header: _(msg`Release Status`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Release`)} />,
         accessorKey: 'release',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => row.original.release || '-',
       },
       {
-        header: _(msg`Uploaded`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Uploaded`)} />,
         accessorKey: 'uploaded',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => row.original.uploaded || '-',
       },
       {
-        header: _(msg`Streaming Link`),
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={_(msg`Streaming Link`)} />
+        ),
         accessorKey: 'streamingLink',
+        enableHiding: true,
         cell: ({ row }) =>
           row.original.streamingLink ? (
             <Link
@@ -151,8 +162,10 @@ export const ReleasesTable = ({
           ),
       },
       {
-        header: _(msg`Assets`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Assets`)} />,
         accessorKey: 'assets',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.assets === true) {
             return (
@@ -171,10 +184,11 @@ export const ReleasesTable = ({
           }
         },
       },
-
       {
-        header: _(msg`Canvas`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Canvas`)} />,
         accessorKey: 'canvas',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.canvas === true) {
             return (
@@ -194,8 +208,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Cover`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Cover`)} />,
         accessorKey: 'cover',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.cover === true) {
             return (
@@ -215,8 +231,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Audio`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Audio`)} />,
         accessorKey: 'audioWAV',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.audioWAV === true) {
             return (
@@ -236,8 +254,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Video`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Video`)} />,
         accessorKey: 'video',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.video === true) {
             return (
@@ -257,8 +277,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Banners`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Banners`)} />,
         accessorKey: 'banners',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.banners === true) {
             return (
@@ -278,8 +300,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Pitch`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Pitch`)} />,
         accessorKey: 'pitch',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.pitch === true) {
             return (
@@ -299,8 +323,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`EPK`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`EPK`)} />,
         accessorKey: 'EPKUpdates',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.EPKUpdates === true) {
             return (
@@ -320,8 +346,12 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`WebSiteUpdates`),
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={_(msg`WebSite Updates`)} />
+        ),
         accessorKey: 'WebSiteUpdates',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.WebSiteUpdates === true) {
             return (
@@ -341,8 +371,10 @@ export const ReleasesTable = ({
         },
       },
       {
-        header: _(msg`Biography`),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={_(msg`Biography`)} />,
         accessorKey: 'Biography',
+        enableHiding: true,
+        enableColumnFilter: true,
         cell: ({ row }) => {
           if (row.original.Biography === true) {
             return (
@@ -361,22 +393,34 @@ export const ReleasesTable = ({
           }
         },
       },
+    ];
+    return columns;
+  };
 
-      // {
-      //   header: _(msg`Actions`),
-      //   cell: ({ row }) =>
-      //     (!row.original.deletedAt || isDocumentCompleted(row.original.status)) && (
-      //       <div className="flex items-center gap-x-4">
-      //         <DocumentsTableActionButton row={row.original} />
-      //         <DocumentsTableActionDropdown
-      //           row={row.original}
-      //           onMoveDocument={onMoveDocument ? () => onMoveDocument(row.original.id) : undefined}
-      //         />
-      //       </div>
-      //     ),
-      // },
-    ] satisfies DataTableColumnDef<DocumentsTableRow>[];
-  }, [team]);
+  const columns = createColumns();
+
+  interface ColumnActions {
+    onEdit?: (data: ReleaseTableRow) => void;
+    onDelete?: (id: number) => void;
+  }
+
+  const { table, shallow, debounceMs, throttleMs } = useDataTable({
+    data: data?.data || [],
+    columns,
+    pageCount: data?.totalPages || 1,
+    enableAdvancedFilter: true,
+    initialState: {
+      sorting: [{ id: 'createdAt', desc: true }],
+      columnPinning: { right: ['actions'] },
+    },
+    defaultColumn: {
+      columns,
+      enableColumnFilter: false,
+    },
+    getRowId: (originalRow) => originalRow.id.toString(),
+    shallow: false,
+    clearOnDefault: true,
+  });
 
   const onPaginationChange = (page: number, perPage: number) => {
     startTransition(() => {
@@ -395,15 +439,14 @@ export const ReleasesTable = ({
   };
 
   return (
-    <div className="relative">
+    <>
       <DataTable
-        isMultipleDelete={isMultipleDelete}
         setIsMultipleDelete={setIsMultipleDelete}
-        onMultipleDelete={onMultipleDelete}
-        columns={columns}
+        isMultipleDelete={isMultipleDelete}
         onDelete={onDelete}
         onEdit={onEdit}
         data={results.data}
+        onMultipleDelete={onMultipleDelete}
         perPage={results.perPage}
         currentPage={results.currentPage}
         totalPages={results.totalPages}
@@ -420,25 +463,94 @@ export const ReleasesTable = ({
           component: (
             <DataTableSkeleton
               columnCount={columns.length}
-              cellWidths={['10rem', '30rem', '10rem', '10rem', '6rem', '6rem', '6rem']}
+              cellWidths={['3rem', '3rem', '3rem', '3rem', '2rem', '2rem', '2rem']}
               shrinkZero
             />
           ),
         }}
+        table={table}
+        actionBar={<ReleasesTableActionBar table={table} />}
       >
-        {(table) => <DataTablePagination additionalInformation="VisibleCount" table={table} />}
-      </DataTable>
+        {/* actionBar={<ReleasesTableActionBar table={table as any} />} */}
 
-      {isPending && (
-        <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
-          <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
-        </div>
-      )}
-    </div>
+        {/* <DataTableToolbar table={table}>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar> */}
+
+        <DataTableAdvancedToolbar table={table}>
+          <DataTableSortList table={table} align="start" />
+          <DataTableFilterList
+            table={table}
+            shallow={shallow}
+            debounceMs={debounceMs}
+            throttleMs={throttleMs}
+            align="start"
+          />
+        </DataTableAdvancedToolbar>
+      </DataTable>
+      {/* <UpdateTaskSheet
+        open={rowAction?.variant === "update"}
+        onOpenChange={() => setRowAction(null)}
+        task={rowAction?.row.original ?? null}
+      />
+      <DeleteTasksDialog
+        open={rowAction?.variant === "delete"}
+        onOpenChange={() => setRowAction(null)}
+        tasks={rowAction?.row.original ? [rowAction?.row.original] : []}
+        showTrigger={false}
+        onSuccess={() => rowAction?.row.toggleSelected(false)}
+      /> */}
+    </>
   );
+
+  // return (
+  //   <div className="relative">
+  //     <DataTable
+  // setIsMultipleDelete={setIsMultipleDelete}
+  // isMultipleDelete={isMultipleDelete}
+  // columns={columns}
+  // onDelete={onDelete}
+  // onEdit={onEdit}
+  // onRetry={onRetry}
+  // onNavegate={onNavegate}
+  // data={results.data}
+  // onMultipleDelete={onMultipleDelete}
+  // perPage={results.perPage}
+  // currentPage={results.currentPage}
+  // totalPages={results.totalPages}
+  // onPaginationChange={onPaginationChange}
+  // onMoveDocument={onMoveDocument}
+  // columnVisibility={{
+  //   sender: team !== undefined,
+  // }}
+  // error={{
+  //   enable: isLoadingError || false,
+  // }}
+  // skeleton={{
+  //   enable: isLoading || false,
+  //   rows: 5,
+  //   component: (
+  //     <DataTableSkeleton
+  //       columnCount={columns.length}
+  //       cellWidths={['10rem', '30rem', '10rem', '10rem', '6rem', '6rem', '6rem']}
+  //       shrinkZero
+  //     />
+  //   ),
+  // }}
+  //     >
+  //       {(table) => <DataTablePagination additionalInformation="VisibleCount" table={table} />}
+  //     </DataTable>
+
+  //     {isPending && (
+  //       <div className="bg-background/50 absolute inset-0 flex items-center justify-center">
+  //         <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 };
 
 type DataTableTitleProps = {
-  row: DocumentsTableRow;
+  row: ReleaseTableRow;
   teamUrl?: string;
 };

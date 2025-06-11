@@ -1,7 +1,6 @@
 // import { TRPCError } from '@trpc/server';
 import type { Prisma } from '@prisma/client';
 import { Release, TypeOfRelease } from '@prisma/client';
-import { DateTime } from 'luxon';
 import { z } from 'zod';
 
 import { findRelease } from '@documenso/lib/server-only/document/find-releases';
@@ -111,7 +110,6 @@ export const releaseRouter = router({
       const { user, teamId } = ctx;
       const userId = user.id;
       const { releases } = input;
-      console.log('Creating multiple releases:', releases.length);
 
       // Verify permissions if it's a team task
       if (teamId && ctx.teamId !== teamId) {
@@ -334,10 +332,48 @@ export const releaseRouter = router({
         period: z.enum(['7d', '14d', '30d']).optional(),
         type: z.nativeEnum(ExtendedReleaseType).optional(),
         release: z.nativeEnum(ExtendedRelease).optional(),
-        orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
+        orderBy: z
+          .enum([
+            'createdAt',
+            'date',
+            'lanzamiento',
+            'typeOfRelease',
+            'release',
+            'uploaded',
+            'streamingLink',
+            'assets',
+            'canvas',
+            'cover',
+            'audioWAV',
+            'video',
+            'banners',
+            'pitch',
+            'EPKUpdates',
+            'WebSiteUpdates',
+            'Biography',
+          ])
+          .optional(),
         orderByDirection: z.enum(['asc', 'desc']).optional().default('desc'),
         orderByColumn: z
-          .enum(['id', 'lanzamiento', 'typeOfRelease', 'createdAt', 'updatedAt'])
+          .enum([
+            'createdAt',
+            'date',
+            'lanzamiento',
+            'typeOfRelease',
+            'uploaded',
+            'release',
+            'streamingLink',
+            'assets',
+            'canvas',
+            'cover',
+            'audioWAV',
+            'video',
+            'banners',
+            'pitch',
+            'EPKUpdates',
+            'WebSiteUpdates',
+            'Biography',
+          ])
           .optional(),
         artistIds: z.array(z.number()).optional(),
       }),
@@ -356,9 +392,9 @@ export const releaseRouter = router({
         period,
         // orderBy = 'createdAt',
       } = input;
+
       const { user, teamId } = ctx;
       const userId = user.id;
-      // Construir el objeto where para los filtros
       const where: Prisma.ReleasesWhereInput = {
         ...(teamId && { teamId }),
         ...(query && {
@@ -377,19 +413,6 @@ export const releaseRouter = router({
         teamId,
       };
 
-      let createdAt: Prisma.ReleasesWhereInput['createdAt'];
-
-      if (period) {
-        const daysAgo = parseInt(period.replace(/d$/, ''), 10);
-
-        const startOfPeriod = DateTime.now().minus({ days: daysAgo }).startOf('day');
-
-        createdAt = {
-          gte: startOfPeriod.toJSDate(),
-        };
-      }
-
-      where.createdAt = createdAt;
       getReleaseType;
       const [stats] = await Promise.all([getReleaseType(getStatOptions)]);
 
@@ -408,13 +431,6 @@ export const releaseRouter = router({
             : undefined,
         }),
       ]);
-      // const releases = await prisma.releases.findMany({
-      //   where,
-
-      //   orderBy: {
-      //     [orderBy]: orderDirection,
-      //   },
-      // });
 
       return { releases: documents, types: stats };
     }),

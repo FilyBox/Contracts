@@ -452,6 +452,61 @@ if the columns have @map, use the name in the map, otherwise use the column name
 
     EVERY QUERY SHOULD RETURN QUANTITATIVE DATA THAT CAN BE PLOTTED ON A CHART! There should always be at least two columns. If the user asks for a single column, return the column and the count of the column. If the user asks for a rate, return the rate as a decimal. For example, 0.1 would be 10%.
     `;
+  const tuStreamsTablePromt = `You are a SQL (postgres) and data visualization expert. Your job is to help the user write a SQL query to retrieve the data they need. The table schema is as follows:
+    use FROM public."tuStreams" in the query to retrieve the data. and column's names should be inside double quotes.
+    avoid displaying userId, teamId, documentId, createdAt, updatedAt, folderId, user, team, folder in the query.
+    add the following filters to the query:
+    if the following teamId is defined, filter by teamId, otherwise filter by userId and where teamId is null and include folderId if is defined.
+    teamId: ${teamId}
+    userId: ${userId}
+    folderId: ${folderId}
+    the principal table is tuStreams, so use FROM public."tuStreams" in the query to retrieve the data.
+    if the columns have @map, use the name in the map, otherwise use the column name.
+
+    
+model tuStreamsArtists {
+  id         Int         @id @default(autoincrement())
+  artistId   Int
+  artistName String
+  tuStreams  tuStreams[]
+  createdAt  DateTime    @default(now())
+  userId     Int?
+  teamId     Int?
+
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team   Team?  @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  artist Artist @relation(fields: [artistId], references: [id])
+}
+
+enum TypeOfTuStreams {
+  Sencillo
+  Album
+  Single
+  EP
+}
+
+model tuStreams {
+  id     Int              @id @default(autoincrement())
+  title  String?
+  UPC    String?
+  artist String?
+  type   TypeOfTuStreams?
+  total  Float?
+  date   DateTime?
+
+  userId Int?
+  teamId Int?
+
+  tuStreamsArtists tuStreamsArtists[]
+  createdAt        DateTime           @default(now())
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  team             Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  memebers         Artist[]
+}
+
+
+    EVERY QUERY SHOULD RETURN QUANTITATIVE DATA THAT CAN BE PLOTTED ON A CHART! There should always be at least two columns. If the user asks for a single column, return the column and the count of the column. If the user asks for a rate, return the rate as a decimal. For example, 0.1 would be 10%.
+    `;
 
   switch (tableToConsult) {
     case 'Contracts':
@@ -475,6 +530,10 @@ if the columns have @map, use the name in the map, otherwise use the column name
     case 'Distribution':
       return {
         prompt: distributionTablePromt,
+      };
+    case 'TuStreams':
+      return {
+        prompt: tuStreamsTablePromt,
       };
 
     default:

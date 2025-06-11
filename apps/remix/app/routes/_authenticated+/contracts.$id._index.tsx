@@ -1,19 +1,15 @@
-import { type MouseEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, TeamMemberRole } from '@prisma/client';
-import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, XIcon } from 'lucide-react';
-import { Maximize } from 'lucide-react';
 import { Link, redirect } from 'react-router';
 import { useNavigate } from 'react-router';
 import { match } from 'ts-pattern';
-import { useDebounceCallback, useWindowSize } from 'usehooks-ts';
+import { useWindowSize } from 'usehooks-ts';
 
 import { getSession } from '@documenso/auth/server/lib/utils/get-session';
-import { useSession } from '@documenso/lib/client-only/providers/session';
 import { getContractById } from '@documenso/lib/server-only/document/get-contract-by-id';
 import { getDocumentById } from '@documenso/lib/server-only/document/get-document-by-id';
 import { getFieldsForDocument } from '@documenso/lib/server-only/field/get-fields-for-document';
@@ -160,67 +156,60 @@ export default function DocumentPage() {
   const loaderData = useSuperLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
-  const { _ } = useLingui();
-  const { user } = useSession();
 
   const [uiArtifact, setUiArtifact] = useState<UIArtifact>(initialArtifactData);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
 
-  const PureHitboxLayer = ({
-    hitboxRef,
-    result,
-    setArtifact,
-  }: {
-    hitboxRef: React.RefObject<HTMLDivElement>;
-    result: any;
-    setArtifact: (updaterFn: UIArtifact | ((currentArtifact: UIArtifact) => UIArtifact)) => void;
-  }) => {
-    const handleClick = useCallback(
-      (event: MouseEvent<HTMLElement>) => {
-        const boundingBox = event.currentTarget.getBoundingClientRect();
+  // const PureHitboxLayer = ({
+  //   hitboxRef,
+  //   result,
+  //   setArtifact,
+  // }: {
+  //   hitboxRef: React.RefObject<HTMLDivElement>;
+  //   result: any;
+  //   setArtifact: (updaterFn: UIArtifact | ((currentArtifact: UIArtifact) => UIArtifact)) => void;
+  // }) => {
+  //   const handleClick = useCallback(
+  //     (event: MouseEvent<HTMLElement>) => {
+  //       const boundingBox = event.currentTarget.getBoundingClientRect();
 
-        setArtifact((artifact) =>
-          artifact.status === 'streaming'
-            ? { ...artifact, isVisible: true }
-            : {
-                ...artifact,
-                title: result.title,
-                documentId: result.id,
-                kind: result.kind,
-                isVisible: true,
-                boundingBox: {
-                  left: boundingBox.x,
-                  top: boundingBox.y,
-                  width: boundingBox.width,
-                  height: boundingBox.height,
-                },
-              },
-        );
-      },
-      [setArtifact, result],
-    );
+  //       setArtifact((artifact) =>
+  //         artifact.status === 'streaming'
+  //           ? { ...artifact, isVisible: true }
+  //           : {
+  //               ...artifact,
+  //               title: result.title,
+  //               documentId: result.id,
+  //               kind: result.kind,
+  //               isVisible: true,
+  //               boundingBox: {
+  //                 left: boundingBox.x,
+  //                 top: boundingBox.y,
+  //                 width: boundingBox.width,
+  //                 height: boundingBox.height,
+  //               },
+  //             },
+  //       );
+  //     },
+  //     [setArtifact, result],
+  //   );
 
-    return (
-      <div
-        className="absolute left-0 top-0 z-10 size-full rounded-xl"
-        ref={hitboxRef}
-        onClick={handleClick}
-        role="presentation"
-        aria-hidden="true"
-      >
-        <div className="flex w-full items-center justify-end p-4">
-          <div className="absolute right-[9px] top-[13px] rounded-md p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700">
-            <Maximize />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const HitboxLayer = memo(PureHitboxLayer, (prevProps, nextProps) => {
-    if (!equal(prevProps.result, nextProps.result)) return false;
-    return true;
-  });
+  //   return (
+  //     <div
+  //       className="absolute left-0 top-0 z-10 size-full rounded-xl"
+  //       ref={hitboxRef}
+  //       onClick={handleClick}
+  //       role="presentation"
+  //       aria-hidden="true"
+  //     >
+  //       <div className="flex w-full items-center justify-end p-4">
+  //         <div className="absolute right-[9px] top-[13px] rounded-md p-2 hover:bg-zinc-100 hover:dark:bg-zinc-700">
+  //           <Maximize />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   const hitboxRef = useRef<HTMLDivElement>(null);
 
@@ -242,11 +231,9 @@ export default function DocumentPage() {
 
   const retryDocument = trpc.document.retryContractData.useMutation();
 
-  const { document, documentRootPath, fields, contract } = loaderData;
-  const { recipients, documentData, documentMeta } = document;
+  const { document, documentRootPath, contract } = loaderData;
+  const { recipients, documentData } = document;
 
-  // This was a feature flag. Leave to false since it's not ready.
-  const isDocumentHistoryEnabled = false;
   const handleRetry = async () => {
     try {
       setIsGenerating(true);
@@ -342,6 +329,16 @@ export default function DocumentPage() {
       </Link>
 
       <div className="mt-6 grid w-full grid-cols-12 gap-8">
+        <div className="dark:bg-mutedh-full col-span-12 w-full !max-w-full items-center">
+          {contract && (
+            <Component
+              generating={isGenerating}
+              handleRetry={handleRetry}
+              documentRootPath={documentRootPath}
+              contract={contract}
+            />
+          )}
+        </div>
         <Card
           className="col-span-12 rounded-xl before:rounded-xl lg:col-span-6 xl:col-span-7"
           gradient
@@ -350,19 +347,6 @@ export default function DocumentPage() {
             <PDFViewer document={document} key={documentData.id} documentData={documentData} />
           </CardContent>
         </Card>
-
-        <div className="dark:bg-mutedh-full !max-w-full items-center">
-          <div className="col-span-12 lg:fixed lg:right-8 lg:top-20 lg:col-span-6 xl:col-span-5">
-            {contract && (
-              <Component
-                generating={isGenerating}
-                handleRetry={handleRetry}
-                documentRootPath={documentRootPath}
-                contract={contract}
-              />
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -1250,17 +1250,12 @@ msgid "Are you sure?"
 msgstr "Êtes-vous sûr ?"
 
 #: apps/remix/app/components/tables/tustreams-table.tsx
-#: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Artist"
 msgstr ""
 
 #: apps/remix/app/components/dialogs/artist-create-dialog.tsx
 msgid "Artist created successfully"
-msgstr ""
-
-#: apps/remix/app/components/tables/releases-table.tsx
-msgid "Artists"
 msgstr ""
 
 #: apps/remix/app/components/general/task/tasks-list.tsx
@@ -3685,6 +3680,10 @@ msgstr "Étiquette"
 msgid "Language"
 msgstr "Langue"
 
+#: apps/remix/app/components/tables/releases-table.tsx
+msgid "Lanzamiento"
+msgstr ""
+
 #: apps/remix/app/components/general/period-selector.tsx
 msgid "Last 14 days"
 msgstr "14 derniers jours"
@@ -4872,11 +4871,13 @@ msgid "Rejection reason: {reason}"
 msgstr "Motif du rejet : {reason}"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+msgid "Release"
+msgstr ""
+
 #: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Status"
 msgstr ""
 
-#: apps/remix/app/components/tables/releases-table.tsx
 #: apps/remix/app/components/tables/lpm-table.tsx
 msgid "Release Title"
 msgstr ""
@@ -7554,6 +7555,9 @@ msgid "Webhooks"
 msgstr "Webhooks"
 
 #: apps/remix/app/components/tables/releases-table.tsx
+msgid "WebSite Updates"
+msgstr ""
+
 #: apps/remix/app/components/tables/lpm-table.tsx
 msgid "WebSiteUpdates"
 msgstr ""
