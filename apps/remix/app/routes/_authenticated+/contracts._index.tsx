@@ -10,7 +10,7 @@ import { FolderType } from '@documenso/lib/types/folder-type';
 import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { parseCsvFile } from '@documenso/lib/utils/csvParser';
 import { formatContractsPath } from '@documenso/lib/utils/teams';
-import { type Contract, type IsrcSongs } from '@documenso/prisma/client';
+import { type Contract } from '@documenso/prisma/client';
 import { ExtendedContractStatus } from '@documenso/prisma/types/extended-contracts';
 import { trpc } from '@documenso/trpc/react';
 import {
@@ -18,7 +18,6 @@ import {
   ZFindContractsInternalRequestSchema,
 } from '@documenso/trpc/server/contracts-router/schema';
 import { type TFolderWithSubfolders } from '@documenso/trpc/server/folder-router/schema';
-// import { searchParamsCache } from '@documenso/ui/lib/validations';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
 import { Button } from '@documenso/ui/primitives/button';
 import { Dialog, DialogContent } from '@documenso/ui/primitives/dialog';
@@ -39,12 +38,6 @@ import { ContractsTable } from '~/components/tables/contracts-table';
 import { GeneralTableEmptyState } from '~/components/tables/general-table-empty-state';
 import { useOptionalCurrentTeam } from '~/providers/team';
 import { appMetaTags } from '~/utils/meta';
-import { superLoaderJson, useSuperLoaderData } from '~/utils/super-json-loader';
-
-type CsvColumnMapping = {
-  csvColumn: string;
-  field: keyof Omit<IsrcSongs, 'id'> | '';
-};
 
 export function meta() {
   return appMetaTags('Contracts');
@@ -156,15 +149,14 @@ export default function ContractsPage() {
 
   const {
     data: documentsData,
-    isLoading: isDocumentsLoading,
-    isLoadingError: isDocumentsLoadingError,
-    refetch: refetchDocuments,
+    // isLoading: isDocumentsLoading,
+    // isLoadingError: isDocumentsLoadingError,
+    // refetch: refetchDocuments,
   } = trpc.document.findAllDocumentsInternalUseToChat.useQuery({
     query: findDocumentSearchParams.query,
     period: findDocumentSearchParams.period,
     page: findDocumentSearchParams.page,
     perPage: findDocumentSearchParams.perPage,
-    // Omit the status parameter as it doesn't match the expected enum values
   });
 
   const { mutateAsync: pinFolder } = trpc.folder.pinFolder.useMutation();
@@ -173,7 +165,7 @@ export default function ContractsPage() {
   const {
     data: foldersData,
     isLoading: isFoldersLoading,
-    refetch: refetchFolders,
+    // refetch: refetchFolders,
   } = trpc.folder.getFolders.useQuery({
     type: FolderType.CONTRACT,
     parentId: null,
@@ -273,7 +265,8 @@ export default function ContractsPage() {
 
       try {
         // Asume formato MM/dd/yyyy
-        let [month, day, year] = dateString.split('/');
+        let [month, day] = dateString.split('/');
+        const year = dateString.split('/')[2];
         if (!month || !day || !year) return undefined;
 
         // if ( day > '31' || year.length !== 4) {
@@ -388,7 +381,7 @@ export default function ContractsPage() {
   const handleCreate = async (newRecord: Omit<Contract, 'id'>) => {
     setIsSubmitting(true);
     try {
-      const { id } = await createContractsMutation.mutateAsync({
+      await createContractsMutation.mutateAsync({
         title: newRecord.title ?? '',
         fileName: newRecord.fileName ?? '',
         artists: newRecord.artists ?? '',
@@ -416,7 +409,7 @@ export default function ContractsPage() {
   const handleUpdate = async (updatedContracts: Contract) => {
     setIsSubmitting(true);
     try {
-      const { id } = await updateContractsMutation.mutateAsync({
+      await updateContractsMutation.mutateAsync({
         id: updatedContracts.id,
         title: updatedContracts.title ?? '',
         artists: updatedContracts.artists ?? '',
@@ -623,7 +616,7 @@ export default function ContractsPage() {
         <div className="-m-1 flex flex-wrap gap-x-4 gap-y-6 overflow-hidden p-1">
           <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4">
             <Tabs value={findDocumentSearchParams.status || 'ALL'} className="overflow-x-auto">
-              <TabsList>
+              <TabsList className="flex h-fit flex-wrap sm:flex">
                 {['VIGENTE', 'NO_ESPECIFICADO', 'FINALIZADO', 'ALL'].map((value) => {
                   return (
                     <TabsTrigger
@@ -650,9 +643,11 @@ export default function ContractsPage() {
               </TabsList>
             </Tabs>
 
-            <Button onClick={openCreateDialog}>Add Item</Button>
+            <Button className="w-full sm:w-fit" onClick={openCreateDialog}>
+              Add Item
+            </Button>
             <AdvancedFilterDialog tableToConsult="Contracts" />
-            <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+            <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-4 sm:w-48">
               <DocumentSearch initialValue={findDocumentSearchParams.query} />
             </div>
           </div>

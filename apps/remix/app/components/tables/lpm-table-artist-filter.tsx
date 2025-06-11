@@ -6,9 +6,6 @@ import { useIsMounted } from '@documenso/lib/client-only/hooks/use-is-mounted';
 import { parseToIntegerArray } from '@documenso/lib/utils/params';
 import { MultiSelectCombobox } from '@documenso/ui/primitives/multi-select-combobox';
 
-type DocumentsTableSenderFilterProps = {
-  teamId: number;
-};
 type artistData =
   | {
       teamId: number | null;
@@ -34,8 +31,6 @@ export const TableArtistFilter = ({
 
   const artistIds = parseToIntegerArray(searchParams?.get('artistIds') ?? '');
 
-  // const { data: artistData, isLoading } = trpc.lpm.findLpmUniqueArtists.useQuery();
-
   const comboBoxOptions = (artistData ?? []).map((artist) => ({
     label: artist.artistName,
     value: artist.artistId,
@@ -59,6 +54,7 @@ export const TableArtistFilter = ({
 
   return (
     <MultiSelectCombobox
+      className="w-full"
       emptySelectionPlaceholder={
         <p className="text-muted-foreground font-normal">
           <Trans>

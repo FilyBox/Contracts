@@ -271,7 +271,6 @@ export const tuStreamsRouter = router({
       };
 
       if (type && type !== ExtendedTuStreamsType.ALL) {
-        console.log('Filtering by type:', type);
         where.type = type;
       }
 

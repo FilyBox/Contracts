@@ -20,6 +20,7 @@ export default function Component({
   handleRetry: () => void;
 }) {
   // Variants para las animaciones
+
   const cardVariants = {
     generating: {
       transition: { duration: 0.5 },
@@ -58,7 +59,7 @@ export default function Component({
   };
 
   return (
-    <div className="col-span-12 mx-auto w-full rounded-xl p-4 before:rounded-xl lg:fixed lg:right-5 lg:top-20 lg:col-span-6 lg:w-[32rem] xl:col-span-7">
+    <div className="col-span-12 mx-auto flex w-full rounded-xl before:rounded-xl lg:fixed lg:right-5 lg:top-20 lg:col-span-6 lg:w-[32rem] xl:col-span-7">
       <motion.div variants={cardVariants} initial="generating">
         <Card className="relative overflow-hidden border-2">
           {/* Gradiente animado de fondo */}

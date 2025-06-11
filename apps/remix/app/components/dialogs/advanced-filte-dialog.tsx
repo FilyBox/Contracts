@@ -150,7 +150,7 @@ export const AdvancedFilterDialog = ({
     <Drawer>
       <DrawerTrigger asChild>
         {trigger ?? (
-          <Button variant="outline" className="flex items-center space-x-2">
+          <Button variant="outline" className="flex w-full items-center space-x-2 sm:w-fit">
             <ListFilter className="h-4 w-4" />
             <span>Advanced Filters</span>
           </Button>

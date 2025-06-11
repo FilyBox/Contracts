@@ -33,6 +33,7 @@ import FormTuStreams from '@documenso/ui/primitives/form-tustreams';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { AdvancedFilterDialog } from '~/components/dialogs/advanced-filte-dialog';
 import { ArtistCreateDialog } from '~/components/dialogs/artist-create-dialog';
 import { DocumentSearch } from '~/components/general/document/document-search';
 import { PeriodSelector } from '~/components/general/period-selector';
@@ -499,12 +500,14 @@ export default function TuStreamsPage() {
               {isSubmitting ? 'Procesando...' : 'Cargar CSV'}
             </Button>
           </div> */}
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+          <div className="flex w-48 flex-wrap items-center justify-between">
             <DocumentSearch initialValue={findDocumentSearchParams.query} />
           </div>
-          <div className="flex w-48 flex-wrap items-center justify-between gap-x-2 gap-y-4">
+          <div className="flex w-fit flex-wrap items-center justify-between">
             <Button onClick={openCreateDialog}>Create TuStream</Button>
           </div>
+
+          <AdvancedFilterDialog tableToConsult="TuStreams" />
 
           <ArtistCreateDialog />
 
