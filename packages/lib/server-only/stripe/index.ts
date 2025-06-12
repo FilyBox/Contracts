@@ -9,3 +9,8 @@ export const stripe = new Stripe(env('NEXT_PRIVATE_STRIPE_API_KEY') ?? '', {
 });
 
 export { Stripe };
+export async function getTransactions() {
+  const payments = await stripe.paymentIntents.list({ limit: 10 });
+  console.log('Payments:', payments.data);
+  return payments;
+}
