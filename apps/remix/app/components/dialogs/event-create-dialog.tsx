@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
 
 import { Trans } from '@lingui/react/macro';
 import { FilePlus, Loader } from 'lucide-react';
@@ -49,6 +50,11 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
   const { toast } = useToast();
   const [image, setImage] = useState<File | null>(null);
   const imageUploaderRef = useRef<{ resetPreview: () => void }>(null);
+
+  const { mutateAsync: createEvent } = trpc.event.createEvent.useMutation();
+
+  const [showEventCreateDialog, setShowEventCreateDialog] = useState(false);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [EventData, setEventData] = useState<{
     name: string;
     description: string | undefined;
@@ -75,28 +81,6 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
     deletedAt: null,
   });
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
-  const dateErrors = useMemo(() => {
-    const errors: string[] = [];
-    if (EventData.beginning < today) {
-      errors.push('La fecha de inicio no puede ser anterior a hoy.');
-    }
-    if (EventData.end <= EventData.beginning) {
-      errors.push('La fecha de fin debe ser posterior a la de inicio.');
-    }
-    return errors;
-  }, [EventData.beginning, EventData.end, today]);
-
-  const { mutateAsync: createEvent } = trpc.event.createEvent.useMutation();
-
-  const [showEventCreateDialog, setShowEventCreateDialog] = useState(false);
-  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-
   const { data: artistsList = [] } = trpc.artist.findArtistsAll.useQuery();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,19 +103,6 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
 
   const onCreateEvent = async () => {
     if (isCreatingEvent || !user.id) return;
-    setIsCreatingEvent(true);
-
-    if (dateErrors.length > 0) {
-      dateErrors.forEach((err) =>
-        toast({
-          title: 'Error en las fechas',
-          description: err,
-          variant: 'destructive',
-        }),
-      );
-      return;
-    }
-
     setIsCreatingEvent(true);
 
     try {
@@ -235,7 +206,7 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
               id="end"
               name="end"
               type="date"
-              value={EventData.end ? EventData.end.toISOString().slice(0, 10) : ''}
+              value={EventData.beginning ? EventData.beginning.toISOString().slice(0, 10) : ''}
               onChange={handleInputChange}
               className="mt-1"
             />
@@ -326,11 +297,6 @@ export const EventCreateDialog = ({ teamId: _teamId }: EventCreateDialogProps) =
             <Trans>Create Event</Trans>
           </Button>
         </DialogFooter>
-        <div className="rounded bg-red-100 p-2 text-sm text-red-700">
-          {dateErrors.map((err, idx) => (
-            <div key={idx}>{err}</div>
-          ))}
-        </div>
       </DialogContent>
     </Dialog>
   );
