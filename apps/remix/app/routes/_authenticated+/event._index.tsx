@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/av
 import { Button } from '@documenso/ui/primitives/button';
 import {
   Card,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -42,7 +43,7 @@ export default function TasksPage() {
   const navigate = useNavigate();
   const team = useOptionalCurrentTeam();
   const taskRootPath = formTasksPath(team?.url);
-  // const updateEventMutation = trpc.event.updateEventById.useMutation();
+  const updateEventMutation = trpc.event.updateEventById.useMutation();
   const deleteEventMutation = trpc.event.deleteEventById.useMutation();
   const { data, isLoading, isLoadingError, refetch } = trpc.event.findEvent.useQuery();
 
@@ -50,11 +51,16 @@ export default function TasksPage() {
     void refetch();
   }, [team?.url]);
 
+  const handleTaskClick = (taskId: number) => {
+    void navigate(`${taskRootPath}/${taskId}`);
+  };
+
   const handleDelete = async (eventId: number) => {
     try {
       await deleteEventMutation.mutateAsync({ id: eventId });
       await refetch();
     } catch (error) {
+      // Puedes manejar el error aquí, por ejemplo mostrar un toast
       console.error('Error al borrar el evento:', error);
     }
   };
@@ -105,7 +111,7 @@ export default function TasksPage() {
           </Button>
         </div>
 
-        <div className="flex items-center gap-4 sm:flex-row sm:justify-end">
+        <div className="flex gap-4 sm:flex-row sm:justify-end">
           <TaskCreateDialog taskRootPath={taskRootPath} />
           <EventCreateDialog />
           <ArtistCreateDialog />
@@ -136,7 +142,7 @@ export default function TasksPage() {
             </div>
           ) : isLoadingError ? (
             <div className="flex h-64 items-center justify-center text-red-500">
-              <Trans>Error al cargar los eventos</Trans>
+              <Trans>Error al cargar las tareas</Trans>
             </div>
           ) : data && data.length === 0 ? (
             <div className="text-muted-foreground/60 flex h-96 flex-col items-center justify-center gap-y-4">
@@ -144,84 +150,56 @@ export default function TasksPage() {
 
               <div className="text-center">
                 <h3 className="text-lg font-semibold">
-                  <Trans>No hay eventos</Trans>
+                  <Trans>No hay tareas</Trans>
                 </h3>
 
                 <p className="mt-2 max-w-[50ch]">
                   <Trans>
-                    No has creado ninguna eventos todavía. Crea una nuevo evento para comenzar.
+                    No has creado ninguna tarea todavía. Crea una nueva tarea para comenzar.
                   </Trans>
                 </p>
               </div>
             </div>
           ) : (
+            // En el componente TasksPage, modifica la parte donde usas TasksTable:
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
               {data?.map((event) => (
                 <Card key={event.id} className="transition hover:shadow-lg">
-                  <CardHeader className="relative p-0">
-                    {event.image && (
-                      <div className="relative h-40 w-full">
-                        <S3Image
-                          s3Key={event.image}
-                          alt={event.name}
-                          className="h-40 w-full rounded-t object-cover"
-                          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <div className="my-2">
-                        <CardTitle>
-                          <h3
-                            className="text-foreground mb-1 truncate text-lg font-semibold md:text-xl"
-                            title={event.name}
-                          >
-                            {event.name}
-                          </h3>
-                        </CardTitle>
-                      </div>
-                      <CardDescription>
-                        <p className="text-muted-foreground mb-4 line-clamp-3 text-sm md:text-base">
-                          {event.description
-                            ? event.description.length > 90
-                              ? `${event.description.slice(0, 90)}...`
-                              : event.description
-                            : ''}
-                        </p>
-                        <div className="mb-3 flex flex-col gap-1">
-                          <div className="flex items-center gap-2 text-xs md:text-sm">
-                            <span className="text-muted-foreground font-medium">
-                              Fecha de inicio:
-                            </span>
-                            <span>
-                              {event.beginning
-                                ? new Date(event.beginning).toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                  })
-                                : 'Fecha no disponible'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs md:text-sm">
-                            <span className="text-muted-foreground font-medium">
-                              Fecha de termino:
-                            </span>
-                            <span>
-                              {event.end
-                                ? new Date(event.end).toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                  })
-                                : 'Fecha no disponible'}
-                            </span>
-                          </div>
-                        </div>
-                      </CardDescription>
-                    </div>
+                  <CardHeader>
+                    <CardTitle>
+                      {event.name.length > 10 ? `${event.name.substring(0, 10)}...` : event.name}
+                    </CardTitle>
+                    <CardDescription>
+                      {event.description && event.description.length > 10
+                        ? `${event.description.substring(0, 10)}...`
+                        : (event.description ?? '')}
+                    </CardDescription>
                   </CardHeader>
+                  <CardContent>
+                    {/* Si tienes imagen */}
+                    {event.image && (
+                      <S3Image
+                        s3Key={event.image}
+                        alt={event.name}
+                        className="mb-2 h-40 w-full rounded object-cover"
+                      />
+                    )}
+                    <div>
+                      <strong>
+                        <Trans>Inicio:</Trans>
+                      </strong>{' '}
+                      {event.beginning && new Date(event.beginning).toLocaleDateString()}
+                    </div>
+                    <div>
+                      <strong>
+                        <Trans>Fin:</Trans>
+                      </strong>{' '}
+                      {event.end && new Date(event.end).toLocaleDateString()}
+                    </div>
+                    {/* Agrega más campos si lo necesitas */}
+                  </CardContent>
                   <CardFooter>
+                    {/* Puedes agregar botones o acciones aquí */}
                     <div className="flex-3 flex items-center justify-between gap-2">
                       <EventUpdateDialog id={event.id} />
                       <Button size="sm" onClick={async () => handleDelete(event.id)}>
